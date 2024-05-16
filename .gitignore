@@ -1,0 +1,5 @@
+refrishCommands
+node_modules
+logs
+.env
+.vscode

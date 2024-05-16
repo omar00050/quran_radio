@@ -1,0 +1,32 @@
+{
+  "gooddb": {},
+  "channels": {
+    "931536214228611102_radioChannel": {
+      "channelId": "1232733878234648646",
+      "guildId": "931536214228611102",
+      "url": "https://Qurango.net/radio/ahmad_khader_altarabulsi",
+      "enabled": true
+    },
+    "1166753042180350024_radioChannel": {
+      "channelId": "1240614844932292628",
+      "url": "https://Qurango.net/radio/maher_al_meaqli",
+      "guildId": "1166753042180350024",
+      "enabled": false
+    },
+    "1122762819927023659_radioChannel": {
+      "channelId": "1240711644745564231",
+      "guildId": "1122762819927023659",
+      "url": "https://Qurango.net/radio/mahmoud_khalil_alhussary",
+      "enabled": false,
+      "ch": "1234288883068309566",
+      "msgId": "1240729625357975562"
+    },
+    "827682419997933568_radioChannel": {
+      "channelId": "1240734810000068731",
+      "guildId": "827682419997933568",
+      "url": "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA",
+      "enabled": false
+    }
+  },
+  "channel": {}
+}

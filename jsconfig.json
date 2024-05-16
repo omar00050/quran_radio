@@ -1,0 +1,32 @@
+{
+  
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "allowArbitraryExtensions": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "target": "ES6",
+    "baseUrl": "./",
+    "paths": {
+      "@root/*": ["./*"],
+      "@src/*": ["./src/*"],
+      "@base/*": ["src/base/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@events/*": ["src/Events/*"],
+      "@handlers/*": ["src/handlers/*"],
+      "@database/*": ["./src/database/*"],
+      "@DevXor/*": ["./src/*"],
+      "@helpers/*": ["./src/utils/helpers/*"]
+    }
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}
+
+// "@root": ".",
+// "@handlers": "src/handlers/",
+// "@events": "src/events/",
+// "@helpers": "src/utils/helpers/",
+// "@database": "src/database/",
+// "@src": "src/",
+// "@base": "src/base/"
