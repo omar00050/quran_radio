@@ -17,8 +17,8 @@ module.exports = {
     }, 500);
 
 
-    let RadioChannels = client.db.table("channels").values() || [];
-    if (RadioChannels.length == 0) return
+    let RadioChannels = await client.db.table("channels").values() || [];
+    if (RadioChannels.length === 0) return
       setTimeout(async () => {
 
         for (let data of RadioChannels) {
