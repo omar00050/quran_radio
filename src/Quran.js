@@ -9,7 +9,7 @@ class DevXor extends baseClient {
   constructor(options) {
     super(options.CustomClientOptions, options.database)
     this.datainput = options
-    this.loadEvents("src/Events")
+    this.loadEvents("src/events")
     this.loadComponents("src/ComponentsAction")
     this.loadCommands("src/Commands")
 

@@ -13,7 +13,7 @@
       "@src/*": ["./src/*"],
       "@base/*": ["src/base/*"],
       "@utils/*": ["./src/utils/*"],
-      "@events/*": ["src/Events/*"],
+      "@events/*": ["src/events/*"],
       "@handlers/*": ["src/handlers/*"],
       "@database/*": ["./src/database/*"],
       "@DevXor/*": ["./src/*"],

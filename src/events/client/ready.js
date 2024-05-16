@@ -18,22 +18,22 @@ module.exports = {
 
 
     let RadioChannels = client.db.table("channels").values() || [];
+    if (RadioChannels.length == 0) return
+      setTimeout(async () => {
 
-    setTimeout(async () => {
+        for (let data of RadioChannels) {
+          if (data.enabled) {
 
-      for (let data of RadioChannels) {
-        if (data.enabled) {
+            let guild = await client.guilds.fetch(data.guildId)
+            if (!guild) continue
+            let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
+            if (conn === null) continue
+            if (conn === "cantConnect") continue
+            client.Radio.set(data.guildId, conn)
+          }
 
-          let guild = await client.guilds.fetch(data.guildId)
-          if (!guild) continue
-          let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
-          if (conn === null) continue
-          if (conn === "cantConnect") continue
-          client.Radio.set(data.guildId, conn)
         }
-
-      }
-    }, 1000);
+      }, 1000);
 
   },
 };

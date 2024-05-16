@@ -40,7 +40,7 @@
     "@base": "src/base/",
     "@utils": "src/utils/",
     "@events": "src/events/",
-    "@handlers": "src/Handlers/",
+    "@handlers": "src/handlers/",
     "@database": "src/database/",
     "@DevXor": "src/",
     "@helpers": "src/utils/helpers/"

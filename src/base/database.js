@@ -10,19 +10,19 @@ class GDB extends GoodDB {
    * @param {import("good.db/dist/Types").JSONDriverOptions} driver
    * @param {import("good.db/dist/Types").goodDBOptions} options
    */
-  constructor (driver, options, db_option) {
+  constructor(driver, options, db_option) {
     super(driver, options);
     this.config_get = db_config_get;
   }
 }
 module.exports =
   class DB {
-    static db_default (db_option) {
+    static db_default(db_option) {
       return new GDB(new JSONDriver({
         path: db_josn_path, format: true
       }), { nested: '..', nestedIsEnabled: true }, db_option);
     }
-    static db_mongo (db_option) {
+    static db_mongo(db_option) {
       return new GDB(new MongoDBDriver({
         uri: db_option.mongo_uri
       }), {
@@ -30,4 +30,4 @@ module.exports =
         nestedIsEnabled: true
       });
     }
-};
+  };
