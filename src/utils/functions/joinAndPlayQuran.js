@@ -48,10 +48,12 @@ module.exports = async (client, channelId, guild, url = process.env.RadioAudioUr
   connection.subscribe(player);
   connection.on("stateChange", async (state) => {
     // this if condition disconnected bots 
-    if (state.status == "ready") {
+    if (state.subscription.connection.state.status == "disconnected") {
 
       let guildId = state.subscription.connection.joinConfig.guildId
       let guildd = client.guilds.cache.get(guildId)
+      if (guildd.members.me.voice?.channelId !== null) return
+
       await client.db.table("channels").set(`${guildId}_radioChannel..enabled`, false)
       let data = await client.db.table("channels").get(`${guildId}_radioChannel`)
       let msg = await guildd.channels.cache.get(data.ch).messages.fetch(data.msgId)
