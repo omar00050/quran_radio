@@ -42,11 +42,12 @@ module.exports = {
 
       if (controlData(client, data)?.content) return interaction.reply(controlData(client, data))
 
-      interaction.reply({ content: "**تم ارسال لوحه التحكم**", ephemeral: true })
 
       let msg = await interaction.channel.send(controlData(client, data))
+      if (!msg) return interaction.reply({ content: ":waring: | ليس لدي صلاحيه لارسال الرساله داخل القناه " })
       await client.db.table("channels").set(`${interaction.guildId}_radioChannel..ch`, interaction.channelId)
       await client.db.table("channels").set(`${interaction.guildId}_radioChannel..msgId`, msg.id)
+      interaction.reply({ content: "**تم ارسال لوحه التحكم**", ephemeral: true })
 
 
     } catch (err) {

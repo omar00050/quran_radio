@@ -20,14 +20,24 @@ module.exports =
     static db_default(db_option) {
       return new GDB(new JSONDriver({
         path: db_josn_path, format: true
-      }), { nested: '..', nestedIsEnabled: true }, db_option);
+      }), {
+        nested: '..', nestedIsEnabled: true,
+        cache: {
+          isEnabled: true,
+          capacity: 2048
+        }
+      }, db_option);
     }
     static db_mongo(db_option) {
       return new GDB(new MongoDBDriver({
         uri: db_option.mongo_uri
       }), {
         nested: '..',
-        nestedIsEnabled: true
+        nestedIsEnabled: true,
+        cache: {
+          isEnabled: true,
+          capacity: 2048
+        }
       });
     }
   };
