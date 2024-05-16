@@ -7,7 +7,7 @@ const Quran = require("@DevXor/Quran");
 let client = new Quran({
   token: process.env.token,
   database: {
-    database_type: "JSON",
+    database_type: "MONGODB",
     mongo_uri: process.env.mongodb_uri
   }
 });
