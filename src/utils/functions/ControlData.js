@@ -21,7 +21,7 @@ module.exports = function (client, data) {
   let menu = new StringSelectMenuBuilder()
     .setCustomId("Radio_list")
     .addOptions(options)
-    .setPlaceholder("اختر القناه الازاعية")
+    .setPlaceholder("اختر القناه الاذاعية")
 
   if (data) {
 
