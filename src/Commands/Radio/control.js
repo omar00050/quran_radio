@@ -36,22 +36,24 @@ module.exports = {
   },
 
   async interactionExecute(client, interaction, lang) {
+    await interaction.deferReply({ ephemeral: true })
     try {
 
       let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
 
       if (controlData(client, data)?.content) return interaction.reply(controlData(client, data))
 
-
       let msg = await interaction.channel.send(controlData(client, data))
-      if (!msg) return interaction.reply({ content: ":waring: | ليس لدي صلاحيه لارسال الرساله داخل القناه " })
+      if (!msg) return interaction.editReply({ content: ":warning: | ليس لدي صلاحيه لارسال الرساله داخل القناه " })
       await client.db.table("channels").set(`${interaction.guildId}_radioChannel..ch`, interaction.channelId)
       await client.db.table("channels").set(`${interaction.guildId}_radioChannel..msgId`, msg.id)
-      interaction.reply({ content: "**تم ارسال لوحه التحكم**", ephemeral: true })
+      interaction.editReply({ content: "**تم ارسال لوحه التحكم**", ephemeral: true })
 
 
     } catch (err) {
-      console.log(err);
+      interaction.editReply({ content: "**:warning: | ليس لدي صلاحيه لارسال الرساله داخل القناه **" })
+
+      console.log(err.message + `Server: ${interaction.guild.name} cant send message`);
     }
   },
 };

@@ -54,7 +54,7 @@ module.exports = {
 
       interaction.reply({ embeds: [embed], components: [row], ephemeral: true })
     } catch (err) {
-      console.log(err);
+      console.log(err.message);
     }
 
   },
