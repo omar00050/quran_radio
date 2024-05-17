@@ -27,7 +27,7 @@ module.exports = [{
   value: "https://Qurango.net/radio/abdulbasit_abdulsamad_warsh"
 },
 {
-  name: "إذاعة عبدالباسط عبدالصمدالمصحف المجود",
+  name: "إذاعة عبدالباسط عبدالصمد المصحف المجود",
   value: "https://Qurango.net/radio/abdulbasit_abdulsamad_mojawwad"
 },
 {
