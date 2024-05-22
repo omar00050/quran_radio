@@ -11,8 +11,9 @@ let client = new Quran({
     mongo_uri: process.env.mongodb_uri
   }
 });
-
-client.botlogin(process.env.token);
+setTimeout(function () {
+  client.botlogin(process.env.token);
+}, 2000);
 
 module.exports = client;
 
