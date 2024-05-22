@@ -41,7 +41,7 @@ module.exports = {
 
       let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
 
-      if (controlData(client, data)?.content) return interaction.reply(controlData(client, data))
+      if (controlData(client, data)?.content) return interaction.editReply(controlData(client, data))
 
       let msg = await interaction.channel.send(controlData(client, data))
       if (!msg) return interaction.editReply({ content: ":warning: | ليس لدي صلاحيه لارسال الرساله داخل القناه " })
