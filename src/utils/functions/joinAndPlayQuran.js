@@ -66,7 +66,7 @@ module.exports = async (client, channelId, guild, url = process.env.RadioAudioUr
     }
   })
   player.on(AudioPlayerStatus.Playing, () => console.log(`Playing Quran in Server: [${guild.name}] Channel: [${channel.name}] ${new Date()}`));
-  player.on('error', error => console.error(`Error: ${error}`));
+  player.on('error', error => console.error(error));
   connection.player = player
   return connection
 
