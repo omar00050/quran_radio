@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const ControlData = require('./ControlData');
-
+let radioUrlCache = new Map();
 
 /**
  * 
@@ -10,10 +10,10 @@ const ControlData = require('./ControlData');
  * @param {import("discord.js").Guild} guild 
  * @returns 
  */
-module.exports = async (client, channelId, guild, url = process.env.RadioAudioUrl, isRunig = false) => {
+module.exports = async function joinAndPlayQuran(client, channelId, guild, url = process.env.RadioAudioUrl, isRunig = false) {
 
   const guildId = guild.id;
-
+  radioUrlCache.set(guildId, url)
   const channel = await guild.channels.fetch(channelId);
 
   if (!channel) return null;
@@ -67,8 +67,9 @@ module.exports = async (client, channelId, guild, url = process.env.RadioAudioUr
   })
   player.on(AudioPlayerStatus.Playing, () => console.log(`Playing Quran in Server: [${guild.name}] Channel: [${channel.name}] ${new Date()}`));
   player.on('error', async (error) => {
+    let radioUrl = radioUrlCache.get(guildId)
     setTimeout(async function () {
-      await this(client, channelId, guild, url, true)
+      await joinAndPlayQuran(client, channelId, guild, radioUrl, true)
     }, 1000);
     console.error(error);
   })
