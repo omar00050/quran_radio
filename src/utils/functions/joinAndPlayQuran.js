@@ -71,7 +71,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
     setTimeout(async function () {
       await joinAndPlayQuran(client, channelId, guild, radioUrl, true)
     }, 1000);
-    console.error(error);
+    console.error(`${error.message} Server : ${guild.name} and rest Radio in :${channel.name} - url: ${radioUrl}`);
   })
   connection.player = player
   return connection
