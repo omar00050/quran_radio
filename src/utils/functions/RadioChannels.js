@@ -14,8 +14,8 @@ module.exports = [{
 */
 
 {
-  name: "إذاعة ماهر المعيقلي",
-  value: "https://Qurango.net/radio/maher_al_meaqli"
+  name: "إذاعة ياسر الدوسري",
+  value: "https://Qurango.net/radio/yasser_aldosari"
 },
 {
   name: "إذاعة ماهر المعيقلي",
