@@ -14,8 +14,8 @@ module.exports = [{
 */
 
 {
-  name: "إذاعة ياسر الدوسري",
-  value: "https://Qurango.net/radio/yasser_aldosari"
+  name: "إذاعة ماهر المعيقلي",
+  value: "https://Qurango.net/radio/maher_al_meaqli"
 },
 {
   name: "إذاعة ماهر المعيقلي",
@@ -77,10 +77,10 @@ module.exports = [{
   name: " إذاعة فارس عباد",
   value: "https://Qurango.net/radio/fares_abbad"
 },
-{
-  name: "إذاعة علي الحذيفي",
-  value: "https://Qurango.net/radio/ali_alhuthaifi_qalon"
-},
+// {
+//   name: "إذاعة علي الحذيفي",
+//   value: "https://Qurango.net/radio/ali_alhuthaifi_qalon"
+// },
 {
   name: "إذاعة تفسير القران الكريم",
   value: "https://qurango.net/radio/tafseer"
