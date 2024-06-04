@@ -14,7 +14,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
 
   const guildId = guild.id;
   radioUrlCache.set(guildId, url)
-  const channel = await guild.channels.fetch(channelId);
+  const channel = await guild.channels.fetch(channelId).catch(() => null);
 
   if (!channel) return null;
   if (isRunig) {
