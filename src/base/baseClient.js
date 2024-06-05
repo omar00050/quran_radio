@@ -103,10 +103,6 @@ class baseClient extends Client {
     // Check if category is disabled
     // Prefix Command
     if (cmd.command?.enabled) {
-      /*
-      if (this.commands.has(cmd.name)) {
-        throw new Error(`Command ${cmd.name} already registered`);
-      }*/
       this.commands.set(cmd.name.toLowerCase(), cmd);
     } else {
       this.logger.debug(`Skipping command ${cmd.name}. Disabled!`);
