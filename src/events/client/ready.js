@@ -10,12 +10,15 @@ module.exports = {
    * @param {import("@base/baseClient")} client 
    */
   async execute(client) {
-    await client.registerInteractions()
+
+    await client.DBConnect();
+    await client.registerInteractions();
+
     const commands = client.slashCommands.map(({ execute, ...data }) => data);
     setTimeout(() => {
       console.log(gr(`Logged In As ` + un(`${client.user.username}`)));
       console.log(chalk.cyan(`Servers:` + un(`${client.guilds.cache.size}`)), chalk.red(`Users:` + un(`${client.users.cache.size}`)), chalk.blue(`Commands:` + un(` ${client.commands.size}` + ` TOTAL Commands ${client.commands.size + commands.length}`)));
-    }, 500);
+    }, 3000);
     client.user.setStatus("idle")
     client.user.setActivity({ name: `Loading....`, type: ActivityType.Playing })
     setTimeout(() => client.user.setStatus("online"), 40000);

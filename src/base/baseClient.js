@@ -6,9 +6,10 @@ const {
   ApplicationCommandType
 } = require("discord.js");
 const Logger = require("@helpers/logger");
+const config = require("@root/config.json");
 const { recursiveReadDirSync } = require("@utils/class/utils");
 const { EventsLoader, CommandsLoader, ComponentsLoader, CustomEvents } = require("@src/handlers");
-const { db_default, db_mongo } = require("@root/src/base/database");
+const { db_default, db_mongo, db_mysql, db_sqlite } = require("@base/database");
 const wait = require("node:timers/promises").setTimeout;
 
 
@@ -34,37 +35,69 @@ let defaultDjsOption = {
 };
 
 class baseClient extends Client {
-
+  #db_option;
   /**
    *
    * @constructor
-   * @param {import("@root/src/Quran").DataBase} db_option
-   * @param {import("discord.js/typings/index").ClientOptions} DjsOption
+   * @param {import("@DevXor/DevXor").DataBase} db_option
+   * @param {import("discord.js").ClientOptions} DjsOption
    */
   constructor(DjsOption = defaultDjsOption, db_option) {
 
     super(DjsOption);
 
-    if (db_option?.database_type == "JSON") {
-      this.db = db_default(db_option)
-    } else if (db_option?.database_type == "MONGODB") {
-      this.db = db_mongo(db_option)
-      this.db.connect()
-        .then(() => {
-          this.logger.success("Connected to MongoDB")
-        });
-    } else throw new TypeError("No database type specified Invalid type")
+    this.#db_option = db_option;
+
+    if (db_option?.database_type == "JSON") this.db = db_default(db_option)
+    else if (db_option?.database_type == "MONGODB") this.db = db_mongo(db_option)
+    else if (db_option?.database_type == "Sqlite") this.db = db_sqlite(db_option)
+    else if (db_option?.database_type == "MySQL") this.db = db_mysql(db_option)
+    else throw new TypeError("No database type specified Invalid type")
 
     this.Radio = new Collection();
+
+    /**
+     * @type  {Collection<string, import("node-schedule").Job>} 
+     */
+    this.cache_job_time = new Collection();
+
+    this.UserHold = new Collection();
+
+    /**
+     * @type  {Collection<string, import("@utils/types/baseCommand")>} 
+     */
     this.commands = new Collection();
-    this.events = new Collection();
+
+    /** 
+     * @type  {Collection<string, import("@utils/types/baseCommand")>} 
+     */
     this.slashCommands = new Collection();
+
+    /**
+     * @type  {Collection<string, import("@utils/types/baseComponent")>}
+     */
     this.ComponentsAction = new Collection();
+
     this.contextMenus = new Collection();
+    this.events = new Collection();
     this.logger = Logger;
     this.wait = wait;
+    this.config = config;
+
+
   };
 
+
+  async DBConnect() {
+    const supportedDbTypes = ["MONGODB", "MySQL"];
+    if (this.db && supportedDbTypes.includes(this.#db_option?.database_type)) {
+      await this.db.connect().then(() => {
+        this.logger.success(`DB Connected to ${this.#db_option?.database_type}`)
+      });
+
+    } else this.logger.log(`DB Type ${this.#db_option?.database_type}`)
+
+  }
   table(name) {
     return this.db.table(name);
   };
@@ -103,6 +136,10 @@ class baseClient extends Client {
     // Check if category is disabled
     // Prefix Command
     if (cmd.command?.enabled) {
+      /*
+      if (this.commands.has(cmd.name)) {
+        throw new Error(`Command ${cmd.name} already registered`);
+      }*/
       this.commands.set(cmd.name.toLowerCase(), cmd);
     } else {
       this.logger.debug(`Skipping command ${cmd.name}. Disabled!`);
@@ -148,12 +185,17 @@ class baseClient extends Client {
 
     // filter slash commands
     this.slashCommands
-      .map((cmd) => ({
-        name: cmd.name,
-        description: cmd.description,
-        type: ApplicationCommandType.ChatInput,
-        options: cmd.slashCommand.options,
-      }))
+      .map((cmd) => {
+        let d = {
+          name: cmd.name,
+          description: cmd.description,
+          type: ApplicationCommandType.ChatInput,
+          options: cmd.slashCommand.options,
+        }
+        if (cmd.category == "OWNER") d.default_member_permissions = 8
+
+        return d
+      })
       .forEach((s) => toRegister.push(s));
 
 

@@ -1,6 +1,3 @@
-const baseClient = require("@root/src/base/baseClient");
-const baseCommand = require("@utils/types/baseCommand");
-const baseComponent = require("@utils/types/baseComponent");
-const BaseFunction = require("@utils/types/BaseFunction");
+const baseClient = require("@base/baseClient");
 
-module.exports = { baseClient, baseCommand, baseComponent, BaseFunction };
+module.exports = { baseClient };

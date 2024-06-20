@@ -2,15 +2,27 @@ require("dotenv").config();
 require("module-alias/register");
 require("events").EventEmitter.setMaxListeners(999999999)
 
-const Quran = require("@DevXor/Quran");
+const { GatewayIntentBits, Partials } = require("discord.js");
+const Quran = require("@DevXor/DevXor");
 
 let client = new Quran({
   token: process.env.token,
   database: {
     database_type: "MONGODB",
-    mongo_uri: process.env.mongodb_uri
+    MongoDB: {
+      uri: process.env.mongodb_uri
+    },
+    options: {
+      nested: '..',
+      nestedIsEnabled: true,
+      cache: {
+        isEnabled: true,
+        capacity: 2048
+      }
+    }
   }
 });
+
 setTimeout(function () {
   client.botlogin(process.env.token);
 }, 2000);

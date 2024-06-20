@@ -31,13 +31,14 @@ module.exports = DevXor;
 
 
 /**
- * @typedef {"MONGODB"|"JSON"} DataBaseType
+ * @typedef {"MONGODB"|"Sqlite"|"JSON"|"MySQL"} DataBaseType
  */
 
 /**
  * @typedef {object} DataBase Default DataBase configuration.
  * @property {DataBaseType} database_type
- * @property {string} [mongo_uri]
+ * @property {import("good.db/dist/Types").goodDBOptions} [options]
+ * @property {import("good.db/dist/Types").MongoDBDriverOptions} [MongoDB]
  * @property {import("mysql2").PoolOptions} [MySQL]
  * 
  */
@@ -49,6 +50,6 @@ module.exports = DevXor;
  * 
  * @property {DataBase} database
  * 
- * @property {import("discord.js/typings/index").ClientOptions} [CustomClientOptions={}]
+ * @property {import("discord.js").ClientOptions} [CustomClientOptions={}]
  * 
  */
