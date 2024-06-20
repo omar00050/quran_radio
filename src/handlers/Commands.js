@@ -7,13 +7,13 @@ module.exports = {
   /**
    * @param {import("@root/src/base/baseClient")} client 
    * @param {import("discord.js").Message} message 
-   * @param {import("@root/lang/en.json")} lang
    * @returns {Promise<void>}
    */
-  handlePrefixCommand: async function (client, message, lang) {
+  handlePrefixCommand: async function (client, message) {
 
     /** @type {string} */
-    const prefix = await client.db.get(`${message.guildId}_prefix`) || await client.db.config_get.prefix;
+    const prefix = await client.db.get(`${message.guildId}_prefix`) || await client.config.prefix;
+
 
 
     if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -34,7 +34,7 @@ module.exports = {
     // Owner commands
     if (
       cmd.category === "OWNER"
-      && !client.db.config_get.owners.includes(message.author.id)
+      && !client.config.owners.includes(message.author.id)
     ) {
       return message.reply("This command is only accessible to bot owners");
     }
@@ -87,7 +87,7 @@ module.exports = {
 
 
     try {
-      cmd.msgExecute(client, message, args, lang)
+      cmd.msgExecute(client, message, args)
     } catch (ex) {
       message.client.logger.error("messageRun", ex);
       message.reply("An error occurred while running this command");
@@ -99,14 +99,10 @@ module.exports = {
    * @param {import("@root/src/base/baseClient")} client 
    * @param {import('discord.js').ChatInputCommandInteraction} interaction
    */
-  handleSlashCommand: async function (client, interaction, lang) {
+  handleSlashCommand: async function (client, interaction) {
 
 
-    /**
-     * @type {import("@utils/types/baseCommand")}
-     */
     const cmd = client.slashCommands.get(interaction.commandName);
-
 
     if (!cmd) return interaction.reply({ content: "An error has occurred", ephemeral: true }).catch(() => { });
 
@@ -114,7 +110,7 @@ module.exports = {
     // Owner commands
     if (
       cmd.category === "OWNER" &&
-      !client.db.config_get.owners.includes(interaction.user.id)) {
+      !client.config.owners.includes(interaction.user.id)) {
       return interaction.reply({
         content: `This command is only accessible to bot owners`,
         ephemeral: true,
@@ -142,10 +138,6 @@ module.exports = {
     }
 
 
-    const cmd_disabled = await client.db.get("disabledcommands") || null
-
-    if (cmd_disabled?.disabledslashcommand?.includes(command.name)) return;
-
     if (cmd.cooldown) {
       let com = `${interaction.user.id}/${interaction.commandName}`
       if (delay.has(com)) {
@@ -161,7 +153,7 @@ module.exports = {
 
     try {
 
-      await cmd.interactionExecute(client, interaction, lang);
+      await cmd.interactionExecute(client, interaction);
     } catch (error) {
       client.logger.error("interactionRun", error);
     }
@@ -170,7 +162,7 @@ module.exports = {
 
   /**
    * @param {import("@root/src/base/baseClient")} client 
-   * @param {import("discord.js").SelectMenuInteraction} interaction
+   * @param {import("discord.js").AutocompleteInteraction} interaction
    */
   handleAutoComplete: async function (client, interaction) {
 
