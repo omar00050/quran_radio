@@ -52,7 +52,7 @@ module.exports = {
         let utils_count = recursiveReadDirSync("src/utils").length
         client.logger.success("done loaded utils :" + utils_count)
         client.loadComponents("src/ComponentsAction")
-        client.loadCommands("src/cmd")
+        client.loadCommands("src/Commands")
 
         const components = client.ComponentsAction.map(({ execute, ...data }) => data);
         const commands = client.commands.map(({ execute, ...data }) => data);
@@ -80,7 +80,7 @@ module.exports = {
         let utils_count = recursiveReadDirSync("src/utils").length
         client.logger.success("done loaded utils :" + utils_count)
         client.loadComponents("src/ComponentsAction")
-        client.loadCommands("src/cmd")
+        client.loadCommands("src/Commands")
 
         const components = client.ComponentsAction.map(({ execute, ...data }) => data);
         const commands = client.commands.map(({ execute, ...data }) => data);
