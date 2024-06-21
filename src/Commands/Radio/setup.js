@@ -30,7 +30,7 @@ module.exports = {
   async interactionExecute(client, interaction, lang) {
     try {
 
-      let config = client.db.config_get
+      let config = client.config
 
       let embed = new EmbedBuilder()
         .setColor("White")

@@ -7,7 +7,7 @@ module.exports = function (client, data) {
   for (let ch of RadioChannels) {
     options.push({ label: ch.name, value: ch.value })
   }
-  let config = client.db.config_get
+  let config = client.config
 
   let embed = new EmbedBuilder()
     .setColor("White")

@@ -16,7 +16,7 @@ module.exports = {
     try {
       await interaction.deferUpdate()
       await client.wait(200)
-      const config = client.db.config_get
+      const config = client.config
 
 
       let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
