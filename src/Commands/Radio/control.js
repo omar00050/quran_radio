@@ -10,8 +10,8 @@ module.exports = {
   name: "control",
   description: "control radio panel",
   category: "ADMIN",
-  botPermissions: ["ManageChannels", "ManageGuild"],
-  userPermissions: ["ManageChannels", 'ManageGuild'],
+  botPermissions: ["ManageChannels"],
+  userPermissions: ["ManageChannels"],
   cooldown: 1000,
   command: {
     enabled: false,
