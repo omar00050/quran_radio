@@ -30,10 +30,11 @@ module.exports = {
     let RadioChannels = await client.db.table("channels").values() || [];
     if (RadioChannels.length === 0) return
     setTimeout(async () => {
+      const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
       for (let data of RadioChannels) {
         if (data.enabled) {
-
+           await sleep(3000)
           let guild = await client.guilds.fetch(data.guildId)
           if (!guild) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
