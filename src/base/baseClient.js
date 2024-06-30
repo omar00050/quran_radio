@@ -24,7 +24,7 @@ let defaultDjsOption = {
     GatewayIntentBits.GuildInvites,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    // GatewayIntentBits.MessageContent
   ],
   partials: [
     Partials.Message,
