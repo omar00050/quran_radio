@@ -33,7 +33,7 @@ module.exports = {
     if (RadioChannels.length === 0) return
     setTimeout(async () => {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-      return
+
       for (let data of RadioChannels) {
         if (data.enabled) {
           await sleep(3000)
