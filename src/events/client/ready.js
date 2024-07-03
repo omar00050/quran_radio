@@ -17,7 +17,9 @@ module.exports = {
     const commands = client.slashCommands.map(({ execute, ...data }) => data);
     setTimeout(() => {
       console.log(gr(`Logged In As ` + un(`${client.user.username}`)));
-      console.log(chalk.cyan(`Servers:` + un(`${client.guilds.cache.size}`)), chalk.red(`Users:` + un(`${client.users.cache.size}`)), chalk.blue(`Commands:` + un(` ${client.commands.size}` + ` TOTAL Commands ${client.commands.size + commands.length}`)));
+      console.log(chalk.cyan(`Servers:` + un(`${client.guilds.cache.size}`)), chalk.red(`Users:` + un(`${client.guilds.cache
+        .reduce((a, b) => a + b.memberCount, 0)
+        .toLocaleString()}`)), chalk.blue(`Commands:` + un(` ${client.commands.size}` + ` TOTAL Commands ${client.commands.size + commands.length}`)));
     }, 3000);
     client.user.setStatus("idle")
     client.user.setActivity({ name: `Loading....`, type: ActivityType.Playing })
@@ -31,10 +33,10 @@ module.exports = {
     if (RadioChannels.length === 0) return
     setTimeout(async () => {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
+      return
       for (let data of RadioChannels) {
         if (data.enabled) {
-           await sleep(3000)
+          await sleep(3000)
           let guild = await client.guilds.fetch(data.guildId).catch(e => null)
           if (!guild?.id) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
