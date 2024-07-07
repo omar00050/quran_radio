@@ -10,6 +10,7 @@ const config = require("@root/config.json");
 const { recursiveReadDirSync } = require("@utils/class/utils");
 const { EventsLoader, CommandsLoader, ComponentsLoader, CustomEvents } = require("@src/handlers");
 const { db_default, db_mongo, db_mysql, db_sqlite } = require("@base/database");
+const UpdateChecker = require("@utils/class/updateChecker");
 const wait = require("node:timers/promises").setTimeout;
 
 
@@ -103,6 +104,11 @@ class baseClient extends Client {
     } else this.logger.log(`DB Type ${this.#db_option?.database_type}`)
 
   }
+  Checker() {
+    setTimeout(() => {
+      UpdateChecker.checkVersion()
+    }, 1000);
+  };
   table(name) {
     return this.db.table(name);
   };

@@ -12,6 +12,7 @@ class DevXor extends baseClient {
     this.loadEvents("src/events")
     this.loadComponents("src/ComponentsAction")
     this.loadCommands("src/Commands")
+    this.Checker()
 
   };
 
