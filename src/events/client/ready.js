@@ -37,7 +37,7 @@ module.exports = {
 
       for (let data of RadioChannels) {
         if (data.enabled) {
-          await sleep(200)
+          await sleep(1000)
           let guild = await client.guilds.fetch(data.guildId).catch(e => null)
           if (!guild?.id) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
@@ -48,7 +48,7 @@ module.exports = {
           if (conn === "cantConnect") continue
           client.Radio.set(data.guildId, conn)
           // client.db.table("channels").set(`${data.guildId}_radioChannel..enabled`, true)
-          if (guild.id !== "1171512753802969098") continue
+          // if (guild.id !== "1171512753802969098") continue
           let data1 = await client.db.table("channels").get(`${data.guildId}_radioChannel`)
           let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
 
