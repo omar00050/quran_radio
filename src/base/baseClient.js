@@ -54,7 +54,12 @@ class baseClient extends Client {
     else if (db_option?.database_type == "MySQL") this.db = db_mysql(db_option)
     else throw new TypeError("No database type specified Invalid type")
 
+    /** 
+         * @type  {Collection<string, import("@discordjs/voice").VoiceConnection & {player : import("@discordjs/voice").AudioPlayer }}>} 
+         */
     this.Radio = new Collection();
+
+    this.radioUrlCache = new Collection();
 
     /**
      * @type  {Collection<string, import("node-schedule").Job>} 

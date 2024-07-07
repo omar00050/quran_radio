@@ -1,4 +1,5 @@
-const joinAndPlayQuran = require('@root/src/utils/functions/joinAndPlayQuran');
+const ControlData = require('@utils/functions/ControlData');
+const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
 const chalk = require('chalk');
 const { ActivityType, } = require('discord.js');
 const gr = chalk.hex('#00D100');
@@ -36,13 +37,22 @@ module.exports = {
 
       for (let data of RadioChannels) {
         if (data.enabled) {
-          await sleep(3000)
+          await sleep(200)
           let guild = await client.guilds.fetch(data.guildId).catch(e => null)
           if (!guild?.id) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
-          if (conn === null) continue
+          if (conn === null) {
+            console.log("no channel in server  " + guild.name + " " + guild.id);
+            continue
+          }
           if (conn === "cantConnect") continue
           client.Radio.set(data.guildId, conn)
+          // client.db.table("channels").set(`${data.guildId}_radioChannel..enabled`, true)
+          if (guild.id !== "1171512753802969098") continue
+          let data1 = await client.db.table("channels").get(`${data.guildId}_radioChannel`)
+          let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
+
+          if (msg) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
         }
 
       }

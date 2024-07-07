@@ -1,5 +1,4 @@
 const controlData = require("@utils/functions/ControlData");
-const RadioChannels = require("@utils/functions/RadioChannels");
 const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
 const { ButtonStyle, ButtonBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ModalSubmitInteraction, ChannelType, EmbedBuilder } = require("discord.js");
 
@@ -14,6 +13,14 @@ module.exports = {
    */
   async action(client, interaction, parts, lang) {
     try {
+      if (!interaction.guild.members.me?.voice?.channel) return interaction.reply({
+        content: "**يجب تشغيل البوت في روم صوتي**",
+        ephemeral: true
+      })
+      if (!interaction.member.voice.channel) return interaction.reply({
+        content: `لا يمكنك التحكم بالراديو و انت لست داخل القناه الصوتية \`${interaction.guild.members.me?.voice?.channel.name}\` ادخل اولا و يمكنك التحكم`,
+        ephemeral: true
+      });
       await interaction.deferUpdate()
       let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
 

@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("module-alias/register");
+require("colors");
 require("events").EventEmitter.setMaxListeners(999999999)
 
 const { GatewayIntentBits, Partials } = require("discord.js");

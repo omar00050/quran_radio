@@ -1,111 +1,189 @@
+//https://www.liveradiu.com/
 module.exports = [{
+  group: "quran",
   name: "إذاعة القران الكريم دولة مصر",
-  value: "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA"
+  value: "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA",
+  img: "https://play-lh.googleusercontent.com/QuVFM8a1DJFaLb3M0iHjgylkrS0ddvpBzDSHOGxs7YzqAFIHeXJwZ53aX7SaMImmA30"
 },
 {
+  group: "quran",
   name: "إذاعة القران الكريم دولة السعودية",
-  value: "http://n0e.radiojar.com/4wqre23fytzuv?rj-ttl=5&rj-tok=AAABgDTrkhEAsmBCfbT280gMag"
+  value: "http://n0e.radiojar.com/4wqre23fytzuv?rj-ttl=5&rj-tok=AAABgDTrkhEAsmBCfbT280gMag",
+  img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/%D9%82%D9%86%D8%A7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85.svg/640px-%D9%82%D9%86%D8%A7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85.svg.png"
 },
-/* 
 {
-  name: "إذاعة القران الكريم دولة البحرين",
-  value: "https://prod-34-82-94-205.wostreaming.net/ihorizonsradio-sakfmmp3-ibc1?session-id=3453c3202479222be48941d99f762a88"
-},
-*/
-
-{
+  group: "quran",
   name: "إذاعة ياسر الدوسري",
-  value: "https://Qurango.net/radio/yasser_aldosari"
+  value: "https://Qurango.net/radio/yasser_aldosari",
+  img: "https://yt3.googleusercontent.com/joiS42EkjnooctQMAds_2RppxXy5JPJ510ZwucUNe4fj2oPXL3N-JTyz12xyz2BLFjeS-5UbNQ=s900-c-k-c0x00ffffff-no-rj"
 },
 {
+  group: "quran",
   name: "إذاعة ماهر المعيقلي",
-  value: "https://Qurango.net/radio/maher_al_meaqli"
+  value: "https://Qurango.net/radio/maher_al_meaqli",
+  img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Maher_Al_Mueaqly.png/260px-Maher_Al_Mueaqly.png"
 },
 {
+  group: "quran",
   name: " إذاعة محمد صديق المنشاوي",
-  value: "https://backup.Qurango.net/radio/mohammed_siddiq_alminshawi"
+  value: "https://backup.Qurango.net/radio/mohammed_siddiq_alminshawi",
+  img: "https://ahramed14.com/wp-content/uploads/2021/01/Sheikh-Muhammad-Siddiq-al-Minshawi.jpg"
 },
 {
+  group: "quran",
   name: "إذاعة محمد صديق المنشاوي المصحف المجود",
-  value: "https://backup.Qurango.net/radio/mohammed_siddiq_alminshawi_mojawwad"
+  value: "https://backup.Qurango.net/radio/mohammed_siddiq_alminshawi_mojawwad",
+  img: "https://ahramed14.com/wp-content/uploads/2021/01/Sheikh-Muhammad-Siddiq-al-Minshawi.jpg"
 },
 {
+  group: "quran",
   name: "إذاعة عبدالباسط عبدالصمد",
-  value: "https://Qurango.net/radio/abdulbasit_abdulsamad_warsh"
+  value: "https://Qurango.net/radio/abdulbasit_abdulsamad_warsh",
+  img: "https://i1.sndcdn.com/artworks-000535580220-34cx42-t500x500.jpg"
 },
 {
+  group: "quran",
   name: "إذاعة عبدالباسط عبدالصمد المصحف المجود",
-  value: "https://Qurango.net/radio/abdulbasit_abdulsamad_mojawwad"
+  value: "https://Qurango.net/radio/abdulbasit_abdulsamad_mojawwad",
+  img: "https://gate.ahram.org.eg/Media/News/2020/11/30/19_2020-637423340126488648-648.jpg"
 },
 {
+  group: "quran",
   name: "إذاعة محمود علي البنا",
-  value: "https://Qurango.net/radio/mahmoud_ali__albanna"
+  value: "https://Qurango.net/radio/mahmoud_ali__albanna",
+  img: "https://i1.sndcdn.com/artworks-yCgtlD6Q6F8aNN1b-6yfBJQ-t500x500.jpg"
 },
 {
+  group: "quran",
   name: "إذاعة محمود علي البنا المصحف المجود",
-  value: "https://Qurango.net/radio/mahmoud_ali__albanna_mojawwad"
+  value: "https://Qurango.net/radio/mahmoud_ali__albanna_mojawwad",
+  img: "https://iqna.ir/files/en/news/2022/8/30/112550_167.png"
 },
 {
-  name: "إذاعة خالد الجليل",
-  value: "https://Qurango.net/radio/khalid_aljileel"
-},
-{
-  name: "إذاعة عبدالله الخلف",
-  value: "https://Qurango.net/radio/abdullah_alkhalaf"
-},
-{
-  name: "إذاعة أحمد الطرابلسي",
-  value: "https://Qurango.net/radio/ahmed_altrabulsi"
-},
-{
-  name: " إذاعة مشاري العفاسي",
-  value: "https://Qurango.net/radio/mishary_alafasi"
-},
-{
-  name: "إذاعة ابراهيم الدوسري",
-  value: "https://Qurango.net/radio/ibrahim_aldosari"
-},
-{
-  name: "إذاعة محمد عبدالكريم",
-  value: "https://Qurango.net/radio/mohammad_abdullkarem"
-},
-{
+  group: "quran",
   name: "إذاعة محمود خليل الحصري",
-  value: "https://Qurango.net/radio/mahmoud_khalil_alhussary"
+  value: "https://Qurango.net/radio/mahmoud_khalil_alhussary",
+  img: "https://i1.sndcdn.com/artworks-oZIi5LWhTYBnKg82-0rtrUQ-t500x500.jpg"
 },
 {
+  group: "quran",
+  name: "إذاعة الشيخ السيد سعيد",
+  value: "https://3vh.liveradiu.com:8000/syd-said.mp3",
+  img: "https://i1.sndcdn.com/artworks-1gzltNVDkmdSHBW4-b3DTlQ-t500x500.jpg"
+},
+{
+  group: "quran",
+  name: "إذاعة خالد الجليل",
+  value: "https://Qurango.net/radio/khalid_aljileel",
+  img: "https://i.scdn.co/image/ab67616d0000b2734149f8ccda508bc40877e709"
+},
+{
+  group: "quran",
+  name: "إذاعة عبدالله الخلف",
+  value: "https://Qurango.net/radio/abdullah_alkhalaf",
+  img: "https://api2.quran-pro.com/images/abdullah-al-khalaf/abdullah-al-khalaf-optimized.webp?version=1686737471900"
+},
+{
+  group: "quran",
+  name: "إذاعة تلاوات خاشعة",
+  value: "https://Qurango.net/radio/salma",
+  img: "https://yt3.googleusercontent.com/TF-u6ctSa_X7ejFs2uF3CmdO818WBoQ6GVHxRIC_aqM1rwJFzXOuU59rKLzfOagag6aQKlP4Pg=s900-c-k-c0x00ffffff-no-rj"
+},
+{
+  group: "quran",
+  name: "إذاعة آيات السكينة",
+  value: "https://backup.Qurango.net/radio/sakeenah",
+  img: "https://defaf.wordpress.com/wp-content/uploads/2010/11/460_01288539529.png?w=584"
+},
+{
+  group: "quran",
+  name: " إذاعة مشاري العفاسي",
+  value: "https://Qurango.net/radio/mishary_alafasi",
+  img: "https://i1.sndcdn.com/artworks-000070576407-wgh2hr-t500x500.jpg"
+},
+{
+  group: "quran",
+  name: "إذاعة ابراهيم الدوسري",
+  value: "https://Qurango.net/radio/ibrahim_aldosari",
+  img: "https://us-east1-aws.api.snapchat.com/web-capture/www.snapchat.com/add/ibrahim_dos/preview/square.jpeg"
+},
+{
+  group: "quran",
   name: " إذاعة فارس عباد",
-  value: "https://Qurango.net/radio/fares_abbad"
+  value: "https://Qurango.net/radio/fares_abbad",
+  img: "https://static.suratmp3.com/pics/reciters/thumbs/15_600_600.jpg"
+},
+{
+  group: "quran",
+  name: "إذاعة عبدالرحمن السديس",
+  value: "https://Qurango.net/radio/abdulrahman_alsudaes",
+  img: "https://www.ashefaa.com/quraan/xalsudais.png.pagespeed.ic.Rl1VLKH1r4.png"
+},
+{
+  group: "quran",
+  name: "إذاعة أحمد العجمي",
+  value: "https://Qurango.net/radio/ahmad_alajmy",
+  img: "https://quranmp3.net/images/reciters/%D8%A3%D8%AD%D9%85%D8%AF-%D8%A7%D9%84%D8%B9%D8%AC%D9%85%D9%8A.jpg"
+},
+{
+  group: "quran",
+  name: "إذاعة سعد الغامدي",
+  value: "https://Qurango.net/radio/saad_alghamdi",
+  img: "https://play-lh.googleusercontent.com/-U_8hpCpP49zxE1OWWTJ9CEIyOtE5kOOmo_9GD54Tofv4nRrvDyyMvSOYFUcWMZ55nc"
+},
+{
+  group: "azkar",
+  name: "أذكار الصباح",
+  value: "https://qurango.net/radio/athkar_sabah",
+  img: "https://play-lh.googleusercontent.com/JB9FF5k44vo3amnG5nTiRwkeYmLam57ZtvIAWj867TFMhtQOwumfOx4dnXtngktgd9s=w600-h300-pc0xffffff-pd"
+},
+{
+  group: "azkar",
+  name: "أذكار المساء",
+  value: "https://qurango.net/radio/athkar_masa",
+  img: "https://play-lh.googleusercontent.com/JB9FF5k44vo3amnG5nTiRwkeYmLam57ZtvIAWj867TFMhtQOwumfOx4dnXtngktgd9s=w600-h300-pc0xffffff-pd"
+},
+{
+  group: "tafseer",
+  name: "إذاعة الشيخ محمد متولي الشعراوي",
+  value: "https://3vh.liveradiu.com:8000/el-shaarawy.mp3",
+  img: "https://alblagh.news/wp-content/uploads/2020/06/%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%D8%A7%D9%88%D9%8A.jpg"
+},
+{
+  group: "tafseer",
+  name: "إذاعة تفسير القران الكريم",
+  value: "https://qurango.net/radio/tafseer",
+  img: "https://play-lh.googleusercontent.com/QdPcX-1uibkhdQQ0UoZh0KgS4lNp_0t1wxJDQgCTnf2iaI3NYwJPjZdxki88RfrfBiY"
 },
 // {
-//   name: "إذاعة علي الحذيفي",
-//   value: "https://Qurango.net/radio/ali_alhuthaifi_qalon"
+//   group: "tafseer",
+//   name: "إذاعة الشيخ جابر بغدادي",
+//   value: "https://stream-148.zeno.fm/wcue1s1g6ehvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJ3Y3VlMXMxZzZlaHZ2IiwiaG9zdCI6InN0cmVhbS0xNDguemVuby5mbSIsInJ0dGwiOjUsImp0aSI6ImdiamJCb240VHd1aHQwVEdiLUFnS0EiLCJpYXQiOjE3MjAzNDk2ODAsImV4cCI6MTcyMDM0OTc0MH0.byo6NawTRXNqhmF9qHYuKiviMSlj9aJ-oItC5hLV24o",
+//   img: "https://i1.sndcdn.com/avatars-yHNVHZKjxUVOCDki-dXThWw-t1080x1080.jpg"
 // },
 {
-  name: "إذاعة تفسير القران الكريم",
-  value: "https://qurango.net/radio/tafseer"
-},
-{
+  group: "siyra",
   name: "السيرة النبوية - 400 حلقة عن سيرة نبينا محمد",
-  value: "https://Qurango.net/radio/fi_zilal_alsiyra"
+  value: "https://Qurango.net/radio/fi_zilal_alsiyra",
+  img: "https://i.scdn.co/image/ab6765630000ba8a16ca20036384c3301464da3e"
 },
 {
-  name: "أذكار الصباح",
-  value: "https://qurango.net/radio/athkar_sabah"
+  group: "any",
+  name: "برنامج العلم و الايمان [دكتور مصطفي محمود]",
+  value: "https://3vh.liveradiu.com:8000/mustafa-mahmoud.mp3",
+  img: "https://i1.sndcdn.com/artworks-000101569536-4b3350-t500x500.jpg"
 },
 {
-  name: "أذكار المساء",
-  value: "https://qurango.net/radio/athkar_masa"
+  group: "ebthalat",
+  name: "اذاعة ابتهالات الشيخ سيد النقشبندي",
+  value: "https://3vh.liveradiu.com:8000/naqshbandi.mp3",
+  img: "https://media.unitedmuslimworld.com/img/24/03/24/16718.jpg"
 },
 {
-  name: "إذاعة عبدالرحمن السديس",
-  value: "https://Qurango.net/radio/abdulrahman_alsudaes"
+  group: "ebthalat",
+  name: "اذاعة ابتهالات الشيخ نصر الدين طوبار",
+  value: "https://3vh.liveradiu.com:8000/nasreddine-tobar.mp3",
+  img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Nasr_El-Din_Tobar.jpg/280px-Nasr_El-Din_Tobar.jpg"
 },
-{
-  name: "إذاعة أحمد العجمي",
-  value: "https://Qurango.net/radio/ahmad_alajmy"
-},
-{
-  name: "إذاعة سعد الغامدي",
-  value: "https://Qurango.net/radio/saad_alghamdi"
-}]
+
+]

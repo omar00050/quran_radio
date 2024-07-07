@@ -1,6 +1,6 @@
 {
   "name": "quran_radio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Quran Radio for discord",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,8 @@
     "ascii-table": "^0.0.9",
     "axios": "^1.6.8",
     "chalk": "^4.1.2",
-    "discord.js": "^14.14.1",
+    "colors": "^1.4.0",
+    "discord.js": "^14.15.3",
     "dotenv": "^16.3.1",
     "ffmpeg-static": "^5.2.0",
     "good.db": "^2.3.3",

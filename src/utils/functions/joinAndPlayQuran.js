@@ -1,31 +1,38 @@
 const fetch = require('node-fetch');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const ControlData = require('./ControlData');
-let radioUrlCache = new Map();
+const VoiceUtils = require('../class/voice');
 
 /**
- * 
- * @param {import("@base/baseClient")} client 
- * @param {import("discord.js").Channel} channel 
- * @param {import("discord.js").Guild} guild 
- * @returns 
+ * Joins a voice channel and plays the Quran audio.
+ * @param {import("@base/baseClient")} client - The Discord client instance.
+ * @param {string} channelId - The ID of the voice channel to join.
+ * @param {import("discord.js").Guild} guild - The guild object.
+ * @param {string} [url=process.env.RadioAudioUrl] - The URL of the Quran audio.
+ * @param {boolean} [isRunning=false] - Indicates if the Quran audio is already running.
+ * @returns {Promise<import("@discordjs/voice").VoiceConnection & {player : import("@discordjs/voice").AudioPlayer}>} - The voice connection and audio player.
  */
 module.exports = async function joinAndPlayQuran(client, channelId, guild, url = process.env.RadioAudioUrl, isRunig = false) {
 
   const guildId = guild.id;
-  radioUrlCache.set(guildId, url)
+  client.radioUrlCache.set(guildId, url)
   const channel = await guild.channels.fetch(channelId).catch(() => null);
 
   if (!channel) return null;
   if (isRunig) {
 
-    client.Radio.get(guildId).player.stop(true);
-    const response = await fetch(url)
-    const stream = response.body;
+    if (!VoiceUtils.isVoiceChannelEmpty(channel)) {
 
-    const resource = createAudioResource(stream);
 
-    client.Radio.get(guildId).player.play(resource);
+      client.Radio.get(guildId).player.stop(true);
+      const response = await fetch(url)
+      const stream = response.body;
+
+      const resource = createAudioResource(stream);
+
+      client.Radio.get(guildId).player.play(resource);
+    }
+
     return "isRunig"
   }
 
@@ -38,12 +45,15 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
   if (!connection) return "cantConnect";
 
   const player = createAudioPlayer();
-  const response = await fetch(url)
+  if (!VoiceUtils.isVoiceChannelEmpty(channel)) {
 
-  const stream = response.body;
+    const response = await fetch(url)
 
-  const resource = createAudioResource(stream);
-  player.play(resource);
+    const stream = response.body;
+
+    const resource = createAudioResource(stream);
+    player.play(resource);
+  } else console.log(`Join Voice Channel in Server: [${guild.name}] Channel: [${channel.name}] ` + `is Empty `.red);
 
   connection.subscribe(player);
   connection.on("stateChange", async (state) => {
@@ -56,22 +66,24 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
 
       await client.db.table("channels").set(`${guildId}_radioChannel..enabled`, false)
       let data = await client.db.table("channels").get(`${guildId}_radioChannel`)
-      let msg = await guildd.channels.cache.get(data.ch).messages.fetch(data.msgId)
+      let msg = await guildd.channels.cache.get(data.ch).messages.fetch(data.msgId).catch(err => null)
 
       if (msg) msg?.edit(ControlData(client, data))
-      state.subscription.player.stop(true);
+      client.Radio.get(guildId).player.stop(true);
+      // state.subscription.player.stop(true);
       client.Radio?.delete(guildId)
       console.log(`Bot disconnected from server ${guildd.name}`);
 
     }
   })
-  player.on(AudioPlayerStatus.Playing, () => console.log(`Playing Quran in Server: [${guild.name}] Channel: [${channel.name}] ${new Date()}`));
+  player.on(AudioPlayerStatus.Playing, () => console.log(`Playing Quran in Server: `.green + `[${guild.name}] `.blue + `Channel: [${channel.name}] `.yellow + `${new Date()}`));
+
   player.on('error', async (error) => {
-    let radioUrl = radioUrlCache.get(guildId)
+    let radioUrl = client.radioUrlCache.get(guildId)
     setTimeout(async function () {
       await joinAndPlayQuran(client, channelId, guild, radioUrl, true)
-    }, 1000);
-    console.error(`${error.message} Server : ${guild.name} and rest Radio in :${channel.name} - url: ${radioUrl}`);
+      console.error(`${error.message} Server : ${guild.name} and rest Radio in :${channel.name} - url: ${radioUrl}`.red);
+    }, 7000);
   })
   connection.player = player
   return connection
