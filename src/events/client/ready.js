@@ -37,7 +37,7 @@ module.exports = {
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       for (let data of RadioChannels) {
         if (data.enabled) {
-          await sleep(1000)
+          await sleep(500)
           let guild = await client.guilds.fetch(data.guildId).catch(e => null)
           if (!guild?.id) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
@@ -54,7 +54,7 @@ module.exports = {
           if (!msg?.id) {
 
             // await client.db.table("channels").set(`${data.guildId}_radioChannel..enabled`, false)
-            console.log("cant find msg in server  " + guild.name + " " + guild.id.red);
+            console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
           }
           if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
         }

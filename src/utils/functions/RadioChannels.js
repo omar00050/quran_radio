@@ -147,7 +147,7 @@ module.exports = [{
   group: "tafseer",
   name: "إذاعة الشيخ محمد متولي الشعراوي",
   value: "https://server3.quraan.us:8014/;*.mp3",
-  img: "https://alblagh.news/wp-content/uploads/2020/06/%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%D8%A7%D9%88%D9%8A.jpg"
+  img: "https://i0.wp.com/quran-uni.com/wp-content/uploads/al-sharawy.jpg"
 },
 {
   group: "tafseer",
