@@ -51,8 +51,12 @@ module.exports = {
           // if (guild.id !== "1171512753802969098") continue
           let data1 = await client.db.table("channels").get(`${data.guildId}_radioChannel`)
           let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
+          if (!msg?.id) {
 
-          if (msg.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
+            // await client.db.table("channels").set(`${data.guildId}_radioChannel..enabled`, false)
+            console.log("cant find msg in server  " + guild.name + " " + guild.id.red);
+          }
+          if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
         }
 
       }
