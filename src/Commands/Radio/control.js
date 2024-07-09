@@ -9,7 +9,7 @@ module.exports = {
   name: "control",
   description: "control radio panel",
   category: "ADMIN",
-  botPermissions: ["ManageChannels"],
+  botPermissions: ["ManageChannels", "SendMessages"],
   userPermissions: ["ManageChannels"],
   cooldown: 1000,
   command: {

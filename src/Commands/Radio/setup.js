@@ -7,7 +7,7 @@ module.exports = {
   name: "setup",
   description: "setup radio channel",
   category: "ADMIN",
-  botPermissions: ["ManageChannels"],
+  botPermissions: [""],
   userPermissions: ["ManageChannels"],
   cooldown: 1000,
   command: {
