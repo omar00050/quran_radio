@@ -34,7 +34,7 @@ module.exports = {
     if (RadioChannels.length === 0) return
     setTimeout(async () => {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
+      // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       for (let data of RadioChannels) {
         if (data.enabled) {
           await sleep(1000)
@@ -52,7 +52,7 @@ module.exports = {
           let data1 = await client.db.table("channels").get(`${data.guildId}_radioChannel`)
           let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
 
-          if (msg) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
+          if (msg.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
         }
 
       }
