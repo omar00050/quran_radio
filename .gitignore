@@ -4,3 +4,5 @@ logs
 .env
 .vscode
 example.env
+guildCreate.js
+guildDelete.js

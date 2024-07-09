@@ -27,13 +27,13 @@ module.exports = [{
   group: "quran",
   name: " إذاعة محمد صديق المنشاوي",
   value: "https://backup.Qurango.net/radio/mohammed_siddiq_alminshawi",
-  img: "https://ahramed14.com/wp-content/uploads/2021/01/Sheikh-Muhammad-Siddiq-al-Minshawi.jpg"
+  img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr5SifpOas_ye7qnYfOa1QAs-j-6oBdn3uMYgnWDB4H123uUESdtatEAsN1fIdby08Ofg&usqp=CAU"
 },
 {
   group: "quran",
   name: "إذاعة محمد صديق المنشاوي المصحف المجود",
   value: "https://backup.Qurango.net/radio/mohammed_siddiq_alminshawi_mojawwad",
-  img: "https://ahramed14.com/wp-content/uploads/2021/01/Sheikh-Muhammad-Siddiq-al-Minshawi.jpg"
+  img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr5SifpOas_ye7qnYfOa1QAs-j-6oBdn3uMYgnWDB4H123uUESdtatEAsN1fIdby08Ofg&usqp=CAU"
 },
 {
   group: "quran",

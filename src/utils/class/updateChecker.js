@@ -14,7 +14,7 @@ module.exports = class UpdateChecker {
           (latest[0] === current[0] && latest[1] > current[1]) ||
           (latest[0] === current[0] && latest[1] === current[1] && latest[2] > current[2])
         )
-          console.warn(`🔄  New version available: ${json[0].name}; Current Version: ${current.join(".")}`.bgRed);
+          console.warn(`🔄 Quran Radio is New version available: ${json[0].name}; Current Version: ${current.join(".")}`.bgRed);
         else console.log("🔄  The Quran Radio is up to date".bgGreen);
       });
     });
