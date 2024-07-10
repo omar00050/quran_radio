@@ -19,10 +19,10 @@ module.exports = {
     if (VoiceUtils.isVoiceChannelEmpty(newState, true) || VoiceUtils.isVoiceChannelEmpty(oldState, true)) {
       if (player.state.status == "idle") return
       player.stop(true);
-      console.log(`Stop radio on empty voice channel`.red + ` in server [${voiceChannel.guild.name}]`.blue + ` Channel [${voiceChannel.name}] `.yellow + `${new Date()}`);
+      console.log(`Stop radio on empty voice channel`.red + ` in server [${voiceChannel.guild.name}]`.blue + ` Channel [${voiceChannel.name}] `.yellow + `Member : ${newState.member.user.username} `.blue + `Name: [${newState.member.user.globalName}]}]`);
     } else {
       if (player.state.status == "playing") return
-      console.log(`Run radio voice channel not empty `.green + ` in server [${voiceChannel.guild.name}]`.blue + ` Channel [${voiceChannel.name}] `.yellow + `${new Date()}`);
+      console.log(`Run radio voice channel not empty `.green + ` in server [${voiceChannel.guild.name}]`.blue + ` Channel [${voiceChannel.name}] `.yellow + `Member : ${newState.member.user.username} `.blue + `Name: [${oldState.member.user.globalName}]}]`);
       await joinAndPlayQuran(client, voiceChannel.id, guild, radioUrl, true)
     }
 
