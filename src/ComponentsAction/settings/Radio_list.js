@@ -17,7 +17,7 @@ module.exports = {
         content: "**يجب تشغيل البوت في روم صوتي**",
         ephemeral: true
       })
-      if (interaction.guild.members.me?.voice?.channel.id != interaction.member.voice.channel.id) return interaction.reply({
+      if (interaction.guild.members.me?.voice?.channel.id !== interaction?.member?.voice?.channel?.id) return interaction.reply({
         content: `لا يمكنك التحكم بالراديو و انت لست داخل القناه الصوتية \`${interaction.guild.members.me?.voice?.channel.name}\` ادخل اولا و يمكنك التحكم`,
         ephemeral: true
       });
