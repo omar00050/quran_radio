@@ -13,7 +13,7 @@ module.exports = {
     try {
       let channelId = interaction.fields.getTextInputValue("RadioChannel").trim()
 
-      let channel = await interaction.guild.channels.fetch(channelId)
+      let channel = await interaction.guild.channels.fetch(channelId).catch(e => null) || interaction.guild.channels.cache.find(ch => ch.name === channelId)
       if (!channel) return interaction.reply({
         content: "❌ | لم يتم العثور علي القناه الصوتيه",
         ephemeral: true
