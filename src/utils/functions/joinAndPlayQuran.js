@@ -20,8 +20,8 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
 
   if (!channel) return null;
   if (isRunig) {
-
-    if (!VoiceUtils.isVoiceChannelEmpty(channel)) {
+    let clientChannel = guild.members.me.voice.channel
+    if (!VoiceUtils.isVoiceChannelEmpty(clientChannel)) {
 
 
       client.Radio.get(guildId).player.stop(true);
