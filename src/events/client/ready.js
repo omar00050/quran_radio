@@ -1,7 +1,7 @@
 const ControlData = require('@utils/functions/ControlData');
 const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
 const chalk = require('chalk');
-const { ActivityType, } = require('discord.js');
+const { ActivityType, Guild, } = require('discord.js');
 const gr = chalk.hex('#00D100');
 const un = chalk.underline;
 
@@ -39,7 +39,8 @@ module.exports = {
       for (let data of RadioChannels) {
         if (data.enabled) {
           await sleep(500)
-          let guild = await client.guilds.fetch(data.guildId) || null
+          /**@type {Guild} */
+          let guild = await client.guilds.fetch(data.guildId).catch(() => null)
           if (!guild?.id) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
           if (conn === null) {
