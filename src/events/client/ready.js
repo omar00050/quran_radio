@@ -32,13 +32,14 @@ module.exports = {
 
     let RadioChannels = await client.db.table("channels").values() || [];
     if (RadioChannels.length === 0) return
+
     setTimeout(async () => {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       for (let data of RadioChannels) {
         if (data.enabled) {
           await sleep(500)
-          let guild = await client.guilds.fetch(data.guildId).catch(e => null)
+          let guild = await client.guilds.fetch(data.guildId) || null
           if (!guild?.id) continue
           let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
           if (conn === null) {
@@ -61,6 +62,7 @@ module.exports = {
 
       }
     }, 1000);
+
 
   },
 };

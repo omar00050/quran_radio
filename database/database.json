@@ -1,13 +1,4 @@
 {
   "gooddb": {},
-  "channels": {
-    "1122762819927023659_radioChannel": {
-      "channelId": "1260041807056732221",
-      "guildId": "1122762819927023659",
-      "url": "https://3vh.liveradiu.com:8000/el-shaarawy.mp3",
-      "enabled": true,
-      "ch": "1260041807056732221",
-      "msgId": "1260042278513279058"
-    }
-  }
+  "channels": {}
 }

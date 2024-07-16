@@ -25,16 +25,20 @@ function help(interaction) {
       iconURL: interaction.author ? interaction.author.displayAvatarURL() : interaction.member.user.displayAvatarURL()
     })
 
-  let btninvite = new ButtonBuilder()
+  let btnInvite = new ButtonBuilder()
     .setURL("https://discord.com/oauth2/authorize?client_id=1110669204295790703")
     .setStyle("Link")
     .setLabel("Invite Me")
-  let btnsupport = new ButtonBuilder()
+  let btnSupport = new ButtonBuilder()
     .setURL("https://discord.gg/devxor")
     .setStyle("Link")
     .setLabel("Support Server")
+  let btnStatus = new ButtonBuilder()
+    .setCustomId("status_bot")
+    .setStyle("Primary")
+    .setLabel("Bot Status")
 
-  let row = new ActionRowBuilder().addComponents(btninvite, btnsupport)
+  let row = new ActionRowBuilder().addComponents(btnInvite, btnSupport, btnStatus)
 
   return { embeds: [em], components: [row] }
 }
