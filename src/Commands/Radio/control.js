@@ -9,7 +9,7 @@ module.exports = {
   name: "control",
   description: "control radio panel",
   category: "ADMIN",
-  botPermissions: ["ManageChannels", "SendMessages"],
+  botPermissions: ["ManageChannels", "SendMessages", "ViewChannel"],
   userPermissions: ["ManageChannels"],
   cooldown: 1000,
   command: {
@@ -50,7 +50,7 @@ module.exports = {
 
 
     } catch (err) {
-      interaction.editReply({ content: "**:warning: | ليس لدي صلاحيه لارسال الرساله داخل القناه **" })
+      interaction.editReply({ content: "**:warning: | ليس لدي صلاحيه لارسال الرساله داخل القناه**" })
 
       console.log(err.message + `Server: ${interaction.guild.name} cant send message`);
     }
