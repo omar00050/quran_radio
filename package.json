@@ -4,7 +4,7 @@
   "description": "Quran Radio for discord",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" "
+    "run": "node index"
   },
   "repository": {
     "type": "git",
