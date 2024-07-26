@@ -1,4 +1,4 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder } = require('discord.js');
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder, ChannelSelectMenuBuilder, ChannelType } = require('discord.js');
 
 /**
  * @type {import("@utils/types/baseCommand")}
@@ -35,6 +35,7 @@ module.exports = {
       let embed = new EmbedBuilder()
         .setColor("White")
         .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL(), url: config.DevXorLink })
+        .setThumbnail(client.user.avatarURL({ size: 2048 }))
         .setTitle("قائمه تسطيب القناه الصوتية ")
         .setDescription("يمكنك  تحديد القناه الصوتية او التسطيب التلقائي")
         .setFooter({ text: config.Copyright.text, iconURL: config.Copyright.logo })
@@ -45,12 +46,12 @@ module.exports = {
         .setLabel("Quick Setup")
         .setStyle(ButtonStyle.Primary)
 
-      let btn_setChannel = new ButtonBuilder()
+      let Menu_setChannel = new ChannelSelectMenuBuilder()
         .setCustomId("set_RadioChannel")
-        .setLabel("Setup set Channel")
-        .setStyle(ButtonStyle.Primary)
+        .setPlaceholder("Setup Radio Channel")
+        .setChannelTypes(ChannelType.GuildVoice)
       let row = new ActionRowBuilder()
-        .addComponents(btn_setChannel)
+        .addComponents(Menu_setChannel)
 
       interaction.reply({ embeds: [embed], components: [row], ephemeral: true })
     } catch (err) {
