@@ -4,7 +4,7 @@
   "description": "Quran Radio for discord",
   "main": "index.js",
   "scripts": {
-    "run": "node index"
+    "start": "node index"
   },
   "repository": {
     "type": "git",

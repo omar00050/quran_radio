@@ -34,7 +34,9 @@ module.exports = {
           channelId: channel.id,
           guildId: interaction.guildId,
           url: data?.url || "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA",
-          enabled: false
+          enabled: data?.enabled || false,
+          ch: data?.ch || null,
+          msgId: data?.msgId || null
         })
 
         interaction.reply({

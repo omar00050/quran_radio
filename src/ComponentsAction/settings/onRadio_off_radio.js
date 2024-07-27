@@ -36,8 +36,8 @@ module.exports = {
 
       } else {
         let conn = client.Radio.get(`${interaction.guildId}`)
-        await conn.player.stop(true)
-        await conn.destroy()
+         conn.player.stop(true)
+         conn.destroy()
         // interaction.followUp({ content: "✅ | تم ايقاف الراديو", ephemeral: true })
         await client.db.table("channels").set(`${interaction.guildId}_radioChannel..enabled`, false)
         client.Radio.delete(`${interaction.guildId}`)

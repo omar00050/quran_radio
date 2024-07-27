@@ -31,6 +31,7 @@ module.exports = {
     try {
 
       let config = client.config
+      let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`) || null
 
       let embed = new EmbedBuilder()
         .setColor("White")
@@ -50,6 +51,7 @@ module.exports = {
         .setCustomId("set_RadioChannel")
         .setPlaceholder("Setup Radio Channel")
         .setChannelTypes(ChannelType.GuildVoice)
+      if (data?.ch) Menu_setChannel.setDefaultChannels([data?.ch])
       let row = new ActionRowBuilder()
         .addComponents(Menu_setChannel)
 
