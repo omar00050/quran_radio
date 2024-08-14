@@ -6,3 +6,5 @@ logs
 example.env
 guildCreate.js
 guildDelete.js
+database.json
+database.sqlite
