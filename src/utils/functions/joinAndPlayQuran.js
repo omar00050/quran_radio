@@ -17,6 +17,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
   const guildId = guild.id;
   client.radioUrlCache.set(guildId, url)
   const channel = await guild.channels.fetch(channelId).catch(() => null);
+  const db = await client.db.table("channels");
 
   if (!channel) return null;
   if (isRunig) {
@@ -64,8 +65,8 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       let guildd = client.guilds.cache.get(guildId)
       if (guildd.members.me.voice?.channelId !== null) return
 
-      await client.db.table("channels").set(`${guildId}_radioChannel..enabled`, false)
-      let data = await client.db.table("channels").get(`${guildId}_radioChannel`)
+      await db.set(`${guildId}_radioChannel..enabled`, false)
+      let data = await db.get(`${guildId}_radioChannel`)
       let msg = await guildd.channels.cache.get(data.ch).messages.fetch(data.msgId).catch(err => null)
 
       if (msg) msg?.edit(ControlData(client, data))

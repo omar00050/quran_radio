@@ -22,12 +22,14 @@ module.exports = {
 
   async msgExecute(client, message, args, lang) {
     try {
-      let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
+      const db = await client.db.table("channels");
+
+      let data = await db.get(`${interaction.guildId}_radioChannel`);
 
 
-      if (controlData(client, data)?.content) return message.reply(controlData(client, data))
+      if (controlData(client, data)?.content) return message.reply(controlData(client, data));
 
-      message.channel.send(controlData(client, data))
+      message.channel.send(controlData(client, data));
 
     } catch (err) {
       console.log(err)
@@ -37,15 +39,16 @@ module.exports = {
   async interactionExecute(client, interaction, lang) {
     await interaction.deferReply({ ephemeral: true })
     try {
+      const db = await client.db.table("channels");
 
-      let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
+      let data = await db.get(`${interaction.guildId}_radioChannel`)
 
       if (controlData(client, data)?.content) return interaction.editReply(controlData(client, data))
 
       let msg = await interaction.channel.send(controlData(client, data))
       if (!msg) return interaction.editReply({ content: ":warning: | ليس لدي صلاحيه لارسال الرساله داخل القناه " })
-      await client.db.table("channels").set(`${interaction.guildId}_radioChannel..ch`, interaction.channelId)
-      await client.db.table("channels").set(`${interaction.guildId}_radioChannel..msgId`, msg.id)
+      await db.set(`${interaction.guildId}_radioChannel..ch`, interaction.channelId)
+      await db.set(`${interaction.guildId}_radioChannel..msgId`, msg.id)
       interaction.editReply({ content: "**تم ارسال لوحه التحكم**", ephemeral: true })
 
 

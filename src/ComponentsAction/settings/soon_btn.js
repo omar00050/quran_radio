@@ -12,7 +12,7 @@ module.exports = {
    */
   async action(client, interaction, parts, lang) {
     try {
-      interaction.reply({ content: " 🛠 | **this feature will be available soon**", ephemeral: true })
+      interaction.reply({ content: " 🛠 | **this feature will be available soon**", ephemeral: true });
     } catch (err) {
       console.log(err)
     }

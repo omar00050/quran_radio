@@ -14,6 +14,7 @@ module.exports = {
 
     await client.DBConnect();
     await client.registerInteractions();
+    const db = await client.db.table("channels");
 
     const commands = client.slashCommands.map(({ execute, ...data }) => data);
     setTimeout(() => {
@@ -30,7 +31,7 @@ module.exports = {
       client.user.setActivity({ name: `in ${ServersStatus} Server`, type: ActivityType.Listening })
     }, 1 * 1000 * 60);
 
-    let RadioChannels = await client.db.table("channels").values() || [];
+    let RadioChannels = await db.values() || [];
     if (RadioChannels.length === 0) return
 
     setTimeout(async () => {
@@ -49,13 +50,13 @@ module.exports = {
           }
           if (conn === "cantConnect") continue
           client.Radio.set(data.guildId, conn)
-          // client.db.table("channels").set(`${data.guildId}_radioChannel..enabled`, true)
+          // await db.set(`${data.guildId}_radioChannel..enabled`, true)
           // if (guild.id !== "1171512753802969098") continue
-          let data1 = await client.db.table("channels").get(`${data.guildId}_radioChannel`)
+          let data1 = await db.get(`${data.guildId}_radioChannel`)
           let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
           if (!msg?.id) {
 
-            // await client.db.table("channels").set(`${data.guildId}_radioChannel..enabled`, false)
+            // await db.set(`${data.guildId}_radioChannel..enabled`, false)
             console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
           }
           if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))

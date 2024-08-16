@@ -13,24 +13,25 @@ module.exports = {
     try {
 
       // let channelId = interaction.fields.getTextInputValue("RadioChannel").trim()
+      const db = await client.db.table("channels");
 
       let channel = interaction.channels.first() //await interaction.guild.channels.fetch(channelId).catch(e => null) || interaction.guild.channels.cache.find(ch => ch.name === channelId)
       if (!channel) return interaction.reply({
         content: "❌ | لم يتم العثور علي القناه الصوتيه",
         ephemeral: true
       })
-      let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
+      let data = await db.get(`${interaction.guildId}_radioChannel`)
 
       if (channel.type === ChannelType.GuildVoice) {
 
-        let isChannel = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`)
+        let isChannel = await db.get(`${interaction.guildId}_radioChannel`)
 
         if (isChannel?.channelId === channel.id) return interaction.reply({
           content: ":warning: | هذه القناه تم تعينها بالفعل من قبل ",
           ephemeral: true
         })
 
-        await client.db.table("channels").set(`${interaction.guildId}_radioChannel`, {
+        await db.set(`${interaction.guildId}_radioChannel`, {
           channelId: channel.id,
           guildId: interaction.guildId,
           url: data?.url || "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA",

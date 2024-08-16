@@ -29,9 +29,11 @@ module.exports = {
 
   async interactionExecute(client, interaction, lang) {
     try {
+      const db = await client.db.table("channels");
 
       let config = client.config
-      let data = await client.db.table("channels").get(`${interaction.guildId}_radioChannel`) || null
+      
+      let data = await db.get(`${interaction.guildId}_radioChannel`) || null
 
       let embed = new EmbedBuilder()
         .setColor("White")
