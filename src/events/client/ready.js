@@ -28,7 +28,7 @@ module.exports = {
     setTimeout(() => client.user.setStatus("online"), 40000);
     setInterval(() => {
       let ServersStatus = client.Radio.size
-      client.user.setActivity({ name: `in ${ServersStatus} Server`, type: ActivityType.Listening })
+      client.user.setActivity({ name: `in ${ServersStatus}/${client.channels.cache.size} Channels`, type: ActivityType.Listening })
     }, 1 * 1000 * 60);
 
     let RadioChannels = await db.values() || [];
