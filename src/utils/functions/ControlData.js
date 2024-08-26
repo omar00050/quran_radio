@@ -70,7 +70,7 @@ module.exports = function (client, data) {
 
     let findRadio = RadioChannels.find(r => r.value == data.url)
 
-    embed.setThumbnail(findRadio.img)
+    embed.setThumbnail(findRadio?.img || null)
 
     if (data.enabled) {
       embed.setDescription(`**
