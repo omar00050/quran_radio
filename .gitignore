@@ -8,3 +8,4 @@ guildCreate.js
 guildDelete.js
 database.json
 database.sqlite
+package-lock.json
