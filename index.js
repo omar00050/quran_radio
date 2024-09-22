@@ -1,6 +1,11 @@
 require("dotenv").config();
 require("module-alias/register");
 require("colors");
+const { registerFont } = require('canvas');
+const fontFile = './src/utils/fonts/Amiri-Regular.ttf';
+
+registerFont(fontFile, { family: 'Amiri' });
+
 require("events").EventEmitter.setMaxListeners(999999999)
 
 const { GatewayIntentBits, Partials } = require("discord.js");
