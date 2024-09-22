@@ -19,7 +19,7 @@ module.exports = {
       let embed = new EmbedBuilder()
         .setTitle("**Bot Status** | **معلومات البوت**")
         .setColor("White")
-        .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL(), url: client.config.DevXorLink})
+        .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL(), url: client.config.DevXorLink })
         .setFooter({ text: client.config.Copyright.text, iconURL: client.config.Copyright.logo })
         // .setThumbnail(client.user.displayAvatarURL({ size: 4096 }))
         .setImage("https://i.pinimg.com/originals/6c/76/32/6c76328c235c489736330d743515500c.jpg")
@@ -42,6 +42,11 @@ module.exports = {
           {
             name: "Channel Listening Count | عدد قنوات الاستماع",
             value: `\`${client.Radio.size}\``,
+            // inline: true
+          },
+          {
+            name: "Channel Azkar Count | عدد قنوات الاذكار",
+            value: `\`${client.Azkar.size}\``,
             // inline: true
           },
           {

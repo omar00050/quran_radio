@@ -2,7 +2,7 @@
 module.exports = [{
   group: "quran",
   name: "إذاعة القران الكريم دولة مصر",
-  value: "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA",
+  value: "http://stream.radiojar.com/8s5u5tpdtwzuv",
   img: "https://play-lh.googleusercontent.com/QuVFM8a1DJFaLb3M0iHjgylkrS0ddvpBzDSHOGxs7YzqAFIHeXJwZ53aX7SaMImmA30"
 },
 {
@@ -67,6 +67,12 @@ module.exports = [{
 },
 {
   group: "quran",
+  name: " إذاعة الشيخ محمد رفعت",
+  value: "https://stream.zeno.fm/73xsyy44qs8uv",
+  img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAUKHXr-T3uFpY0puZLu8i6lTQ_3hZ9qzazW_yGjQjvAyftyLY31Uop5AvILB0AbmuMQw&usqp=CAU"
+},
+{
+  group: "quran",
   name: "إذاعة الشيخ السيد سعيد",
   value: "https://3vh.liveradiu.com:8000/syd-said.mp3",
   img: "https://i1.sndcdn.com/artworks-1gzltNVDkmdSHBW4-b3DTlQ-t500x500.jpg"
@@ -103,12 +109,6 @@ module.exports = [{
 },
 {
   group: "quran",
-  name: "إذاعة ابراهيم الدوسري",
-  value: "https://Qurango.net/radio/ibrahim_aldosari",
-  img: "https://us-east1-aws.api.snapchat.com/web-capture/www.snapchat.com/add/ibrahim_dos/preview/square.jpeg"
-},
-{
-  group: "quran",
   name: " إذاعة فارس عباد",
   value: "https://Qurango.net/radio/fares_abbad",
   img: "https://static.suratmp3.com/pics/reciters/thumbs/15_600_600.jpg"
@@ -130,6 +130,12 @@ module.exports = [{
   name: "إذاعة سعد الغامدي",
   value: "https://Qurango.net/radio/saad_alghamdi",
   img: "https://play-lh.googleusercontent.com/-U_8hpCpP49zxE1OWWTJ9CEIyOtE5kOOmo_9GD54Tofv4nRrvDyyMvSOYFUcWMZ55nc"
+},
+{
+  group: "quran",
+  name: "اذاعة قناة الحرم المكي",
+  value: "https://fmradiohub.in/play?url=http://r7.tarat.com:8004/;stream.mp3",
+  img: "https://makkahtv.tv/assets/images/makkah-channel-redcolor-1440-alpha-570x716.png"
 },
 {
   group: "azkar",
@@ -166,6 +172,18 @@ module.exports = [{
   name: "السيرة النبوية - 400 حلقة عن سيرة نبينا محمد",
   value: "https://Qurango.net/radio/fi_zilal_alsiyra",
   img: "https://i.scdn.co/image/ab6765630000ba8a16ca20036384c3301464da3e"
+},
+{
+  group: "any",
+  name: "اذاعة محاضرات الشيخ عمر عبد الكافي",
+  value: "http://stream.zeno.fm/66geh5zntp8uv",
+  img: "https://www.almowaten.net/wp-content/uploads/%D8%B9%D9%85%D8%B1-%D8%B9%D8%A8%D8%AF-%D8%A7%D9%84%D9%83%D8%A7%D9%81%D9%8A.jpg"
+},
+{
+  group: "any",
+  name: "اذاعة محاضرات الدكتور مبروك عطية",
+  value: "http://stream.zeno.fm/9ybgk6ngkf9uv",
+  img: "https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/101F7/production/_125593066_24bc3933-fbbc-47be-a18b-8e47d2fbd898.jpg.webp"
 },
 {
   group: "any",

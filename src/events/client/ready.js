@@ -1,3 +1,4 @@
+const sendAzkar = require('@root/src/utils/functions/sendAzkar');
 const ControlData = require('@utils/functions/ControlData');
 const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
 const chalk = require('chalk');
@@ -38,28 +39,38 @@ module.exports = {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       for (let data of RadioChannels) {
-        if (data.enabled) {
-          await sleep(500)
-          /**@type {Guild} */
-          let guild = await client.guilds.fetch(data.guildId).catch(() => null)
-          if (!guild?.id) continue
-          let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
-          if (conn === null) {
-            console.log("no channel in server  " + guild.name + " " + guild.id);
-            continue
-          }
-          if (conn === "cantConnect") continue
-          client.Radio.set(data.guildId, conn)
-          // await db.set(`${data.guildId}_radioChannel..enabled`, true)
-          // if (guild.id !== "1171512753802969098") continue
-          let data1 = await db.get(`${data.guildId}_radioChannel`)
-          let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
-          if (!msg?.id) {
 
-            // await db.set(`${data.guildId}_radioChannel..enabled`, false)
-            console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
+        let guild = await client.guilds.fetch(data.guildId).catch(() => null)
+        if (!guild?.id) continue
+
+        if (data.enabled) {
+          // to run azkar
+          if (data.msgTimeSend) {
+            await sendAzkar(client, guild, data)
+
+          } else {
+            // To run Radio 
+
+            await sleep(500)
+            /**@type {Guild} */
+            let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url)
+            if (conn === null) {
+              console.log("no channel in server  " + guild.name + " " + guild.id);
+              continue
+            }
+            if (conn === "cantConnect") continue
+            client.Radio.set(data.guildId, conn)
+            // await db.set(`${data.guildId}_radioChannel..enabled`, true)
+            // if (guild.id !== "1171512753802969098") continue
+            let data1 = await db.get(`${data.guildId}_radioChannel`)
+            let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
+            if (!msg?.id) {
+
+              // await db.set(`${data.guildId}_radioChannel..enabled`, false)
+              console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
+            }
+            if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
           }
-          if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err))
         }
 
       }

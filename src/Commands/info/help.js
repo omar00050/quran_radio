@@ -17,7 +17,8 @@ function help(interaction) {
     .addFields([
       { name: "/help", value: "Shows this message || اوامر المساعدة", inline: true },
       { name: "/ping", value: "Shows bot ping || البنج", inline: true },
-      { name: "/setup", value: "setup radio channel || تسطيب القناه الصوتية", inline: true },
+      { name: "/setup radio", value: "setup radio channel || تسطيب القناه الصوتية", inline: true },
+      { name: "/setup azkar", value: "setup azkar channel || تسطيب الاذكار", inline: true },
       { name: "/control", value: "control radio channel || التحكم بالراديو", inline: true }
     ])
     .setFooter({

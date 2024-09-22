@@ -1,5 +1,5 @@
 const controlData = require("@utils/functions/ControlData");
-const RadioChannels = require("@utils/functions/RadioChannels");
+const RadioChannels = require("@root/src/utils/helpers/RadioChannels");
 const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
 const { ButtonStyle, ButtonBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ModalSubmitInteraction, ChannelType, EmbedBuilder } = require("discord.js");
 

@@ -56,9 +56,14 @@ class baseClient extends Client {
     else throw new TypeError("No database type specified Invalid type")
 
     /** 
-         * @type  {Collection<string, import("@discordjs/voice").VoiceConnection & {player : import("@discordjs/voice").AudioPlayer }}>} 
-         */
+     * @type  {Collection<string, import("@discordjs/voice").VoiceConnection & {player : import("@discordjs/voice").AudioPlayer }}>} 
+     */
     this.Radio = new Collection();
+
+    /**
+     * @type  {Collection<string, NodeJS.Timeout>} 
+     */
+    this.Azkar = new Collection();
 
     this.radioUrlCache = new Collection();
 

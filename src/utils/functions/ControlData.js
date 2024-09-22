@@ -1,10 +1,10 @@
 const { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle } = require("discord.js")
-const RadioChannels = require("./RadioChannels")
+const RadioChannels = require("../helpers/RadioChannels")
 /**
  * 
  * @param {import("./../../../")} client 
  * @param {*} data 
- * @returns 
+ * @returns {import("discord.js").MessageReplyOptions}
  */
 module.exports = function (client, data) {
 
@@ -26,19 +26,19 @@ module.exports = function (client, data) {
     .setCustomId("onRadio_off_radio")
 
   let btnNextRadio = new ButtonBuilder()
-    .setCustomId("soon_btn_1")
+    .setCustomId("next_channel")
     .setEmoji("1025001307557343252")
     .setLabel("القناه القادمة")
     .setStyle(ButtonStyle.Secondary)
 
   let btnPrevRadio = new ButtonBuilder()
-    .setCustomId("soon_btn_2")
+    .setCustomId("back_channel")
     .setEmoji("1025001498557558784")
     .setLabel("القناه السابقة")
     .setStyle(ButtonStyle.Secondary)
 
   let btnVolumeUp = new ButtonBuilder()
-    .setCustomId("soon_btn_3")
+    .setCustomId("random_channel")
     .setEmoji("1024998653640851537")
     .setLabel("تزييد الصوت")
     .setStyle(ButtonStyle.Secondary)
