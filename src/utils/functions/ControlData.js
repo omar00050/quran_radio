@@ -37,17 +37,17 @@ module.exports = function (client, data) {
     .setLabel("القناه السابقة")
     .setStyle(ButtonStyle.Secondary)
 
-  let btnVolumeUp = new ButtonBuilder()
-    .setCustomId("random_channel")
-    .setEmoji("1024998653640851537")
-    .setLabel("تزييد الصوت")
-    .setStyle(ButtonStyle.Secondary)
+  // let btnVolumeUp = new ButtonBuilder()
+  //   .setCustomId("random_channel")
+  //   .setEmoji("1024998653640851537")
+  //   .setLabel("تزييد الصوت")
+  //   .setStyle(ButtonStyle.Secondary)
 
-  let btnVolumeDown = new ButtonBuilder()
-    .setCustomId("soon_btn_4")
-    .setEmoji("1024999026069872640")
-    .setLabel("تقليل الصوت")
-    .setStyle(ButtonStyle.Secondary)
+  // let btnVolumeDown = new ButtonBuilder()
+  //   .setCustomId("soon_btn_4")
+  //   .setEmoji("1024999026069872640")
+  //   .setLabel("تقليل الصوت")
+  //   .setStyle(ButtonStyle.Secondary)
 
   let btnRandomChannel = new ButtonBuilder()
     .setCustomId("random_channel")
@@ -90,7 +90,7 @@ module.exports = function (client, data) {
     let row = new ActionRowBuilder().addComponents(QuranMenu)
     let row1 = new ActionRowBuilder().addComponents(anyMenu)
     let row2 = new ActionRowBuilder().addComponents(btn, btnRandomChannel)
-    let row3 = new ActionRowBuilder().addComponents(btnPrevRadio, btnNextRadio,)
+    let row3 = new ActionRowBuilder().addComponents(btnPrevRadio, btnNextRadio)
     let row4 = new ActionRowBuilder().addComponents(btnVolumeDown, btnVolumeUp)
 
 

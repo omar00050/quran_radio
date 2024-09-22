@@ -28,8 +28,8 @@ module.exports = {
       await interaction.deferUpdate();
 
       let data = await db.get(`${interaction.guildId}_radioChannel`);
-      let Indexlink = RadioChannels.findIndex(r => r.value == data?.url);
-      let link = RadioChannels[Indexlink - 1]?.value || RadioChannels[0]?.value;
+      let Indexlink = RadioChannels.findIndex(r => r.value == data?.url) - 1;
+      let link = RadioChannels[Indexlink]?.value || RadioChannels[0]?.value;
       let isConn = client.Radio.get(`${interaction.guildId}`);
       if (isConn) {
         let conn = await joinAndPlayQuran(client, data.channelId, interaction.guild, link, true);

@@ -6,7 +6,7 @@ const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
  * @type {import("@utils/types/baseComponent")}
  */
 module.exports = {
-  name: "back_channel",
+  name: "random_channel",
   enabled: true,
   /**
    * @param {import("discord.js").ButtonInteraction} interaction 
