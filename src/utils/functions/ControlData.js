@@ -50,7 +50,7 @@ module.exports = function (client, data) {
     .setStyle(ButtonStyle.Secondary)
 
   let btnRandomChannel = new ButtonBuilder()
-    .setCustomId("soon_btn_5")
+    .setCustomId("random_channel")
     .setEmoji("1025002020043771934")
     .setLabel("تغيير القناه")
     .setStyle(ButtonStyle.Secondary)
