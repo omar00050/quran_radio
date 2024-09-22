@@ -16,7 +16,7 @@ module.exports = {
     try {
 
       const db = await client.db.table("channels");
-
+      await interaction.deferUpdate()
       let channel = interaction.channels.first()
       if (!channel) return interaction.reply({
         content: "❌ | لم يتم العثور علي القناه ",
@@ -46,7 +46,7 @@ module.exports = {
       let data2 = await db.get(`${interaction.guildId}_azkarChannel`)
       let gg = ControlAzkar(client, data2)
 
-      interaction.reply({
+      interaction.editReply({
         ...gg,
         ephemeral: true
       })
