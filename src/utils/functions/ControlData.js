@@ -91,7 +91,7 @@ module.exports = function (client, data) {
     let row1 = new ActionRowBuilder().addComponents(anyMenu)
     let row2 = new ActionRowBuilder().addComponents(btn, btnRandomChannel)
     let row3 = new ActionRowBuilder().addComponents(btnPrevRadio, btnNextRadio)
-    let row4 = new ActionRowBuilder().addComponents(btnVolumeDown, btnVolumeUp)
+    // let row4 = new ActionRowBuilder().addComponents(btnVolumeDown, btnVolumeUp)
 
 
 
