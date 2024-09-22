@@ -75,14 +75,14 @@ module.exports = function (client, data) {
     if (data.enabled) {
       embed.setDescription(`**
       حاله التشغيل : ✅
-      ${findRadio.name}
+      ${findRadio?.name || "قم بتغير القناه "}
       **`)
 
       btn.setLabel("Radio off").setStyle(ButtonStyle.Danger).setEmoji("1031533069238292520")
     } else {
       embed.setDescription(`**
       حاله التشغيل : ❌
-      ${findRadio.name}
+      ${findRadio?.name || "قم بتغير القناه "}
       **`)
       btn.setLabel("Radio on").setStyle(ButtonStyle.Success).setEmoji("1024996154410291230")
     }
