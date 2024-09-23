@@ -1,3 +1,4 @@
+const RadioChannels = require("@utils/helpers/RadioChannels");
 const { ButtonStyle, ButtonBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
 
 /**
@@ -34,7 +35,7 @@ module.exports = {
         await db.set(`${interaction.guildId}_radioChannel`, {
           channelId: channel.id,
           guildId: interaction.guildId,
-          url: data?.url || "http://n02.radiojar.com/v33ay8543d0uv?rj-ttl=5&rj-tok=AAABgDTqH90AIyBNaL5t4qE1IA",
+          url: data?.url || RadioChannels[0].value,
           enabled: data?.enabled || false,
           ch: data?.ch || null,
           msgId: data?.msgId || null

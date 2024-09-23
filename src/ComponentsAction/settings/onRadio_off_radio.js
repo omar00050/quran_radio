@@ -22,12 +22,13 @@ module.exports = {
       let data = await db.get(`${interaction.guildId}_radioChannel`);
 
       let findRadio = RadioChannels.find(r => r.value == data?.url);
-
-      if (!findRadio) return interaction.editReply({
-        content: ":warning: | Please change radio Channel to play | **من فضلك قم بتغير القناه بسبب عدم العثور عليها **",
-        ephemeral: true
-      });
-
+      if (!findRadio) {
+        findRadio = RadioChannels[0]
+        // return interaction.followUp({
+        //   content: ":warning: | Please change radio Channel to play | **من فضلك قم بتغير القناه بسبب عدم العثور عليها **",
+        //   ephemeral: true
+        // });
+      }
       if (!data.enabled) {
         let conn = await joinAndPlayQuran(client, data.channelId, interaction.guild, data.url);
         if (conn == null) return interaction.followUp({ content: "❌ | لم يتم العثور علي القناه الصوتيه" });
