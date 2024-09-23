@@ -103,7 +103,7 @@ module.exports = async function drawZekr(zekr) {
 
 
   };
-  wrapText(ctx, randomText.zekr, x, y, canvas.width - 170, 70);
+  wrapText(ctx, randomText.zekr, x, y, canvas.width - 170, 80);
 
   let description = '** **';
   if (randomText.description && randomText.description.length > 1) {
