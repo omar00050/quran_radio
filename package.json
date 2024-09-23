@@ -1,6 +1,6 @@
 {
   "name": "quran_radio",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Quran Radio for discord",
   "main": "index.js",
   "scripts": {
