@@ -41,13 +41,12 @@ module.exports = {
 
       } else {
         let conn = client.Radio.get(`${interaction.guildId}`);
-        if (!conn?.player) {
+        if (!conn) {
           client.Radio.delete(`${interaction.guildId}`);
 
           await db.set(`${interaction.guildId}_radioChannel..enabled`, false);
           client.Radio.delete(`${interaction.guildId}`);
-          conn.destroy();
-          return 
+          return
         }
         conn.player.stop(true);
         conn.destroy();
