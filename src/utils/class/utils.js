@@ -143,6 +143,25 @@ module.exports = class Utils {
     return { allowedPermissions, deniedPermissions };
   };
 
+
+  /**
+   * Splits an array into chunks of a specified size
+   * @example
+   * const array = [1, 2, 3, 4, 5, 6];
+   * const chunkedArray = Utils.chunkArray(array, 2);
+   * console.log(chunkedArray); // [[1, 2], [3, 4], [5, 6]]
+   * @param {any[]} array
+   * @param {number} chunkSize
+   * @returns {any[][]}
+   */
+  static chunkArray(array, chunkSize) {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
+  }
+
   /**
    * Recursively searches for a file in a directory
    * @param {string} dir

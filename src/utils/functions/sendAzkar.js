@@ -31,28 +31,34 @@ module.exports = async function SendAzkar(client, guild, data, isTest = false) {
 
   let db = await client.db.table("channels");
 
-  let isGuild = client.guilds.cache.get(guild.id) || await client.guilds.fetch(guild.id).catch(() => null);
-  if (!isGuild) {
-    await db.set(`${guild.id}_azkarChannel..enabled`, false);
-    clearTimeout(client.Azkar.get(guild.id));
-    client.Azkar.delete(guild.id);
-    return false
-  }
-  const isDone = true;
-
-  let data2 = await db.get(`${guild.id}_azkarChannel`);
-
-  if (!isTest) {
-
-    clearTimeout(client.Azkar.get(guild.id));
-
-    let timeout = setTimeout(async function () {
-      await SendAzkar(client, isGuild, data2);
-    }, ms(data2.msgTimeSend));
-    client.Azkar.set(guild.id, timeout);
-  }
-
   return new Promise(async (resolve, reject) => {
+
+
+    const isDone = true;
+
+    let data2 = await db.get(`${guild.id}_azkarChannel`);
+
+    if (!isTest) {
+
+      clearTimeout(client.Azkar.get(guild.id));
+
+      let timeout = setTimeout(async function () {
+
+        let isGuild = client.guilds.cache.get(guild.id) || await client.guilds.fetch(guild.id).catch(() => null);
+        
+        if (!isGuild) {
+          await db.set(`${guild.id}_azkarChannel..enabled`, false);
+          clearTimeout(client.Azkar.get(guild.id));
+          client.Azkar.delete(guild.id);
+          return resolve(false);
+        }
+        await SendAzkar(client, isGuild, data2);
+
+      }, ms(data2.msgTimeSend));
+
+      client.Azkar.set(guild.id, timeout);
+    }
+
 
 
     /** @type {import("discord.js").TextChannel} */
