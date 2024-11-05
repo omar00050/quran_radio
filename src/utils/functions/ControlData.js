@@ -95,7 +95,7 @@ module.exports = function (client, data) {
 
 
 
-    return { content: "** **", embeds: [embed], components: [row, row1, row2, row3] }
+    return { embeds: [embed], components: [row, row1, row2, row3] }
 
   } else return {
     content: ":warning: | لم يتم تعين اي قناه صوتية لوضع قناه التحكم استخدم امر \`/setup\` حتي تتمكن من التحكم في الراديو",
