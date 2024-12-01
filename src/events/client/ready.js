@@ -46,98 +46,132 @@ module.exports = {
       let chunkedAzkar = chunkArray(AzkarChannels, 30)
 
 
-        for (let i = 0; i < chunkedAzkar.length; i++) {
+      for (let i = 0; i < chunkedAzkar.length; i++) {
 
-          setTimeout(async () => {
+        setTimeout(async () => {
 
-            for (let data of chunkedAzkar[i]) {
+          for (let data of chunkedAzkar[i]) {
 
-              let guild = await client.guilds.fetch(data.guildId).catch(() => null);
-              if (!guild?.id) {
-                setTimeout(async () => await db.delete(`${data.guildId}_azkarChannel`), 1000 * i);
-                console.log("no guild in server  " + guild + " and delete it");
-                continue;
-              }
-              if (data) {
-                await sleep(1000);
-                if (data?.msgTimeSend) {
-                  console.log(`send azkar in server  ${guild.name} ${guild.id}`);
-                  await sendAzkar(client, guild, data);
-                }
-
-              }
+            let guild = await client.guilds.fetch(data.guildId).catch(() => null);
+            if (!guild?.id) {
+              setTimeout(async () => await db.delete(`${data.guildId}_azkarChannel`), 1000 * i);
+              console.log("no guild in server  " + guild + " and delete it");
+              continue;
             }
-          }, 1000 * i)
+            if (data) {
+              await sleep(1000);
+              if (data?.msgTimeSend) {
+                console.log(`send azkar in server  ${guild.name} ${guild.id}`);
+                await sendAzkar(client, guild, data);
+              }
 
-        }
+            }
+          }
+        }, 1000 * i)
 
-        for (let i = 0; i < chunkedRadio.length; i++) {
+      }
 
-          setTimeout(async () => {
+      for (let i = 0; i < chunkedRadio.length; i++) {
 
-            for (let data of chunkedRadio[i]) {
+        setTimeout(async () => {
 
-              let guild = await client.guilds.fetch(data.guildId).catch(() => null);
-
+          for (let data of chunkedRadio[i]) {
+            client.guilds.fetch(data.guildId).then(guild => {
               if (!guild?.id) {
                 setTimeout(async () => await db.delete(`${data.guildId}_radioChannel`), 1000 * i);
                 console.log("no guild in server  " + guild + " and delete it");
-                continue;
+                return
               }
-
               if (data.enabled) {
 
-                if (client.Radio.has(data.guildId)) continue
-                await sleep(3000);
-                let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url);
+                if (client.Radio.has(data.guildId)) return
 
-                if (conn === null) {
-                  console.log("no channel in server  " + guild.name + " " + guild.id);
-                  noCh.push(data)
-                  continue
-                }
-                if (conn === "cantConnect") {
-                  console.log("cant connect in server  " + guild.name + " " + guild.id);
-                  continue
-                }
+                joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
 
-                client.Radio.set(data.guildId, conn)
-                setTimeout(async () => {
-                  // await db.set(`${data.guildId}_radioChannel..enabled`, true)
-                }, 100 * i);
+                  if (conn === null) {
+                    console.log("no channel in server  " + guild.name + " " + guild.id);
+                    noCh.push(data)
+                    return
+                  }
+                  if (conn === "cantConnect") {
+                    console.log("cant connect in server  " + guild.name + " " + guild.id);
+                    return
+                  }
 
-                // if (guild.id !== "1171512753802969098") continue
-                let data1 = await db.get(`${data.guildId}_radioChannel`)
+                  client.Radio.set(data.guildId, conn)
+                  setTimeout(async () => {
+                    // await db.set(`${data.guildId}_radioChannel..enabled`, true)
+                  }, 100 * i);
 
-                let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
-                if (!msg?.id) {
+                  // if (guild.id !== "1171512753802969098") continue
+                  let data1 = await db.get(`${data.guildId}_radioChannel`)
 
-                  // await db.set(`${ data.guildId }_radioChannel..enabled`, false)
-                  console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
-                }
-                if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err));
+                  let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
+                  if (!msg?.id) {
+
+                    // await db.set(`${ data.guildId }_radioChannel..enabled`, false)
+                    console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
+                  }
+                  if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err));
+                });
 
               }
+            })
+            // let guild = await client.guilds.fetch(data.guildId).catch(() => null);
 
-              // let table = console.table([
-              //   {
-              //     "AllRadio": RadioChannels.length,
-              //     "client.Radio.size": client.Radio.size,
-              //     "client.Azkar.size": client.Azkar.size,
-              //     "noCh": noCh.length
-              //   },
-              //   {
-              //     "azkarChannels": Object.entries(AzkarChannels).length,
-              //     "radioChannels": Object.entries(RadioChannels).length
-              //   }
-              // ]);
-              // setTimeout(() => table.update(), 1000);
-            }
-          }, 100 * i);
+            // if (data.enabled) {
 
-        }
+            //   if (client.Radio.has(data.guildId)) continue
+            //   await sleep(3000);
+            //   let conn = await joinAndPlayQuran(client, data.channelId, guild, data.url);
 
-       
+            //   if (conn === null) {
+            //     console.log("no channel in server  " + guild.name + " " + guild.id);
+            //     noCh.push(data)
+            //     continue
+            //   }
+            //   if (conn === "cantConnect") {
+            //     console.log("cant connect in server  " + guild.name + " " + guild.id);
+            //     continue
+            //   }
+
+            //   client.Radio.set(data.guildId, conn)
+            //   setTimeout(async () => {
+            //     // await db.set(`${data.guildId}_radioChannel..enabled`, true)
+            //   }, 100 * i);
+
+            //   // if (guild.id !== "1171512753802969098") continue
+            //   let data1 = await db.get(`${data.guildId}_radioChannel`)
+
+            //   let msg = await guild.channels.cache.get(data1.ch)?.messages.fetch(data1.msgId).catch(err => null)
+            //   if (!msg?.id) {
+
+            //     // await db.set(`${ data.guildId }_radioChannel..enabled`, false)
+            //     console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
+            //   }
+            //   if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err));
+
+            // }
+
+            // let table = console.table([
+            //   {
+            //     "AllRadio": RadioChannels.length,
+            //     "client.Radio.size": client.Radio.size,
+            //     "client.Azkar.size": client.Azkar.size,
+            //     "noCh": noCh.length
+            //   },
+            //   {
+            //     "azkarChannels": Object.entries(AzkarChannels).length,
+            //     "radioChannels": Object.entries(RadioChannels).length
+            //   }
+            // ]);
+            // setTimeout(() => table.update(), 1000);
+          }
+        }, 100 * i);
+
+      }
+
+
 
     }, 3000);
 
