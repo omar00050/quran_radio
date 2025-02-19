@@ -105,7 +105,7 @@ module.exports = {
                   // if (guild.id !== "1171512753802969098") continue
                   let data1 = await db.get(`${data.guildId}_radioChannel`)
 
-                  let ch = await guild.channels.cache.get(data1?.ch).catch(() => null);
+                  let ch = await guild.channels.cache.get(data1?.ch) || null;
                   if (!ch) {
                     console.log("cant find channel in server  " + guild.name.yellow + " " + guild.id.red);
                     db.set(`${data.guildId}_radioChannel..ch`, null)
