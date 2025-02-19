@@ -36,7 +36,7 @@ setTimeout(function () {
 client.on("shardError", (error) => console.log("shardError".red, error));
 client.on("shardDisconnect", (event) => console.log("shardDisconnect".yellow, event));
 client.on("shardReconnecting", (event) => console.log("shardReconnecting".bgGreen, event));
-client.on("debug", (message) => !message.startsWith("[VOICE] received voice state update") && console.log("debug".green, message));
+client.on("debug", (message) => !message.startsWith("[VOICE] received voice state update") && !message.startsWith("[VOICE] received voice server") && console.log("debug".green, message));
 module.exports = client;
 
 //nodejs-events
