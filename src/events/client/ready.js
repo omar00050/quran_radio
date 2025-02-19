@@ -42,7 +42,7 @@ module.exports = {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       let noCh = []
-      let chunkedRadio = chunkArray(RadioChannels, 50)
+      let chunkedRadio = chunkArray(RadioChannels, 100)
       let chunkedAzkar = chunkArray(AzkarChannels, 30)
 
 
@@ -75,22 +75,20 @@ module.exports = {
 
         setTimeout(async () => {
 
-          for (let data of chunkedRadio[i]) {
-            await sleep(1000);
+          for (let [key, data] of chunkedRadio[i].entries()) {
+
             client.guilds.fetch(data.guildId).then(async guild => {
-              if (!guild?.id) {
-                setTimeout(async () => await db.delete(`${data.guildId}_radioChannel`), 1000 * i);
-                console.log("no guild in server  " + guild + " and delete it");
-                return
-              }
+
               if (data.enabled) {
 
                 if (client.Radio.has(data.guildId)) return
-                await sleep(1000);
-                joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
+                await sleep(5000 * key);
+                if (data?.channelId) joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
 
                   if (conn === null) {
                     console.log("no channel in server  " + guild.name + " " + guild.id);
+                    db.set(`${data.guildId}_radioChannel..enabled`, false)
+                    db.set(`${data.guildId}_radioChannel..channelId`, null)
                     noCh.push(data)
                     return
                   }
@@ -117,7 +115,12 @@ module.exports = {
                 });
 
               }
-            })
+            }).catch(err => {
+              if (err.status === 404) {
+                setTimeout(async () => await db.delete(`${data.guildId}_radioChannel`), 1000 * i);
+                console.log("no guild in server  " + data.guildId + " and delete it".bgRed);
+              }
+            });
             // let guild = await client.guilds.fetch(data.guildId).catch(() => null);
 
             // if (data.enabled) {
@@ -174,7 +177,7 @@ module.exports = {
 
 
 
-    }, 3000);
+    }, 10000);
 
 
   },

@@ -45,6 +45,10 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
 
+    connection.on('error', err => {
+      console.log(`Voice Connection Error: ${err}`.red)
+      return resolve("cantConnect");
+    })
     if (!connection) return resolve("cantConnect");
 
     const player = createAudioPlayer();
@@ -69,7 +73,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
 
         await db.set(`${guildId}_radioChannel..enabled`, false)
         let data = await db.get(`${guildId}_radioChannel`)
-        let msg = await guildd.channels.cache.get(data.ch).messages.fetch(data.msgId).catch(err => null)
+        let msg = await guildd.channels.cache.get(data.ch)?.messages.fetch(data.msgId).catch(err => null) || null
 
         if (msg) msg?.edit(ControlData(client, data))
         client.Radio.get(guildId).player.stop(true);
@@ -88,7 +92,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
         console.error(`${error.message} Server : ${guild.name} and rest Radio in :${channel.name} - url: ${radioUrl}`.red);
       }, 7000);
     })
-    
+
     connection.player = player
 
     return resolve(connection)
