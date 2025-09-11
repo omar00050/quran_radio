@@ -45,6 +45,11 @@ module.exports = {
             // inline: true
           },
           {
+            name: "Channel Azkar Count | عدد قنوات الاذان",
+            value: `\`${client.Adhan.size}\``,
+            // inline: true
+          },
+          {
             name: "Channel Azkar Count | عدد قنوات الاذكار",
             value: `\`${client.Azkar.size}\``,
             // inline: true
