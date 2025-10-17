@@ -65,6 +65,8 @@ class baseClient extends Client {
      */
     this.Azkar = new Collection();
 
+    this.Adhan = new Collection();
+
     this.radioUrlCache = new Collection();
 
     /**

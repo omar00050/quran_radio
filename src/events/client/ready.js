@@ -1,19 +1,19 @@
-const { chunkArray } = require('@root/src/utils/class/utils');
-const sendAzkar = require('@root/src/utils/functions/sendAzkar');
-const ControlData = require('@utils/functions/ControlData');
-const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
-const chalk = require('chalk');
-const { ActivityType, Guild, } = require('discord.js');
-const gr = chalk.hex('#00D100');
+const { chunkArray } = require("@root/src/utils/class/utils");
+const sendAzkar = require("@root/src/utils/functions/sendAzkar");
+const ControlData = require("@utils/functions/ControlData");
+const sendPrayer = require("@utils/functions/sendPrayer");
+const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
+const chalk = require("chalk");
+const { ActivityType, Guild } = require("discord.js");
+const gr = chalk.hex("#00D100");
 const un = chalk.underline;
 
 module.exports = {
-  name: 'ready',
+  name: "ready",
   /**
-   * @param {import("@base/baseClient")} client 
+   * @param {import("@base/baseClient")} client
    */
   async execute(client) {
-
     await client.DBConnect();
     await client.registerInteractions();
     const db = await client.db.table("channels");
@@ -21,40 +21,92 @@ module.exports = {
     const commands = client.slashCommands.map(({ execute, ...data }) => data);
     setTimeout(() => {
       console.log(gr(`Logged In As ` + un(`${client.user.username}`)));
-      console.log(chalk.cyan(`Servers:` + un(`${client.guilds.cache.size}`)), chalk.red(`Users:` + un(`${client.guilds.cache
-        .reduce((a, b) => a + b.memberCount, 0)
-        .toLocaleString()}`)), chalk.blue(`Commands:` + un(` ${client.commands.size}` + ` TOTAL Commands ${client.commands.size + commands.length}`)));
+      console.log(
+        chalk.cyan(`Servers:` + un(`${client.guilds.cache.size}`)),
+        chalk.red(
+          `Users:` +
+            un(
+              `${client.guilds.cache
+                .reduce((a, b) => a + b.memberCount, 0)
+                .toLocaleString()}`
+            )
+        ),
+        chalk.blue(
+          `Commands:` +
+            un(
+              ` ${client.commands.size}` +
+                ` TOTAL Commands ${client.commands.size + commands.length}`
+            )
+        )
+      );
     }, 3000);
-    client.user.setStatus("idle")
-    client.user.setActivity({ name: `Loading....`, type: ActivityType.Playing })
+    client.user.setStatus("idle");
+    client.user.setActivity({
+      name: `Loading....`,
+      type: ActivityType.Playing,
+    });
     setTimeout(() => client.user.setStatus("online"), 40000);
     setInterval(() => {
-      let ServersStatus = client.Radio.size + client.Azkar.size;
-      client.user.setActivity({ name: `in ${ServersStatus}/${client.channels.cache.size} Channels`, type: ActivityType.Listening })
+      let ServersStatus =
+        client.Radio.size + client.Azkar.size + client.Adhan.size;
+      client.user.setActivity({
+        name: `in ${ServersStatus}/${client.channels.cache.size} Channels`,
+        type: ActivityType.Listening,
+      });
     }, 1 * 1000 * 60);
 
     // let RadioChannels = await db.values() || [];
     let RadioChannels = Object.values(await db.endsWith("_radioChannel")) || [];
     let AzkarChannels = Object.values(await db.endsWith("_azkarChannel")) || [];
+    let AdhanChannels = Object.values(await db.endsWith("_prayerChannel")) || [];
 
-    if (RadioChannels.length === 0) return
+    //! if (RadioChannels.length === 0) return;
     setTimeout(async () => {
-      const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-      // if (process.env.testMode) return console.log("stop run radio is test mode".red);
-      let noCh = []
-      let chunkedRadio = chunkArray(RadioChannels, 100)
-      let chunkedAzkar = chunkArray(AzkarChannels, 30)
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      let noCh = [];
+      let chunkedRadio = chunkArray(RadioChannels, 100);
+      let chunkedAzkar = chunkArray(AzkarChannels, 30);
+      let chunkedAdhan = chunkArray(AdhanChannels, 30);
+      if (AdhanChannels.length > 0) {
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+        for (let i = 0; i < chunkedAdhan.length; i++) {
+          setTimeout(async () => {
+            for (let data of chunkedAdhan[i]) {
+              let guild = await client.guilds
+                .fetch(data.guildId)
+                .catch(() => null);
+              if (!guild?.id) {
+                await db.delete(`${data.guildId}_prayerChannel`);
+                console.log(
+                  "no guild for prayer channel, deleted data for guildId " +
+                    data.guildId
+                );
+                continue;
+              }
+              if (data.enabled) {
+                await sleep(1000);
+                console.log(
+                  `Sending adhan in guild ${guild.name} (${guild.id})`
+                );
+                await sendPrayer(client, guild, data);
+              }
+            }
+          }, 1000 * i);
+        }
+      }
 
       for (let i = 0; i < chunkedAzkar.length; i++) {
-
         setTimeout(async () => {
-
           for (let data of chunkedAzkar[i]) {
-
-            let guild = await client.guilds.fetch(data.guildId).catch(() => null);
+            let guild = await client.guilds
+              .fetch(data.guildId)
+              .catch(() => null);
             if (!guild?.id) {
-              setTimeout(async () => await db.delete(`${data.guildId}_azkarChannel`), 1000 * i);
+              setTimeout(
+                async () => await db.delete(`${data.guildId}_azkarChannel`),
+                1000 * i
+              );
               console.log("no guild in server  " + guild + " and delete it");
               continue;
             }
@@ -64,69 +116,99 @@ module.exports = {
                 console.log(`send azkar in server  ${guild.name} ${guild.id}`);
                 await sendAzkar(client, guild, data);
               }
-
             }
           }
-        }, 1000 * i)
-
+        }, 1000 * i);
       }
 
       for (let i = 0; i < chunkedRadio.length; i++) {
-
         setTimeout(async () => {
-
           for (let [key, data] of chunkedRadio[i].entries()) {
+            client.guilds
+              .fetch(data.guildId)
+              .then(async (guild) => {
+                if (data.enabled) {
+                  if (client.Radio.has(data.guildId)) return;
+                  await sleep(5000 * key);
+                  if (data?.channelId)
+                    joinAndPlayQuran(
+                      client,
+                      data.channelId,
+                      guild,
+                      data.url
+                    ).then(async (conn) => {
+                      if (conn === null) {
+                        console.log(
+                          "no channel in server  " + guild.name + " " + guild.id
+                        );
+                        db.set(`${data.guildId}_radioChannel..enabled`, false);
+                        db.set(`${data.guildId}_radioChannel..channelId`, null);
+                        noCh.push(data);
+                        return;
+                      }
+                      if (conn === "cantConnect") {
+                        console.log(
+                          "cant connect in server  " +
+                            guild.name +
+                            " " +
+                            guild.id
+                        );
+                        return;
+                      }
 
-            client.guilds.fetch(data.guildId).then(async guild => {
+                      client.Radio.set(data.guildId, conn);
+                      setTimeout(async () => {
+                        // await db.set(`${data.guildId}_radioChannel..enabled`, true)
+                      }, 100 * i);
 
-              if (data.enabled) {
+                      // if (guild.id !== "1171512753802969098") continue
+                      let data1 = await db.get(`${data.guildId}_radioChannel`);
 
-                if (client.Radio.has(data.guildId)) return
-                await sleep(5000 * key);
-                if (data?.channelId) joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
-
-                  if (conn === null) {
-                    console.log("no channel in server  " + guild.name + " " + guild.id);
-                    db.set(`${data.guildId}_radioChannel..enabled`, false)
-                    db.set(`${data.guildId}_radioChannel..channelId`, null)
-                    noCh.push(data)
-                    return
-                  }
-                  if (conn === "cantConnect") {
-                    console.log("cant connect in server  " + guild.name + " " + guild.id);
-                    return
-                  }
-
-                  client.Radio.set(data.guildId, conn)
-                  setTimeout(async () => {
-                    // await db.set(`${data.guildId}_radioChannel..enabled`, true)
-                  }, 100 * i);
-
-                  // if (guild.id !== "1171512753802969098") continue
-                  let data1 = await db.get(`${data.guildId}_radioChannel`)
-
-                  let ch = await guild.channels.cache.get(data1?.ch) || null;
-                  if (!ch) {
-                    console.log("cant find channel in server  " + guild.name.yellow + " " + guild.id.red);
-                    db.set(`${data.guildId}_radioChannel..ch`, null)
-                    return
-                  }
-                  let msg = await ch?.messages.fetch(data1?.msgId).catch(err => null)
-                  if (!msg?.id) {
-                    // await db.set(`${ data.guildId }_radioChannel..enabled`, false)
-                    console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
-                    db.set(`${data.guildId}_radioChannel..msgId`, null)
-                  }
-                  if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err));
-                });
-
-              }
-            }).catch(err => {
-              if (err.status === 404) {
-                setTimeout(async () => await db.delete(`${data.guildId}_radioChannel`), 1000 * i);
-                console.log("no guild in server  " + data.guildId + " and delete it".bgRed);
-              }
-            });
+                      let ch =
+                        (await guild.channels.cache.get(data1?.ch)) || null;
+                      if (!ch) {
+                        console.log(
+                          "cant find channel in server  " +
+                            guild.name.yellow +
+                            " " +
+                            guild.id.red
+                        );
+                        db.set(`${data.guildId}_radioChannel..ch`, null);
+                        return;
+                      }
+                      let msg = await ch?.messages
+                        .fetch(data1?.msgId)
+                        .catch((err) => null);
+                      if (!msg?.id) {
+                        // await db.set(`${ data.guildId }_radioChannel..enabled`, false)
+                        console.log(
+                          "cant find msg in server  " +
+                            guild.name.yellow +
+                            " " +
+                            guild.id.red
+                        );
+                        db.set(`${data.guildId}_radioChannel..msgId`, null);
+                      }
+                      if (msg?.id)
+                        msg
+                          ?.edit(ControlData(client, data1))
+                          .catch((err) => console.log(err));
+                    });
+                }
+              })
+              .catch((err) => {
+                if (err.status === 404) {
+                  setTimeout(
+                    async () => await db.delete(`${data.guildId}_radioChannel`),
+                    1000 * i
+                  );
+                  console.log(
+                    "no guild in server  " +
+                      data.guildId +
+                      " and delete it".bgRed
+                  );
+                }
+              });
             // let guild = await client.guilds.fetch(data.guildId).catch(() => null);
 
             // if (data.enabled) {
@@ -178,13 +260,7 @@ module.exports = {
             // setTimeout(() => table.update(), 1000);
           }
         }, 1000 * i);
-
       }
-
-
-
     }, 10000);
-
-
   },
 };
