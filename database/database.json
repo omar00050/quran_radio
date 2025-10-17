@@ -1,4 +1,25 @@
 {
   "gooddb": {},
-  "channels": {}
+  "channels": {
+    "1171512753802969098_radioChannel": {
+      "channelId": "1175514092988010546",
+      "guildId": "1171512753802969098",
+      "url": "https://3vh.liveradiu.com:8000/nasreddine-tobar.mp3",
+      "enabled": true,
+      "ch": "1175514092988010546",
+      "msgId": "1286676659121950752"
+    },
+    "1171512753802969098_azkarChannel": {
+      "channelId": "1266423144076411011",
+      "guildId": "1171512753802969098",
+      "enabled": true,
+      "msgTimeSend": "1h",
+      "category": [
+        "azkar"
+      ],
+      "roles": [],
+      "lastSned": 1728193405365,
+      "embed": false
+    }
+  }
 }

@@ -44,6 +44,10 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       guildId: guildId,
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3997645b5f00ae81274deb77f3356706ccb0e2ad
     connection.on('error', err => {
       console.log(`Voice Connection Error: ${err}`.red)
       return resolve("cantConnect");
@@ -72,7 +76,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
 
         await db.set(`${guildId}_radioChannel..enabled`, false)
         let data = await db.get(`${guildId}_radioChannel`)
-        let msg = await guildd.channels.cache.get(data.ch).messages.fetch(data.msgId).catch(err => null)
+        let msg = await guildd.channels.cache.get(data.ch)?.messages.fetch(data.msgId).catch(err => null) || null
 
         if (msg) msg?.edit(ControlData(client, data))
         client.Radio.get(guildId).player.stop(true);
