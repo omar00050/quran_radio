@@ -33,17 +33,10 @@ setTimeout(function () {
   client.botlogin(process.env.token);
 }, 2000);
 
-<<<<<<< HEAD
-client.on("shardError", (error) => console.log(error));
-client.on("shardDisconnect", (event) => console.log(event));
-client.on("shardReconnecting", (event) => console.log(event));
-client.on("debug", (message) => console.log(message));
-=======
 client.on("shardError", (error) => console.log("shardError".red, error));
 client.on("shardDisconnect", (event) => console.log("shardDisconnect".yellow, event));
 client.on("shardReconnecting", (event) => console.log("shardReconnecting".bgGreen, event));
 client.on("debug", (message) => !message.startsWith("[VOICE] received voice state update") && !message.startsWith("[VOICE] received voice server") && console.log("debug".green, message));
->>>>>>> 3997645b5f00ae81274deb77f3356706ccb0e2ad
 module.exports = client;
 
 //nodejs-events

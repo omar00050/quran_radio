@@ -44,10 +44,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       guildId: guildId,
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
-<<<<<<< HEAD
-=======
 
->>>>>>> 3997645b5f00ae81274deb77f3356706ccb0e2ad
     connection.on('error', err => {
       console.log(`Voice Connection Error: ${err}`.red)
       return resolve("cantConnect");

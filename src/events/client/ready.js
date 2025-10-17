@@ -75,24 +75,15 @@ module.exports = {
 
         setTimeout(async () => {
 
-<<<<<<< HEAD
-          for (let data of chunkedRadio[i]) {
-=======
           for (let [key, data] of chunkedRadio[i].entries()) {
->>>>>>> 3997645b5f00ae81274deb77f3356706ccb0e2ad
 
             client.guilds.fetch(data.guildId).then(async guild => {
 
               if (data.enabled) {
 
                 if (client.Radio.has(data.guildId)) return
-<<<<<<< HEAD
-                await sleep(5000);
-                joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
-=======
                 await sleep(5000 * key);
                 if (data?.channelId) joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
->>>>>>> 3997645b5f00ae81274deb77f3356706ccb0e2ad
 
                   if (conn === null) {
                     console.log("no channel in server  " + guild.name + " " + guild.id);
@@ -108,7 +99,7 @@ module.exports = {
 
                   client.Radio.set(data.guildId, conn)
                   setTimeout(async () => {
-                    await db.set(`${data.guildId}_radioChannel..enabled`, true)
+                    // await db.set(`${data.guildId}_radioChannel..enabled`, true)
                   }, 100 * i);
 
                   // if (guild.id !== "1171512753802969098") continue
