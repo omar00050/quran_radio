@@ -44,7 +44,10 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       guildId: guildId,
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
-
+    connection.on('error', err => {
+      console.log(`Voice Connection Error: ${err}`.red)
+      return resolve("cantConnect");
+    })
     if (!connection) return resolve("cantConnect");
 
     const player = createAudioPlayer();
@@ -88,7 +91,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
         console.error(`${error.message} Server : ${guild.name} and rest Radio in :${channel.name} - url: ${radioUrl}`.red);
       }, 7000);
     })
-    
+
     connection.player = player
 
     return resolve(connection)

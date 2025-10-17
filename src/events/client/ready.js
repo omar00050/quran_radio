@@ -42,7 +42,7 @@ module.exports = {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       let noCh = []
-      let chunkedRadio = chunkArray(RadioChannels, 50)
+      let chunkedRadio = chunkArray(RadioChannels, 100)
       let chunkedAzkar = chunkArray(AzkarChannels, 30)
 
 
@@ -76,7 +76,7 @@ module.exports = {
         setTimeout(async () => {
 
           for (let data of chunkedRadio[i]) {
-            await sleep(1000);
+
             client.guilds.fetch(data.guildId).then(async guild => {
               if (!guild?.id) {
                 setTimeout(async () => await db.delete(`${data.guildId}_radioChannel`), 1000 * i);
@@ -86,7 +86,7 @@ module.exports = {
               if (data.enabled) {
 
                 if (client.Radio.has(data.guildId)) return
-                await sleep(1000);
+                await sleep(5000);
                 joinAndPlayQuran(client, data.channelId, guild, data.url).then(async conn => {
 
                   if (conn === null) {
@@ -101,7 +101,7 @@ module.exports = {
 
                   client.Radio.set(data.guildId, conn)
                   setTimeout(async () => {
-                    // await db.set(`${data.guildId}_radioChannel..enabled`, true)
+                    await db.set(`${data.guildId}_radioChannel..enabled`, true)
                   }, 100 * i);
 
                   // if (guild.id !== "1171512753802969098") continue
@@ -174,7 +174,7 @@ module.exports = {
 
 
 
-    }, 3000);
+    }, 10000);
 
 
   },
