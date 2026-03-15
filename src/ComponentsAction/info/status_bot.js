@@ -1,5 +1,6 @@
 const controlData = require("@utils/functions/ControlData");
 const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
+const { getBroadcastStats } = require("@utils/functions/joinAndPlayQuran");
 const { ButtonStyle, ButtonBuilder, ChannelType, EmbedBuilder, ButtonInteraction } = require("discord.js");
 
 /**
@@ -15,7 +16,10 @@ module.exports = {
     try {
 
       let UserCount = client.guilds.cache.reduce((a, b) => a + b.memberCount, 0)
-
+      const activeBroadcasts = getBroadcastStats();
+      const guildId = interaction.guild.id;
+      const shardId = client.ws.shards.find(s => s.manager.client.guilds.cache.has(guildId)).id;
+      const totalShards = client.ws.shards.size
       let embed = new EmbedBuilder()
         .setTitle("**Bot Status** | **معلومات البوت**")
         .setColor("White")
@@ -50,6 +54,16 @@ module.exports = {
             // inline: true
           },
           {
+            name: "Channel Adhan Count | عدد قنوات الاذان",
+            value: `\`${client.Adhan.size}\``,
+            // inline: true
+          },
+          {
+            name: "Active Broadcasts Count | عدد البثوث النشطة",
+            value: `\`${activeBroadcasts.activeBroadcasts}\``,
+            // inline: true
+          },
+          {
             name: "Channel Count | عدد القنوات",
             value: `\`${client.channels.cache.size}\``,
             // inline: true
@@ -62,6 +76,11 @@ module.exports = {
           {
             name: "Ping | سرعة استجابة البوت",
             value: `\`${client.ws.ping}ms\` 🏓`,
+            inline: true
+          },
+          {
+            name: "shardId / shards | الشارد",
+            value: `\`${shardId}/${totalShards}\` 🏓`,
             inline: true
           },
           {
@@ -80,6 +99,7 @@ module.exports = {
             inline: false
           },
         ])
+
       client.logger.log(`${client.user.username} Status Command has been used! | by user [${interaction.user.username}] | global name [${interaction.user.globalName}] |  in server ${interaction.guild.name} with ID [${interaction.guild.id}] `);
       interaction.reply({ embeds: [embed], ephemeral: true })
 

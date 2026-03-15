@@ -1,0 +1,173 @@
+[
+  {
+    "city": "Cairo",
+    "city_ar": "القاهرة",
+    "country": "Egypt",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇪🇬",
+    "timezone": "Africa/Cairo"
+  },
+  {
+    "city": "Riyadh",
+    "city_ar": "الرياض",
+    "country": "Saudi Arabia",
+    "method": 4,
+    "format": "12h",
+    "flag": "🇸🇦",
+    "timezone": "Asia/Riyadh"
+  },
+  {
+    "city": "Gaza",
+    "city_ar": "غزة",
+    "country": "Palestine",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇵🇸",
+    "timezone": "Asia/Gaza"
+  },
+  {
+    "city": "Baghdad",
+    "city_ar": "بغداد",
+    "country": "Iraq",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇮🇶",
+    "timezone": "Asia/Baghdad"
+  },
+  {
+    "city": "Algiers",
+    "city_ar": "الجزائر",
+    "country": "Algeria",
+    "method": 19,
+    "format": "12h",
+    "flag": "🇩🇿",
+    "timezone": "Africa/Algiers"
+  },
+  {
+    "city": "Casablanca",
+    "city_ar": "الدار البيضاء",
+    "country": "Morocco",
+    "method": 21,
+    "format": "12h",
+    "flag": "🇲🇦",
+    "timezone": "Africa/Casablanca"
+  },
+  {
+    "city": "Khartoum",
+    "city_ar": "الخرطوم",
+    "country": "Sudan",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇸🇩",
+    "timezone": "Africa/Khartoum"
+  },
+  {
+    "city": "Tunis",
+    "city_ar": "تونس",
+    "country": "Tunisia",
+    "method": 18,
+    "format": "12h",
+    "flag": "🇹🇳",
+    "timezone": "Africa/Tunis"
+  },
+  {
+    "city": "Amman",
+    "city_ar": "عمان",
+    "country": "Jordan",
+    "method": 23,
+    "format": "12h",
+    "flag": "🇯🇴",
+    "timezone": "Asia/Amman"
+  },
+  {
+    "city": "Beirut",
+    "city_ar": "بيروت",
+    "country": "Lebanon",
+    "method": 2,
+    "format": "12h",
+    "flag": "🇱🇧",
+    "timezone": "Asia/Beirut"
+  },
+  {
+    "city": "Doha",
+    "city_ar": "الدوحة",
+    "country": "Qatar",
+    "method": 8,
+    "format": "12h",
+    "flag": "🇶🇦",
+    "timezone": "Asia/Qatar"
+  },
+  {
+    "city": "Muscat",
+    "city_ar": "مسقط",
+    "country": "Oman",
+    "method": 8,
+    "format": "12h",
+    "flag": "🇴🇲",
+    "timezone": "Asia/Muscat"
+  },
+  {
+    "city": "Abu Dhabi",
+    "city_ar": "أبوظبي",
+    "country": "United Arab Emirates",
+    "method": 8,
+    "format": "12h",
+    "flag": "🇦🇪",
+    "timezone": "Asia/Dubai"
+  },
+  {
+    "city": "Kuwait City",
+    "city_ar": "مدينة الكويت",
+    "country": "Kuwait",
+    "method": 9,
+    "format": "12h",
+    "flag": "🇰🇼",
+    "timezone": "Asia/Kuwait"
+  },
+  {
+    "city": "Manama",
+    "city_ar": "المنامة",
+    "country": "Bahrain",
+    "method": 8,
+    "format": "12h",
+    "flag": "🇧🇭",
+    "timezone": "Asia/Bahrain"
+  },
+  {
+    "city": "Damascus",
+    "city_ar": "دمشق",
+    "country": "Syria",
+    "method": 2,
+    "format": "12h",
+    "flag": "🇸🇾",
+    "timezone": "Asia/Damascus"
+  },
+  {
+    "city": "Tripoli",
+    "city_ar": "طرابلس",
+    "country": "Libya",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇱🇾",
+    "timezone": "Africa/Tripoli"
+  },
+  {
+    "city": "Mogadishu",
+    "city_ar": "مقديشو",
+    "country": "Somalia",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇸🇴",
+    "timezone": "Africa/Mogadishu"
+  },
+  {
+    "city": "Nouakchott",
+    "city_ar": "نواكشوط",
+    "country": "Mauritania",
+    "method": 5,
+    "format": "12h",
+    "flag": "🇲🇷",
+    "timezone": "Africa/Nouakchott"
+  }
+]

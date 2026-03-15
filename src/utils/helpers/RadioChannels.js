@@ -9,13 +9,13 @@ module.exports = [{
   group: "quran",
   name: "إذاعة القران الكريم دولة السعودية",
   value: "http://n0e.radiojar.com/4wqre23fytzuv?rj-ttl=5&rj-tok=AAABgDTrkhEAsmBCfbT280gMag",
-  img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/%D9%82%D9%86%D8%A7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85.svg/640px-%D9%82%D9%86%D8%A7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85.svg.png"
+  img: "https://pbs.twimg.com/profile_images/1313539609268285442/86vzT1LT_400x400.jpg"
 },
 {
   group: "quran",
   name: "إذاعة ياسر الدوسري",
   value: "https://Qurango.net/radio/yasser_aldosari",
-  img: "https://yt3.googleusercontent.com/joiS42EkjnooctQMAds_2RppxXy5JPJ510ZwucUNe4fj2oPXL3N-JTyz12xyz2BLFjeS-5UbNQ=s900-c-k-c0x00ffffff-no-rj"
+  img: "https://i.scdn.co/image/ab6761610000e5eb6a6628f0fcfd0b1b01bbf912"
 },
 {
   group: "quran",
@@ -71,12 +71,12 @@ module.exports = [{
   value: "https://stream.zeno.fm/73xsyy44qs8uv",
   img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAUKHXr-T3uFpY0puZLu8i6lTQ_3hZ9qzazW_yGjQjvAyftyLY31Uop5AvILB0AbmuMQw&usqp=CAU"
 },
-{
-  group: "quran",
-  name: "إذاعة الشيخ السيد سعيد",
-  value: "https://3vh.liveradiu.com:8000/syd-said.mp3",
-  img: "https://i1.sndcdn.com/artworks-1gzltNVDkmdSHBW4-b3DTlQ-t500x500.jpg"
-},
+// {
+//   group: "quran",
+//   name: "إذاعة الشيخ السيد سعيد",//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//   value: "https://3vh.liveradiu.com:8000/syd-said.mp3",
+//   img: "https://i1.sndcdn.com/artworks-1gzltNVDkmdSHBW4-b3DTlQ-t500x500.jpg"
+// },
 {
   group: "quran",
   name: "إذاعة خالد الجليل",
@@ -134,7 +134,7 @@ module.exports = [{
 {
   group: "quran",
   name: "اذاعة قناة الحرم المكي",
-  value: "https://fmradiohub.in/play?url=http://r7.tarat.com:8004/;stream.mp3",
+  value: "https://r7.tarat.com:8004/;stream.mp3",
   img: "https://makkahtv.tv/assets/images/makkah-channel-redcolor-1440-alpha-570x716.png"
 },
 {
@@ -152,7 +152,7 @@ module.exports = [{
 {
   group: "tafseer",
   name: "إذاعة الشيخ محمد متولي الشعراوي",
-  value: "https://server3.quraan.us:8014/;*.mp3",
+  value: "https://stream.zeno.fm/2fngkhm0pnhvv",
   img: "https://i0.wp.com/quran-uni.com/wp-content/uploads/al-sharawy.jpg"
 },
 {
@@ -161,17 +161,23 @@ module.exports = [{
   value: "https://qurango.net/radio/tafseer",
   img: "https://play-lh.googleusercontent.com/QdPcX-1uibkhdQQ0UoZh0KgS4lNp_0t1wxJDQgCTnf2iaI3NYwJPjZdxki88RfrfBiY"
 },
-// {
-//   group: "tafseer",
-//   name: "إذاعة الشيخ جابر بغدادي",
-//   value: "https://stream-148.zeno.fm/wcue1s1g6ehvv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJ3Y3VlMXMxZzZlaHZ2IiwiaG9zdCI6InN0cmVhbS0xNDguemVuby5mbSIsInJ0dGwiOjUsImp0aSI6ImdiamJCb240VHd1aHQwVEdiLUFnS0EiLCJpYXQiOjE3MjAzNDk2ODAsImV4cCI6MTcyMDM0OTc0MH0.byo6NawTRXNqhmF9qHYuKiviMSlj9aJ-oItC5hLV24o",
-//   img: "https://i1.sndcdn.com/avatars-yHNVHZKjxUVOCDki-dXThWw-t1080x1080.jpg"
-// },
+{
+  group: "tafseer",
+  name: "إذاعة الشيخ جابر بغدادي",
+  value: "https://stream.zeno.fm/am5gxs1g6ehvv",
+  img: "https://i1.sndcdn.com/avatars-yOn6yvvUJ6Z7fZSF-pOIsVg-t240x240.jpg"
+},
 {
   group: "siyra",
   name: "السيرة النبوية - 400 حلقة عن سيرة نبينا محمد",
   value: "https://Qurango.net/radio/fi_zilal_alsiyra",
   img: "https://i.scdn.co/image/ab6765630000ba8a16ca20036384c3301464da3e"
+},
+{
+  group: "any",
+  name: "اذاعة الشيخ الدكتور حازم شومان",
+  value: "https://stream.zeno.fm/xlyqjpw6echuv",
+  img: "https://i.servimg.com/u/f93/17/93/78/55/112.jpg"
 },
 {
   group: "any",
@@ -188,20 +194,20 @@ module.exports = [{
 {
   group: "any",
   name: "برنامج العلم و الايمان [دكتور مصطفي محمود]",
-  value: "https://3vh.liveradiu.com:8000/mustafa-mahmoud.mp3",
+  value: "https://stream.zeno.fm/3hr7bkacfg8uv",
   img: "https://i1.sndcdn.com/artworks-000101569536-4b3350-t500x500.jpg"
 },
 {
   group: "ebthalat",
   name: "اذاعة ابتهالات الشيخ سيد النقشبندي",
-  value: "https://3vh.liveradiu.com:8000/naqshbandi.mp3",
+  value: "https://stream.zeno.fm/s0vc98c0pnhvv",
   img: "https://media.unitedmuslimworld.com/img/24/03/24/16718.jpg"
 },
 {
   group: "ebthalat",
   name: "اذاعة ابتهالات الشيخ نصر الدين طوبار",
-  value: "https://3vh.liveradiu.com:8000/nasreddine-tobar.mp3",
-  img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Nasr_El-Din_Tobar.jpg/280px-Nasr_El-Din_Tobar.jpg"
+  value: "https://stream.zeno.fm/e15ed2m0pnhvv",
+  img: "https://upload.wikimedia.org/wikipedia/commons/7/79/Nasr_El-Din_Tobar.jpg"
 },
 
 ]

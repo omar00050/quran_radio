@@ -19,6 +19,7 @@ function help(interaction) {
       { name: "/ping", value: "Shows bot ping || البنج", inline: true },
       { name: "/setup radio", value: "setup radio channel || تسطيب القناه الصوتية", inline: true },
       { name: "/setup azkar", value: "setup azkar channel || تسطيب الاذكار", inline: true },
+      { name: "/setup prayer", value: "setup prayer channel || تسطيب الاذان", inline: true },
       { name: "/control", value: "control radio channel || التحكم بالراديو", inline: true }
     ])
     .setFooter({

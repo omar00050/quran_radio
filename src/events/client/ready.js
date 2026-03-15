@@ -1,5 +1,7 @@
 const { chunkArray } = require('@root/src/utils/class/utils');
 const sendAzkar = require('@root/src/utils/functions/sendAzkar');
+const SendAdhan = require('@utils/functions/sendPrayer');
+const { cleanOldPrayerCache } = require('@utils/functions/sendPrayer');
 const ControlData = require('@utils/functions/ControlData');
 const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
 const chalk = require('chalk');
@@ -16,6 +18,7 @@ module.exports = {
 
     await client.DBConnect();
     await client.registerInteractions();
+    cleanOldPrayerCache(client);
     const db = await client.db.table("channels");
 
     const commands = client.slashCommands.map(({ execute, ...data }) => data);
@@ -36,15 +39,15 @@ module.exports = {
     // let RadioChannels = await db.values() || [];
     let RadioChannels = Object.values(await db.endsWith("_radioChannel")) || [];
     let AzkarChannels = Object.values(await db.endsWith("_azkarChannel")) || [];
+    let PrayerChannels = Object.values(await db.endsWith("_prayerChannel")) || [];
 
-    if (RadioChannels.length === 0) return
     setTimeout(async () => {
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       let noCh = []
       let chunkedRadio = chunkArray(RadioChannels, 100)
       let chunkedAzkar = chunkArray(AzkarChannels, 30)
-
+      let chunkedPrayer = chunkArray(PrayerChannels, 30)
 
       for (let i = 0; i < chunkedAzkar.length; i++) {
 
@@ -68,6 +71,33 @@ module.exports = {
             }
           }
         }, 1000 * i)
+
+      }
+
+      // Restore prayer (adhan) channels
+      for (let i = 0; i < chunkedPrayer.length; i++) {
+
+        setTimeout(async () => {
+
+          for (let data of chunkedPrayer[i]) {
+
+            let guild = await client.guilds.fetch(data.guildId).catch(() => null);
+            if (!guild?.id) {
+              setTimeout(async () => await db.delete(`${data.guildId}_prayerChannel`), 1000 * i);
+              console.log("no guild in server  " + guild + " and delete it");
+              continue;
+            }
+            if (data) {
+              await sleep(1000);
+              if (data?.enabled) {
+                console.log(`send adhan in server  ${guild.name} ${guild.id}`);
+                await SendAdhan(client, guild, data);
+              }
+
+            }
+          }
+        }
+          , 1000 * i)
 
       }
 
@@ -183,7 +213,7 @@ module.exports = {
 
 
 
-    }, 10000);
+    }, 1000);
 
 
   },

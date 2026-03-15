@@ -1,0 +1,363 @@
+{
+  "Egypt": {
+    "flag": "🇪🇬",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Cairo",           "city_ar": "القاهرة",          "timezone": "Africa/Cairo", "latitude": 30.0444,  "longitude": 31.2357  },
+      { "city": "Alexandria",      "city_ar": "الإسكندرية",       "timezone": "Africa/Cairo", "latitude": 31.2001,  "longitude": 29.9187  },
+      { "city": "Giza",            "city_ar": "الجيزة",           "timezone": "Africa/Cairo", "latitude": 30.0131,  "longitude": 31.2089  },
+      { "city": "Aswan",           "city_ar": "أسوان",            "timezone": "Africa/Cairo", "latitude": 24.0889,  "longitude": 32.8998  },
+      { "city": "Luxor",           "city_ar": "الأقصر",           "timezone": "Africa/Cairo", "latitude": 25.6872,  "longitude": 32.6396  },
+      { "city": "Tanta",           "city_ar": "طنطا",             "timezone": "Africa/Cairo", "latitude": 30.7865,  "longitude": 31.0004  },
+      { "city": "Mansoura",        "city_ar": "المنصورة",         "timezone": "Africa/Cairo", "latitude": 31.0364,  "longitude": 31.3807  },
+      { "city": "Port Said",       "city_ar": "بورسعيد",          "timezone": "Africa/Cairo", "latitude": 31.2565,  "longitude": 32.2841  },
+      { "city": "Suez",            "city_ar": "السويس",           "timezone": "Africa/Cairo", "latitude": 29.9668,  "longitude": 32.5498  },
+      { "city": "Ismailia",        "city_ar": "الإسماعيلية",      "timezone": "Africa/Cairo", "latitude": 30.5965,  "longitude": 32.2715  },
+      { "city": "Sharm el-Sheikh", "city_ar": "شرم الشيخ",        "timezone": "Africa/Cairo", "latitude": 27.9158,  "longitude": 34.3300  },
+      { "city": "Hurghada",        "city_ar": "الغردقة",          "timezone": "Africa/Cairo", "latitude": 27.2579,  "longitude": 33.8116  },
+      { "city": "Zagazig",         "city_ar": "الزقازيق",         "timezone": "Africa/Cairo", "latitude": 30.5877,  "longitude": 31.5021  },
+      { "city": "Asyut",           "city_ar": "أسيوط",            "timezone": "Africa/Cairo", "latitude": 27.1783,  "longitude": 31.1859  },
+      { "city": "Sohag",           "city_ar": "سوهاج",            "timezone": "Africa/Cairo", "latitude": 26.5591,  "longitude": 31.6957  },
+      { "city": "Qena",            "city_ar": "قنا",              "timezone": "Africa/Cairo", "latitude": 26.1551,  "longitude": 32.7160  },
+      { "city": "Beni Suef",       "city_ar": "بني سويف",         "timezone": "Africa/Cairo", "latitude": 29.0661,  "longitude": 31.0994  },
+      { "city": "Faiyum",          "city_ar": "الفيوم",           "timezone": "Africa/Cairo", "latitude": 29.3084,  "longitude": 30.8428  },
+      { "city": "Minya",           "city_ar": "المنيا",           "timezone": "Africa/Cairo", "latitude": 28.1099,  "longitude": 30.7503  },
+      { "city": "Damanhur",        "city_ar": "دمنهور",           "timezone": "Africa/Cairo", "latitude": 31.0340,  "longitude": 30.4673  },
+      { "city": "Kafr el-Sheikh",  "city_ar": "كفر الشيخ",        "timezone": "Africa/Cairo", "latitude": 31.1107,  "longitude": 30.9388  },
+      { "city": "Damietta",        "city_ar": "دمياط",            "timezone": "Africa/Cairo", "latitude": 31.4165,  "longitude": 31.8133  },
+      { "city": "Banha",           "city_ar": "بنها",             "timezone": "Africa/Cairo", "latitude": 30.4618,  "longitude": 31.1827  },
+      { "city": "Shibin el-Kom",   "city_ar": "شبين الكوم",       "timezone": "Africa/Cairo", "latitude": 30.5569,  "longitude": 31.0100  },
+      { "city": "Mersa Matruh",    "city_ar": "مرسى مطروح",       "timezone": "Africa/Cairo", "latitude": 31.3543,  "longitude": 27.2373  },
+      { "city": "Arish",           "city_ar": "العريش",           "timezone": "Africa/Cairo", "latitude": 31.1320,  "longitude": 33.7990  },
+      { "city": "Kharga",          "city_ar": "الخارجة",          "timezone": "Africa/Cairo", "latitude": 25.4478,  "longitude": 30.5516  }
+    ]
+  },
+  "Saudi Arabia": {
+    "flag": "🇸🇦",
+    "method": 4,
+    "format": "12h",
+    "cities": [
+      { "city": "Riyadh",          "city_ar": "الرياض",           "timezone": "Asia/Riyadh", "latitude": 24.7136,  "longitude": 46.6753  },
+      { "city": "Jeddah",          "city_ar": "جدة",              "timezone": "Asia/Riyadh", "latitude": 21.4858,  "longitude": 39.1925  },
+      { "city": "Mecca",           "city_ar": "مكة المكرمة",      "timezone": "Asia/Riyadh", "latitude": 21.3891,  "longitude": 39.8579  },
+      { "city": "Medina",          "city_ar": "المدينة المنورة",  "timezone": "Asia/Riyadh", "latitude": 24.5247,  "longitude": 39.5692  },
+      { "city": "Dammam",          "city_ar": "الدمام",           "timezone": "Asia/Riyadh", "latitude": 26.3927,  "longitude": 49.9777  },
+      { "city": "Taif",            "city_ar": "الطائف",           "timezone": "Asia/Riyadh", "latitude": 21.2703,  "longitude": 40.4158  },
+      { "city": "Khobar",          "city_ar": "الخبر",            "timezone": "Asia/Riyadh", "latitude": 26.2172,  "longitude": 50.1971  },
+      { "city": "Tabuk",           "city_ar": "تبوك",             "timezone": "Asia/Riyadh", "latitude": 28.3998,  "longitude": 36.5715  },
+      { "city": "Buraidah",        "city_ar": "بريدة",            "timezone": "Asia/Riyadh", "latitude": 26.3292,  "longitude": 43.9749  },
+      { "city": "Khamis Mushait",  "city_ar": "خميس مشيط",        "timezone": "Asia/Riyadh", "latitude": 18.3000,  "longitude": 42.7333  },
+      { "city": "Hail",            "city_ar": "حائل",             "timezone": "Asia/Riyadh", "latitude": 27.5114,  "longitude": 41.7208  },
+      { "city": "Najran",          "city_ar": "نجران",            "timezone": "Asia/Riyadh", "latitude": 17.4920,  "longitude": 44.1277  },
+      { "city": "Abha",            "city_ar": "أبها",             "timezone": "Asia/Riyadh", "latitude": 18.2164,  "longitude": 42.5053  },
+      { "city": "Jizan",           "city_ar": "جازان",            "timezone": "Asia/Riyadh", "latitude": 16.8892,  "longitude": 42.5611  },
+      { "city": "Yanbu",           "city_ar": "ينبع",             "timezone": "Asia/Riyadh", "latitude": 24.0895,  "longitude": 38.0618  },
+      { "city": "Al-Ahsa",         "city_ar": "الأحساء",          "timezone": "Asia/Riyadh", "latitude": 25.3797,  "longitude": 49.5870  },
+      { "city": "Al-Jouf",         "city_ar": "الجوف",            "timezone": "Asia/Riyadh", "latitude": 29.9697,  "longitude": 40.2002  },
+      { "city": "Arar",            "city_ar": "عرعر",             "timezone": "Asia/Riyadh", "latitude": 30.9753,  "longitude": 41.0381  }
+    ]
+  },
+  "Palestine": {
+    "flag": "🇵🇸",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Gaza",            "city_ar": "غزة",              "timezone": "Asia/Gaza",    "latitude": 31.5017,  "longitude": 34.4668  },
+      { "city": "Ramallah",        "city_ar": "رام الله",         "timezone": "Asia/Hebron",  "latitude": 31.9038,  "longitude": 35.2034  },
+      { "city": "Nablus",          "city_ar": "نابلس",            "timezone": "Asia/Hebron",  "latitude": 32.2211,  "longitude": 35.2544  },
+      { "city": "Hebron",          "city_ar": "الخليل",           "timezone": "Asia/Hebron",  "latitude": 31.5326,  "longitude": 35.0998  },
+      { "city": "Jenin",           "city_ar": "جنين",             "timezone": "Asia/Hebron",  "latitude": 32.4607,  "longitude": 35.2966  },
+      { "city": "Tulkarm",         "city_ar": "طولكرم",           "timezone": "Asia/Hebron",  "latitude": 32.3100,  "longitude": 35.0286  },
+      { "city": "Bethlehem",       "city_ar": "بيت لحم",          "timezone": "Asia/Hebron",  "latitude": 31.7054,  "longitude": 35.2024  },
+      { "city": "Jericho",         "city_ar": "أريحا",            "timezone": "Asia/Hebron",  "latitude": 31.8557,  "longitude": 35.4631  },
+      { "city": "Rafah",           "city_ar": "رفح",              "timezone": "Asia/Gaza",    "latitude": 31.2868,  "longitude": 34.2488  },
+      { "city": "Khan Yunis",      "city_ar": "خان يونس",         "timezone": "Asia/Gaza",    "latitude": 31.3452,  "longitude": 34.3060  },
+      { "city": "Qalqilya",        "city_ar": "قلقيلية",          "timezone": "Asia/Hebron",  "latitude": 32.1881,  "longitude": 34.9704  },
+      { "city": "Salfit",          "city_ar": "سلفيت",            "timezone": "Asia/Hebron",  "latitude": 32.0841,  "longitude": 35.1788  }
+    ]
+  },
+  "Iraq": {
+    "flag": "🇮🇶",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Baghdad",         "city_ar": "بغداد",            "timezone": "Asia/Baghdad", "latitude": 33.3152,  "longitude": 44.3661  },
+      { "city": "Basra",           "city_ar": "البصرة",           "timezone": "Asia/Baghdad", "latitude": 30.5085,  "longitude": 47.7804  },
+      { "city": "Mosul",           "city_ar": "الموصل",           "timezone": "Asia/Baghdad", "latitude": 36.3350,  "longitude": 43.1189  },
+      { "city": "Erbil",           "city_ar": "أربيل",            "timezone": "Asia/Baghdad", "latitude": 36.1901,  "longitude": 44.0091  },
+      { "city": "Najaf",           "city_ar": "النجف",            "timezone": "Asia/Baghdad", "latitude": 31.9904,  "longitude": 44.3352  },
+      { "city": "Karbala",         "city_ar": "كربلاء",           "timezone": "Asia/Baghdad", "latitude": 32.6158,  "longitude": 44.0249  },
+      { "city": "Kirkuk",          "city_ar": "كركوك",            "timezone": "Asia/Baghdad", "latitude": 35.4681,  "longitude": 44.3922  },
+      { "city": "Sulaymaniyah",    "city_ar": "السليمانية",       "timezone": "Asia/Baghdad", "latitude": 35.5615,  "longitude": 45.4348  },
+      { "city": "Fallujah",        "city_ar": "الفلوجة",          "timezone": "Asia/Baghdad", "latitude": 33.3500,  "longitude": 43.7833  },
+      { "city": "Amarah",          "city_ar": "العمارة",          "timezone": "Asia/Baghdad", "latitude": 31.8350,  "longitude": 47.1500  },
+      { "city": "Nasiriyah",       "city_ar": "الناصرية",         "timezone": "Asia/Baghdad", "latitude": 31.0604,  "longitude": 46.2604  },
+      { "city": "Hillah",          "city_ar": "الحلة",            "timezone": "Asia/Baghdad", "latitude": 32.4747,  "longitude": 44.4223  },
+      { "city": "Ramadi",          "city_ar": "الرمادي",          "timezone": "Asia/Baghdad", "latitude": 33.4258,  "longitude": 43.2994  },
+      { "city": "Dohuk",           "city_ar": "دهوك",             "timezone": "Asia/Baghdad", "latitude": 36.8669,  "longitude": 42.9903  },
+      { "city": "Kut",             "city_ar": "الكوت",            "timezone": "Asia/Baghdad", "latitude": 32.5000,  "longitude": 45.8167  },
+      { "city": "Diwaniyah",       "city_ar": "الديوانية",        "timezone": "Asia/Baghdad", "latitude": 31.9892,  "longitude": 44.9244  }
+    ]
+  },
+  "Algeria": {
+    "flag": "🇩🇿",
+    "method": 19,
+    "format": "12h",
+    "cities": [
+      { "city": "Algiers",         "city_ar": "الجزائر",          "timezone": "Africa/Algiers", "latitude": 36.7372,  "longitude": 3.0865   },
+      { "city": "Oran",            "city_ar": "وهران",            "timezone": "Africa/Algiers", "latitude": 35.6969,  "longitude": -0.6331  },
+      { "city": "Constantine",     "city_ar": "قسنطينة",          "timezone": "Africa/Algiers", "latitude": 36.3650,  "longitude": 6.6147   },
+      { "city": "Annaba",          "city_ar": "عنابة",            "timezone": "Africa/Algiers", "latitude": 36.9000,  "longitude": 7.7667   },
+      { "city": "Batna",           "city_ar": "باتنة",            "timezone": "Africa/Algiers", "latitude": 35.5559,  "longitude": 6.1740   },
+      { "city": "Setif",           "city_ar": "سطيف",             "timezone": "Africa/Algiers", "latitude": 36.1898,  "longitude": 5.4108   },
+      { "city": "Tlemcen",         "city_ar": "تلمسان",           "timezone": "Africa/Algiers", "latitude": 34.8828,  "longitude": -1.3167  },
+      { "city": "Biskra",          "city_ar": "بسكرة",            "timezone": "Africa/Algiers", "latitude": 34.8500,  "longitude": 5.7333   },
+      { "city": "Blida",           "city_ar": "البليدة",          "timezone": "Africa/Algiers", "latitude": 36.4703,  "longitude": 2.8277   },
+      { "city": "Bejaia",          "city_ar": "بجاية",            "timezone": "Africa/Algiers", "latitude": 36.7529,  "longitude": 5.0567   },
+      { "city": "Tizi Ouzou",      "city_ar": "تيزي وزو",         "timezone": "Africa/Algiers", "latitude": 36.7169,  "longitude": 4.0497   },
+      { "city": "Djelfa",          "city_ar": "الجلفة",           "timezone": "Africa/Algiers", "latitude": 34.6803,  "longitude": 3.2639   },
+      { "city": "Tamanrasset",     "city_ar": "تمنراست",          "timezone": "Africa/Algiers", "latitude": 22.7851,  "longitude": 5.5228   },
+      { "city": "Ouargla",         "city_ar": "ورقلة",            "timezone": "Africa/Algiers", "latitude": 31.9539,  "longitude": 5.3353   },
+      { "city": "Ghardaia",        "city_ar": "غرداية",           "timezone": "Africa/Algiers", "latitude": 32.4908,  "longitude": 3.6736   }
+    ]
+  },
+  "Morocco": {
+    "flag": "🇲🇦",
+    "method": 21,
+    "format": "12h",
+    "cities": [
+      { "city": "Casablanca",      "city_ar": "الدار البيضاء",    "timezone": "Africa/Casablanca", "latitude": 33.5731,  "longitude": -7.5898  },
+      { "city": "Rabat",           "city_ar": "الرباط",           "timezone": "Africa/Casablanca", "latitude": 34.0133,  "longitude": -6.8326  },
+      { "city": "Fez",             "city_ar": "فاس",              "timezone": "Africa/Casablanca", "latitude": 34.0181,  "longitude": -5.0078  },
+      { "city": "Marrakesh",       "city_ar": "مراكش",            "timezone": "Africa/Casablanca", "latitude": 31.6295,  "longitude": -7.9811  },
+      { "city": "Agadir",          "city_ar": "أكادير",           "timezone": "Africa/Casablanca", "latitude": 30.4278,  "longitude": -9.5981  },
+      { "city": "Tangier",         "city_ar": "طنجة",             "timezone": "Africa/Casablanca", "latitude": 35.7595,  "longitude": -5.8340  },
+      { "city": "Oujda",           "city_ar": "وجدة",             "timezone": "Africa/Casablanca", "latitude": 34.6867,  "longitude": -1.9114  },
+      { "city": "Meknes",          "city_ar": "مكناس",            "timezone": "Africa/Casablanca", "latitude": 33.8935,  "longitude": -5.5473  },
+      { "city": "Tetouan",         "city_ar": "تطوان",            "timezone": "Africa/Casablanca", "latitude": 35.5785,  "longitude": -5.3684  },
+      { "city": "Kenitra",         "city_ar": "القنيطرة",         "timezone": "Africa/Casablanca", "latitude": 34.2610,  "longitude": -6.5802  },
+      { "city": "Safi",            "city_ar": "آسفي",             "timezone": "Africa/Casablanca", "latitude": 32.2994,  "longitude": -9.2372  },
+      { "city": "El Jadida",       "city_ar": "الجديدة",          "timezone": "Africa/Casablanca", "latitude": 33.2549,  "longitude": -8.5079  },
+      { "city": "Nador",           "city_ar": "الناظور",          "timezone": "Africa/Casablanca", "latitude": 35.1740,  "longitude": -2.9287  },
+      { "city": "Beni Mellal",     "city_ar": "بني ملال",         "timezone": "Africa/Casablanca", "latitude": 32.3372,  "longitude": -6.3498  }
+    ]
+  },
+  "Sudan": {
+    "flag": "🇸🇩",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Khartoum",        "city_ar": "الخرطوم",          "timezone": "Africa/Khartoum", "latitude": 15.5007,  "longitude": 32.5599  },
+      { "city": "Omdurman",        "city_ar": "أم درمان",         "timezone": "Africa/Khartoum", "latitude": 15.6445,  "longitude": 32.4777  },
+      { "city": "Port Sudan",      "city_ar": "بورت سودان",       "timezone": "Africa/Khartoum", "latitude": 19.6158,  "longitude": 37.2164  },
+      { "city": "Kassala",         "city_ar": "كسلا",             "timezone": "Africa/Khartoum", "latitude": 15.4500,  "longitude": 36.4000  },
+      { "city": "Wad Madani",      "city_ar": "ود مدني",          "timezone": "Africa/Khartoum", "latitude": 14.3989,  "longitude": 33.5192  },
+      { "city": "El Obeid",        "city_ar": "الأبيض",           "timezone": "Africa/Khartoum", "latitude": 13.1840,  "longitude": 30.2176  },
+      { "city": "Nyala",           "city_ar": "نيالا",            "timezone": "Africa/Khartoum", "latitude": 12.0490,  "longitude": 24.8817  },
+      { "city": "El Fasher",       "city_ar": "الفاشر",           "timezone": "Africa/Khartoum", "latitude": 13.6272,  "longitude": 25.3496  },
+      { "city": "Atbara",          "city_ar": "عطبرة",            "timezone": "Africa/Khartoum", "latitude": 17.7000,  "longitude": 33.9833  }
+    ]
+  },
+  "Tunisia": {
+    "flag": "🇹🇳",
+    "method": 18,
+    "format": "12h",
+    "cities": [
+      { "city": "Tunis",           "city_ar": "تونس",             "timezone": "Africa/Tunis", "latitude": 36.8190,  "longitude": 10.1658  },
+      { "city": "Sfax",            "city_ar": "صفاقس",            "timezone": "Africa/Tunis", "latitude": 34.7400,  "longitude": 10.7600  },
+      { "city": "Sousse",          "city_ar": "سوسة",             "timezone": "Africa/Tunis", "latitude": 35.8256,  "longitude": 10.6369  },
+      { "city": "Kairouan",        "city_ar": "القيروان",         "timezone": "Africa/Tunis", "latitude": 35.6781,  "longitude": 10.0963  },
+      { "city": "Bizerte",         "city_ar": "بنزرت",            "timezone": "Africa/Tunis", "latitude": 37.2744,  "longitude": 9.8739   },
+      { "city": "Gabes",           "city_ar": "قابس",             "timezone": "Africa/Tunis", "latitude": 33.8881,  "longitude": 10.0975  },
+      { "city": "Gafsa",           "city_ar": "قفصة",             "timezone": "Africa/Tunis", "latitude": 34.4250,  "longitude": 8.7842   },
+      { "city": "Monastir",        "city_ar": "المنستير",         "timezone": "Africa/Tunis", "latitude": 35.7643,  "longitude": 10.8113  },
+      { "city": "Nabeul",          "city_ar": "نابل",             "timezone": "Africa/Tunis", "latitude": 36.4520,  "longitude": 10.7347  },
+      { "city": "Tozeur",          "city_ar": "توزر",             "timezone": "Africa/Tunis", "latitude": 33.9197,  "longitude": 8.1335   },
+      { "city": "Mahdia",          "city_ar": "المهدية",          "timezone": "Africa/Tunis", "latitude": 35.5047,  "longitude": 11.0622  }
+    ]
+  },
+  "Jordan": {
+    "flag": "🇯🇴",
+    "method": 23,
+    "format": "12h",
+    "cities": [
+      { "city": "Amman",           "city_ar": "عمّان",            "timezone": "Asia/Amman", "latitude": 31.9454,  "longitude": 35.9284  },
+      { "city": "Zarqa",           "city_ar": "الزرقاء",          "timezone": "Asia/Amman", "latitude": 32.0608,  "longitude": 36.0875  },
+      { "city": "Irbid",           "city_ar": "إربد",             "timezone": "Asia/Amman", "latitude": 32.5556,  "longitude": 35.8500  },
+      { "city": "Aqaba",           "city_ar": "العقبة",           "timezone": "Asia/Amman", "latitude": 29.5321,  "longitude": 35.0063  },
+      { "city": "Salt",            "city_ar": "السلط",            "timezone": "Asia/Amman", "latitude": 32.0392,  "longitude": 35.7278  },
+      { "city": "Mafraq",          "city_ar": "المفرق",           "timezone": "Asia/Amman", "latitude": 32.3419,  "longitude": 36.2027  },
+      { "city": "Karak",           "city_ar": "الكرك",            "timezone": "Asia/Amman", "latitude": 31.1771,  "longitude": 35.7047  },
+      { "city": "Madaba",          "city_ar": "مأدبا",            "timezone": "Asia/Amman", "latitude": 31.7167,  "longitude": 35.8000  },
+      { "city": "Jerash",          "city_ar": "جرش",              "timezone": "Asia/Amman", "latitude": 32.2742,  "longitude": 35.8997  },
+      { "city": "Ajloun",          "city_ar": "عجلون",            "timezone": "Asia/Amman", "latitude": 32.3302,  "longitude": 35.7508  },
+      { "city": "Tafilah",         "city_ar": "الطفيلة",          "timezone": "Asia/Amman", "latitude": 30.8369,  "longitude": 35.6044  },
+      { "city": "Maan",            "city_ar": "معان",             "timezone": "Asia/Amman", "latitude": 30.1933,  "longitude": 35.7325  }
+    ]
+  },
+  "Lebanon": {
+    "flag": "🇱🇧",
+    "method": 2,
+    "format": "12h",
+    "cities": [
+      { "city": "Beirut",          "city_ar": "بيروت",            "timezone": "Asia/Beirut", "latitude": 33.8886,  "longitude": 35.4955  },
+      { "city": "Tripoli",         "city_ar": "طرابلس",           "timezone": "Asia/Beirut", "latitude": 34.4367,  "longitude": 35.8497  },
+      { "city": "Sidon",           "city_ar": "صيدا",             "timezone": "Asia/Beirut", "latitude": 33.5606,  "longitude": 35.3758  },
+      { "city": "Tyre",            "city_ar": "صور",              "timezone": "Asia/Beirut", "latitude": 33.2705,  "longitude": 35.2037  },
+      { "city": "Baalbek",         "city_ar": "بعلبك",            "timezone": "Asia/Beirut", "latitude": 34.0042,  "longitude": 36.2110  },
+      { "city": "Zahle",           "city_ar": "زحلة",             "timezone": "Asia/Beirut", "latitude": 33.8497,  "longitude": 35.9019  },
+      { "city": "Jounieh",         "city_ar": "جونية",            "timezone": "Asia/Beirut", "latitude": 33.9806,  "longitude": 35.6178  },
+      { "city": "Nabatieh",        "city_ar": "النبطية",          "timezone": "Asia/Beirut", "latitude": 33.3772,  "longitude": 35.4839  }
+    ]
+  },
+  "Qatar": {
+    "flag": "🇶🇦",
+    "method": 8,
+    "format": "12h",
+    "cities": [
+      { "city": "Doha",            "city_ar": "الدوحة",           "timezone": "Asia/Qatar", "latitude": 25.2854,  "longitude": 51.5310  },
+      { "city": "Al Rayyan",       "city_ar": "الريان",           "timezone": "Asia/Qatar", "latitude": 25.2920,  "longitude": 51.4241  },
+      { "city": "Al Wakrah",       "city_ar": "الوكرة",           "timezone": "Asia/Qatar", "latitude": 25.1715,  "longitude": 51.6113  },
+      { "city": "Al Khor",         "city_ar": "الخور",            "timezone": "Asia/Qatar", "latitude": 25.6833,  "longitude": 51.5000  },
+      { "city": "Dukhan",          "city_ar": "دخان",             "timezone": "Asia/Qatar", "latitude": 25.4236,  "longitude": 50.7847  },
+      { "city": "Umm Salal",       "city_ar": "أم صلال",          "timezone": "Asia/Qatar", "latitude": 25.4071,  "longitude": 51.3979  },
+      { "city": "Al Shamal",       "city_ar": "الشمال",           "timezone": "Asia/Qatar", "latitude": 26.1582,  "longitude": 51.2150  }
+    ]
+  },
+  "Oman": {
+    "flag": "🇴🇲",
+    "method": 8,
+    "format": "12h",
+    "cities": [
+      { "city": "Muscat",          "city_ar": "مسقط",             "timezone": "Asia/Muscat", "latitude": 23.5880,  "longitude": 58.3829  },
+      { "city": "Salalah",         "city_ar": "صلالة",            "timezone": "Asia/Muscat", "latitude": 17.0150,  "longitude": 54.0924  },
+      { "city": "Sohar",           "city_ar": "صحار",             "timezone": "Asia/Muscat", "latitude": 24.3464,  "longitude": 56.7455  },
+      { "city": "Nizwa",           "city_ar": "نزوى",             "timezone": "Asia/Muscat", "latitude": 22.9333,  "longitude": 57.5333  },
+      { "city": "Sur",             "city_ar": "صور",              "timezone": "Asia/Muscat", "latitude": 22.5667,  "longitude": 59.5289  },
+      { "city": "Ibri",            "city_ar": "عبري",             "timezone": "Asia/Muscat", "latitude": 23.2258,  "longitude": 56.5131  },
+      { "city": "Buraimi",         "city_ar": "البريمي",          "timezone": "Asia/Muscat", "latitude": 24.2500,  "longitude": 55.7833  },
+      { "city": "Duqm",            "city_ar": "الدقم",            "timezone": "Asia/Muscat", "latitude": 19.6500,  "longitude": 57.7000  },
+      { "city": "Khasab",          "city_ar": "خصب",              "timezone": "Asia/Muscat", "latitude": 26.1833,  "longitude": 56.2500  }
+    ]
+  },
+  "United Arab Emirates": {
+    "flag": "🇦🇪",
+    "method": 8,
+    "format": "12h",
+    "cities": [
+      { "city": "Dubai",           "city_ar": "دبي",              "timezone": "Asia/Dubai", "latitude": 25.2048,  "longitude": 55.2708  },
+      { "city": "Abu Dhabi",       "city_ar": "أبوظبي",           "timezone": "Asia/Dubai", "latitude": 24.4539,  "longitude": 54.3773  },
+      { "city": "Sharjah",         "city_ar": "الشارقة",          "timezone": "Asia/Dubai", "latitude": 25.3462,  "longitude": 55.4211  },
+      { "city": "Ajman",           "city_ar": "عجمان",            "timezone": "Asia/Dubai", "latitude": 25.4052,  "longitude": 55.5136  },
+      { "city": "Al Ain",          "city_ar": "العين",            "timezone": "Asia/Dubai", "latitude": 24.2075,  "longitude": 55.7447  },
+      { "city": "Ras al-Khaimah",  "city_ar": "رأس الخيمة",       "timezone": "Asia/Dubai", "latitude": 25.7895,  "longitude": 55.9432  },
+      { "city": "Fujairah",        "city_ar": "الفجيرة",          "timezone": "Asia/Dubai", "latitude": 25.1288,  "longitude": 56.3265  },
+      { "city": "Umm al-Quwain",   "city_ar": "أم القيوين",       "timezone": "Asia/Dubai", "latitude": 25.5647,  "longitude": 55.5554  }
+    ]
+  },
+  "Kuwait": {
+    "flag": "🇰🇼",
+    "method": 9,
+    "format": "12h",
+    "cities": [
+      { "city": "Kuwait City",     "city_ar": "مدينة الكويت",     "timezone": "Asia/Kuwait", "latitude": 29.3759,  "longitude": 47.9774  },
+      { "city": "Hawalli",         "city_ar": "حولي",             "timezone": "Asia/Kuwait", "latitude": 29.3322,  "longitude": 48.0323  },
+      { "city": "Salmiya",         "city_ar": "السالمية",         "timezone": "Asia/Kuwait", "latitude": 29.3375,  "longitude": 48.0775  },
+      { "city": "Jahra",           "city_ar": "الجهراء",          "timezone": "Asia/Kuwait", "latitude": 29.3372,  "longitude": 47.6578  },
+      { "city": "Ahmadi",          "city_ar": "الأحمدي",          "timezone": "Asia/Kuwait", "latitude": 29.0769,  "longitude": 48.0839  },
+      { "city": "Farwaniya",       "city_ar": "الفروانية",        "timezone": "Asia/Kuwait", "latitude": 29.2778,  "longitude": 47.9592  },
+      { "city": "Mubarak Al-Kabeer","city_ar": "مبارك الكبير",    "timezone": "Asia/Kuwait", "latitude": 29.2119,  "longitude": 48.0519  }
+    ]
+  },
+  "Bahrain": {
+    "flag": "🇧🇭",
+    "method": 8,
+    "format": "12h",
+    "cities": [
+      { "city": "Manama",          "city_ar": "المنامة",          "timezone": "Asia/Bahrain", "latitude": 26.2154,  "longitude": 50.5832  },
+      { "city": "Riffa",           "city_ar": "الرفاع",           "timezone": "Asia/Bahrain", "latitude": 26.1300,  "longitude": 50.5550  },
+      { "city": "Muharraq",        "city_ar": "المحرق",           "timezone": "Asia/Bahrain", "latitude": 26.2572,  "longitude": 50.6128  },
+      { "city": "Hamad Town",      "city_ar": "مدينة حمد",        "timezone": "Asia/Bahrain", "latitude": 26.1108,  "longitude": 50.5094  },
+      { "city": "Isa Town",        "city_ar": "مدينة عيسى",       "timezone": "Asia/Bahrain", "latitude": 26.1728,  "longitude": 50.5483  },
+      { "city": "Sitra",           "city_ar": "سترة",             "timezone": "Asia/Bahrain", "latitude": 26.1544,  "longitude": 50.6353  }
+    ]
+  },
+  "Syria": {
+    "flag": "🇸🇾",
+    "method": 2,
+    "format": "12h",
+    "cities": [
+      { "city": "Damascus",        "city_ar": "دمشق",             "timezone": "Asia/Damascus", "latitude": 33.5102,  "longitude": 36.2913  },
+      { "city": "Aleppo",          "city_ar": "حلب",              "timezone": "Asia/Damascus", "latitude": 36.2021,  "longitude": 37.1343  },
+      { "city": "Homs",            "city_ar": "حمص",              "timezone": "Asia/Damascus", "latitude": 34.7272,  "longitude": 36.7239  },
+      { "city": "Hama",            "city_ar": "حماة",             "timezone": "Asia/Damascus", "latitude": 35.1333,  "longitude": 36.7500  },
+      { "city": "Latakia",         "city_ar": "اللاذقية",         "timezone": "Asia/Damascus", "latitude": 35.5317,  "longitude": 35.7918  },
+      { "city": "Deir ez-Zor",     "city_ar": "دير الزور",        "timezone": "Asia/Damascus", "latitude": 35.3360,  "longitude": 40.1400  },
+      { "city": "Daraa",           "city_ar": "درعا",             "timezone": "Asia/Damascus", "latitude": 32.6189,  "longitude": 36.1021  },
+      { "city": "Raqqa",           "city_ar": "الرقة",            "timezone": "Asia/Damascus", "latitude": 35.9500,  "longitude": 39.0167  },
+      { "city": "Tartus",          "city_ar": "طرطوس",            "timezone": "Asia/Damascus", "latitude": 34.8869,  "longitude": 35.8869  },
+      { "city": "Qamishli",        "city_ar": "القامشلي",         "timezone": "Asia/Damascus", "latitude": 37.0514,  "longitude": 41.2268  },
+      { "city": "Idlib",           "city_ar": "إدلب",             "timezone": "Asia/Damascus", "latitude": 35.9300,  "longitude": 36.6340  },
+      { "city": "Suwayda",         "city_ar": "السويداء",         "timezone": "Asia/Damascus", "latitude": 32.7081,  "longitude": 36.5681  }
+    ]
+  },
+  "Libya": {
+    "flag": "🇱🇾",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Tripoli",         "city_ar": "طرابلس",           "timezone": "Africa/Tripoli", "latitude": 32.9032,  "longitude": 13.1800  },
+      { "city": "Benghazi",        "city_ar": "بنغازي",           "timezone": "Africa/Tripoli", "latitude": 32.1194,  "longitude": 20.0870  },
+      { "city": "Misrata",         "city_ar": "مصراتة",           "timezone": "Africa/Tripoli", "latitude": 32.3754,  "longitude": 15.0925  },
+      { "city": "Sabha",           "city_ar": "سبها",             "timezone": "Africa/Tripoli", "latitude": 27.0377,  "longitude": 14.4283  },
+      { "city": "Tobruk",          "city_ar": "طبرق",             "timezone": "Africa/Tripoli", "latitude": 32.0762,  "longitude": 23.9547  },
+      { "city": "Zawiya",          "city_ar": "الزاوية",          "timezone": "Africa/Tripoli", "latitude": 32.7522,  "longitude": 12.7275  },
+      { "city": "Zliten",          "city_ar": "زليتن",            "timezone": "Africa/Tripoli", "latitude": 32.4669,  "longitude": 14.5683  },
+      { "city": "Sirte",           "city_ar": "سرت",              "timezone": "Africa/Tripoli", "latitude": 31.2089,  "longitude": 16.5887  },
+      { "city": "Derna",           "city_ar": "درنة",             "timezone": "Africa/Tripoli", "latitude": 32.7559,  "longitude": 22.6375  },
+      { "city": "Al Bayda",        "city_ar": "البيضاء",          "timezone": "Africa/Tripoli", "latitude": 32.7630,  "longitude": 21.7550  }
+    ]
+  },
+  "Somalia": {
+    "flag": "🇸🇴",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Mogadishu",       "city_ar": "مقديشو",           "timezone": "Africa/Mogadishu", "latitude": 2.0469,   "longitude": 45.3182  },
+      { "city": "Hargeisa",        "city_ar": "هرجيسا",           "timezone": "Africa/Mogadishu", "latitude": 9.5600,   "longitude": 44.0650  },
+      { "city": "Kismayo",         "city_ar": "كيسمايو",          "timezone": "Africa/Mogadishu", "latitude": -0.3582,  "longitude": 42.5454  },
+      { "city": "Bosaso",          "city_ar": "بوصاصو",           "timezone": "Africa/Mogadishu", "latitude": 11.2842,  "longitude": 49.1816  },
+      { "city": "Merca",           "city_ar": "مركا",             "timezone": "Africa/Mogadishu", "latitude": 1.7089,   "longitude": 44.7669  },
+      { "city": "Baidoa",          "city_ar": "بيدوا",            "timezone": "Africa/Mogadishu", "latitude": 3.1167,   "longitude": 43.6500  }
+    ]
+  },
+  "Mauritania": {
+    "flag": "🇲🇷",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Nouakchott",      "city_ar": "نواكشوط",          "timezone": "Africa/Nouakchott", "latitude": 18.0735,  "longitude": -15.9582 },
+      { "city": "Nouadhibou",      "city_ar": "نواذيبو",          "timezone": "Africa/Nouakchott", "latitude": 20.9310,  "longitude": -17.0347 },
+      { "city": "Kaedi",           "city_ar": "كيهيدي",           "timezone": "Africa/Nouakchott", "latitude": 16.1500,  "longitude": -13.5000 },
+      { "city": "Zouerate",        "city_ar": "زويرات",           "timezone": "Africa/Nouakchott", "latitude": 22.7333,  "longitude": -12.4667 },
+      { "city": "Rosso",           "city_ar": "روصو",             "timezone": "Africa/Nouakchott", "latitude": 16.5133,  "longitude": -15.8053 }
+    ]
+  },
+  "Yemen": {
+    "flag": "🇾🇪",
+    "method": 5,
+    "format": "12h",
+    "cities": [
+      { "city": "Sanaa",           "city_ar": "صنعاء",            "timezone": "Asia/Aden", "latitude": 15.3694,  "longitude": 44.1910  },
+      { "city": "Aden",            "city_ar": "عدن",              "timezone": "Asia/Aden", "latitude": 12.7794,  "longitude": 45.0367  },
+      { "city": "Taiz",            "city_ar": "تعز",              "timezone": "Asia/Aden", "latitude": 13.5776,  "longitude": 44.0178  },
+      { "city": "Hodeidah",        "city_ar": "الحديدة",          "timezone": "Asia/Aden", "latitude": 14.7978,  "longitude": 42.9540  },
+      { "city": "Ibb",             "city_ar": "إب",               "timezone": "Asia/Aden", "latitude": 13.9797,  "longitude": 44.1813  },
+      { "city": "Mukalla",         "city_ar": "المكلا",           "timezone": "Asia/Aden", "latitude": 14.5422,  "longitude": 49.1281  },
+      { "city": "Dhamar",          "city_ar": "ذمار",             "timezone": "Asia/Aden", "latitude": 14.5501,  "longitude": 44.4040  },
+      { "city": "Marib",           "city_ar": "مأرب",             "timezone": "Asia/Aden", "latitude": 15.4678,  "longitude": 45.3228  },
+      { "city": "Hajjah",          "city_ar": "حجة",              "timezone": "Asia/Aden", "latitude": 15.6942,  "longitude": 43.6030  }
+    ]
+  }
+}

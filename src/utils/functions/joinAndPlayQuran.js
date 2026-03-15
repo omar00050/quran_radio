@@ -1,7 +1,11 @@
-const fetch = require('node-fetch');
+const AudioBroadcaster = require('./AudioBroadcaster');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const ControlData = require('./ControlData');
 const VoiceUtils = require('../class/voice');
+
+// إنشاء instance واحد للمذيع
+const broadcaster = new AudioBroadcaster();
+
 
 /**
  * Joins a voice channel and plays the Quran audio.
@@ -12,31 +16,46 @@ const VoiceUtils = require('../class/voice');
  * @param {boolean} [isRunning=false] - Indicates if the Quran audio is already running.
  * @returns {Promise<import("@discordjs/voice").VoiceConnection & {player : import("@discordjs/voice").AudioPlayer}>} - The voice connection and audio player.
  */
-module.exports = async function joinAndPlayQuran(client, channelId, guild, url = process.env.RadioAudioUrl, isRunig = false) {
+module.exports = async function joinAndPlayQuran(client, channelId, guild, url = process.env.RadioAudioUrl, isRunning = false) {
+
 
   return new Promise(async (resolve, reject) => {
-
     const guildId = guild.id;
-    client.radioUrlCache.set(guildId, url)
+    client.radioUrlCache.set(guildId, url);
     const channel = await guild.channels.fetch(channelId).catch(() => null);
     const db = await client.db.table("channels");
 
     if (!channel) return resolve(null);
-    if (isRunig) {
-      let clientChannel = guild.members.me.voice.channel
-      if (!VoiceUtils.isVoiceChannelEmpty(clientChannel)) {
 
+    // دالة مساعدة للتشغيل
+    const playBroadcastAudio = async (guildId, url, player = null) => {
+      try {
+        // التأكد من وجود البث الرئيسي أولاً
+        await broadcaster.getBroadcastForURL(url);
 
-        client.Radio.get(guildId).player.stop(true);
-        const response = await fetch(url)
-        const stream = response.body;
-
-        const resource = createAudioResource(stream);
-
-        client.Radio.get(guildId).player.play(resource);
+        // إنشاء الـ resource للجيلد
+        const resource = broadcaster.createAudioResourceForGuild(url);
+        if (resource) {
+          if (!player) client.Radio.get(guildId).player.play(resource);
+          else player.play(resource);
+          console.log(`Playing broadcast audio for guild: ${guild.name}`);
+          return true;
+        }
+      } catch (error) {
+        console.error(`Error in playBroadcastAudio for ${guild.name}:`, error);
       }
+      return false;
+    };
 
-      return resolve("isRunig")
+    if (isRunning) {
+      let clientChannel = guild.members.me.voice.channel;
+      if (!VoiceUtils.isVoiceChannelEmpty(clientChannel)) {
+        const success = await playBroadcastAudio(guildId, url);
+        if (!success) {
+          console.log(`Failed to play broadcast for ${guild.name}, will retry...`);
+        }
+      }
+      return resolve("isRunning");
     }
 
     const connection = joinVoiceChannel({
@@ -46,56 +65,101 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
     });
 
     connection.on('error', err => {
-      console.log(`Voice Connection Error: ${err}`.red)
+      console.log(`Voice Connection Error in ${guild.name}: ${err}`.red);
+      broadcaster.releaseGuildConnection(url);
       return resolve("cantConnect");
-    })
-    if (!connection) return resolve("cantConnect");
+    });
+
+    if (!connection) {
+      broadcaster.releaseGuildConnection(url);
+      return resolve("cantConnect");
+    }
 
     const player = createAudioPlayer();
+
     if (!VoiceUtils.isVoiceChannelEmpty(channel)) {
-
-      const response = await fetch(url)
-
-      const stream = response.body;
-
-      const resource = createAudioResource(stream);
-      player.play(resource);
-    } else console.log(`Join Voice Channel in Server: [${guild.name}] Channel: [${channel.name}] ` + `is Empty `.red);
+      const success = await playBroadcastAudio(guildId, url, player);
+      if (!success) {
+        console.log(`Failed to start broadcast for ${guild.name}`);
+      }
+    } else {
+      console.log(`Join Voice Channel in Server: [${guild.name}] Channel: [${channel.name}] is Empty `.red);
+    }
 
     connection.subscribe(player);
-    connection.on("stateChange", async (state) => {
-      // this if condition disconnected bots 
-      if (state.subscription.connection.state.status == "disconnected") {
 
-        let guildId = state.subscription.connection.joinConfig.guildId
-        let guildd = client.guilds.cache.get(guildId)
-        if (guildd.members.me.voice?.channelId !== null) return
+    connection.on("stateChange", async (oldState, newState) => {
+      if (newState.status === "disconnected") {
+        let guildId = newState.subscription?.connection?.joinConfig?.guildId;
+        if (!guildId) return;
 
-        await db.set(`${guildId}_radioChannel..enabled`, false)
-        let data = await db.get(`${guildId}_radioChannel`)
-        let msg = await guildd.channels.cache.get(data.ch)?.messages.fetch(data.msgId).catch(err => null) || null
+        let guildd = client.guilds.cache.get(guildId);
+        if (guildd?.members.me.voice?.channelId !== null) return;
 
-        if (msg) msg?.edit(ControlData(client, data))
-        client.Radio.get(guildId).player.stop(true);
-        // state.subscription.player.stop(true);
-        client.Radio?.delete(guildId)
+        await db.set(`${guildId}_radioChannel..enabled`, false);
+        let data = await db.get(`${guildId}_radioChannel`);
+        let msg = await guildd.channels.cache.get(data.ch)?.messages.fetch(data.msgId).catch(err => null) || null;
+
+        if (msg) msg?.edit(ControlData(client, data));
+
+        client.Radio.get(guildId)?.player?.stop(true);
+        client.Radio?.delete(guildId);
+
+        // تحرير اتصال الجيلد من البث
+        broadcaster.releaseGuildConnection(url);
+
         console.log(`Bot disconnected from server ${guildd.name}`);
-
       }
-    })
-    player.on(AudioPlayerStatus.Playing, () => console.log(`Playing Quran in Server: `.green + `[${guild.name}] `.blue + `Channel: [${channel.name}] `.yellow + `${new Date()}`));
+    });
+
+    player.on(AudioPlayerStatus.Playing, () => {
+      console.log(`✅ Playing Quran in Server: [${guild.name}] Channel: [${channel.name}] - ${new Date()}`);
+      // عرض إحصائيات البث
+      const stats = broadcaster.getStats();
+      console.log(`📊 Broadcast Stats: ${JSON.stringify(stats)}`);
+    });
+
+    player.on(AudioPlayerStatus.Idle, () => {
+      console.log(`🔄 Player became idle in ${guild.name}`);
+    });
 
     player.on('error', async (error) => {
-      let radioUrl = client.radioUrlCache.get(guildId)
+      let radioUrl = client.radioUrlCache.get(guildId);
+      console.error(`🔴 Player error in ${guild.name}: ${error.message}`.red);
+
+      // تحرير الاتصال الحالي
+      broadcaster.releaseGuildConnection(url);
+
       setTimeout(async function () {
-        await joinAndPlayQuran(client, channelId, guild, radioUrl, true)
-        console.error(`${error.message} Server : ${guild.name} and rest Radio in :${channel.name} - url: ${radioUrl}`.red);
+        try {
+          console.log(`🔄 Retrying connection for ${guild.name}...`);
+          await joinAndPlayQuran(client, channelId, guild, radioUrl, true);
+        } catch (retryError) {
+          console.error(`❌ Failed to restart radio in ${guild.name}:`, retryError);
+        }
       }, 7000);
-    })
+    });
 
-    connection.player = player
+    connection.player = player;
 
-    return resolve(connection)
-  })
+    // تخزين معلومات البث في الـ connection للوصول لها لاحقاً
+    connection.broadcastUrl = url;
+    connection.guildId = guildId;
 
+    return resolve(connection);
+  });
+};
+
+// دالة مساعدة لعرض إحصائيات البث
+function getBroadcastStats() {
+  return broadcaster.getStats();
 }
+
+// دالة لتنظيف البث يدوياً إذا لزم الأمر
+function cleanupBroadcast(url) {
+  broadcaster.cleanupBroadcast(url);
+}
+
+// تصدير الدوال المساعدة
+module.exports.getBroadcastStats = getBroadcastStats;
+module.exports.cleanupBroadcast = cleanupBroadcast;

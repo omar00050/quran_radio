@@ -65,6 +65,19 @@ class baseClient extends Client {
      */
     this.Azkar = new Collection();
 
+    /**
+     * @type  {Collection<string, NodeJS.Timeout>} 
+     */
+    this.Adhan = new Collection();
+
+    /**
+     * @type  {Collection<string, NodeJS.Timeout>} 
+     */
+    this.prayerCache = new Collection();
+
+    /**
+     * @type  {Collection<string, String>} 
+     */
     this.radioUrlCache = new Collection();
 
     /**
