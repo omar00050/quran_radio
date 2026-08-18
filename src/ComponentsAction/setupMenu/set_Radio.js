@@ -23,7 +23,7 @@ module.exports = {
       })
       let data = await db.get(`${interaction.guildId}_radioChannel`)
 
-      if (channel.type === ChannelType.GuildVoice) {
+      if (channel.type === ChannelType.GuildVoice || channel.type === ChannelType.GuildStageVoice) {
 
         let isChannel = await db.get(`${interaction.guildId}_radioChannel`)
 
