@@ -89,6 +89,10 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
     connection.subscribe(player);
 
     connection.on("stateChange", async (oldState, newState) => {
+      if (newState.status === "ready") {
+        channel.guild.members.me.voice.setSuppressed(false);
+      }
+      
       if (newState.status === "disconnected") {
         let guildId = newState.subscription?.connection?.joinConfig?.guildId;
         if (!guildId) return;

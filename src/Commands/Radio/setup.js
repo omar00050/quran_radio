@@ -70,7 +70,7 @@ module.exports = {
           let Menu_setChannel = new ChannelSelectMenuBuilder()
             .setCustomId("set_RadioChannel")
             .setPlaceholder("Setup Radio Channel")
-            .setChannelTypes(ChannelType.GuildVoice)
+            .setChannelTypes(ChannelType.GuildVoice, ChannelType.GuildStageVoice)
           if (data?.ch) Menu_setChannel.setDefaultChannels([data?.ch])
           let rowMenu = new ActionRowBuilder().addComponents(Menu_setChannel)
           let rowQuick = new ActionRowBuilder().addComponents(btn_setup)
