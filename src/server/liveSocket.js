@@ -10,6 +10,9 @@ const RadioChannels = require('../utils/helpers/RadioChannels');
 
 let _io          = null;
 let _latestStats = null;
+let _audioHealthLogState = null;
+
+const AUDIO_HEALTH_TIMEOUT_MS = 3_000;
 
 // ── Restore last persisted stats so the dashboard gets data immediately ──
 try {
@@ -20,6 +23,87 @@ try {
 /** Resolve a stream URL to a human-readable station name. */
 function _stationName(url) {
   return RadioChannels.find(r => r.value === url)?.name ?? url;
+}
+
+/**
+ * Builds the manager-owned status block. Reachability, last response and
+ * failure count survive across collect cycles via the last emitted stats,
+ * so a transient health failure does not erase them.
+ */
+function _baseAudioStatus(shardStatus) {
+  const previous = _latestStats?.audioServer ?? null;
+  return {
+    configured:      shardStatus?.configured ?? previous?.configured ?? true,
+    reachable:       previous?.reachable ?? shardStatus?.reachable ?? null,
+    url:             shardStatus?.url ?? previous?.url ?? null,
+    consecutiveFailures: previous?.consecutiveFailures ?? shardStatus?.consecutiveFailures ?? 0,
+    lastCheckAt:     previous?.lastCheckAt ?? shardStatus?.lastCheckAt ?? null,
+    ...(previous?.health ? { health: previous.health } : {}),
+  };
+}
+
+/**
+ * Polls the standalone audio server's /health once per collect cycle. The
+ * shards only know the static `_audioServerStatus` stub (nothing calls
+ * setAudioServerStatus), so the manager is the one place that can report
+ * real reachability and per-station health to the dashboard.
+ */
+async function _collectAudioServerStatus(shardStatus) {
+  const base = _baseAudioStatus(shardStatus);
+  if (typeof fetch !== 'function') return base;
+
+  const url = (base.url || process.env.AUDIO_SERVER_URL || 'http://127.0.0.1:3040')
+    .replace(/\/+$/, '');
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), AUDIO_HEALTH_TIMEOUT_MS);
+
+  try {
+    const headers = { accept: 'application/json' };
+    if (process.env.AUDIO_SERVER_TOKEN) {
+      headers.authorization = `Bearer ${process.env.AUDIO_SERVER_TOKEN}`;
+    }
+
+    const res = await fetch(`${url}/health`, { headers, signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const health = await res.json();
+    const checkedAt = Date.now();
+
+    if (_audioHealthLogState !== true) {
+      console.log(`[LiveSocket] Audio server health reachable at ${url}`);
+      _audioHealthLogState = true;
+    }
+
+    return {
+      ...base,
+      configured: true,
+      reachable: true,
+      url,
+      consecutiveFailures: 0,
+      lastCheckAt: checkedAt,
+      health: {
+        ok:               health?.ok !== false,
+        uptimeSec:        typeof health?.uptimeSec === 'number' ? health.uptimeSec : null,
+        stations:         Array.isArray(health?.stations) ? health.stations : [],
+        totals:           health?.totals ?? null,
+        checkedAt,
+      },
+    };
+  } catch (err) {
+    const failures = (base.consecutiveFailures ?? 0) + 1;
+    if (_audioHealthLogState !== false) {
+      console.warn(`[LiveSocket] Audio server health check failed (${url}): ${err.message}`);
+      _audioHealthLogState = false;
+    }
+    return {
+      ...base,
+      configured: true,
+      reachable: false,
+      url,
+      consecutiveFailures: failures,
+    };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -176,6 +260,12 @@ async function _collect(manager) {
     .filter(b => b.guilds > 0)
     .sort((a, b) => b.listeners - a.listeners);
 
+  const audioMode = results[0]?.audioMode ?? null;
+  const shardAudioServer = results.find(r => r.audioServer)?.audioServer ?? null;
+  const audioServer = audioMode === 'remote' || shardAudioServer?.configured === true
+    ? await _collectAudioServerStatus(shardAudioServer)
+    : shardAudioServer;
+
   const stats = {
     totalServers:     results.reduce((a, b) => a + b.guilds,  0),
     totalUsers:       results.reduce((a, b) => a + b.users,   0),
@@ -189,12 +279,12 @@ async function _collect(manager) {
     totalListeners:   results.reduce((a, b) => a + (b.shardListeners ?? 0), 0),
     broadcasts,
     // Audio source aggregate — mode is process-wide (set once from env), so
-    // any shard's value represents all of them; audioServer reachability is
-    // per-process too, but surface the worst case across shards.
-    audioMode:             results[0]?.audioMode ?? null,
+    // any shard's value represents all of them. audioServer is refreshed by
+    // the manager's /health poll in _collectAudioServerStatus().
+    audioMode,
     audioActiveBroadcasts: results.reduce((a, b) => a + (b.audioActiveBroadcasts ?? 0), 0),
     audioTotalListeners:   results.reduce((a, b) => a + (b.audioTotalListeners ?? 0), 0),
-    audioServer:           results.find(r => r.audioServer)?.audioServer ?? null,
+    audioServer,
     shards: results.map((r, i) => ({
       id:     i,
       guilds: r.guilds,
