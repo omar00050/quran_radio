@@ -4,6 +4,10 @@ module.exports = {
     {
       name: "quran-audio",
       script: "audio-server.js",
+      // pm2 sets no cwd by default, which leaves dotenv resolving .env against
+      // whatever directory pm2 was invoked from. Pin it so both apps load the
+      // SAME .env and AUDIO_SERVER_TOKEN / AUDIO_BITRATE agree.
+      cwd: __dirname,
       exec_mode: "fork",
       instances: 1,
       watch: false,
@@ -24,6 +28,7 @@ module.exports = {
     {
       name: "quran",
       script: "shard.js",
+      cwd: __dirname,
       exec_mode: "fork",
       instances: 1,
       watch: false,

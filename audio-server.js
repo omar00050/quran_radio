@@ -2,7 +2,15 @@
 // shard. Run with `node audio-server.js`. Never run with the production bot
 // token; this process has nothing to do with Discord.
 require('module-alias/register');
-require('dotenv').config();
+
+// Load .env from the repo root explicitly, NOT relative to process.cwd().
+// dotenv's default resolves against the cwd, and pm2 does not set one unless
+// told to — so starting the server from anywhere else silently loaded zero
+// variables ("injecting env (0) from .env"), leaving AUDIO_SERVER_TOKEN unset
+// and AUDIO_BITRATE at its default while the bot used the real values. Every
+// request from the bot would then 401. ecosystem.config.js also pins `cwd`,
+// but this makes the script correct on its own.
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
 // index.js does this for the bot; the audio server has to do it for itself or
 // EmbeddedProvider falls back to bare 'ffmpeg' on PATH, which is precisely
