@@ -9,8 +9,9 @@ const Logger = require("@helpers/logger");
 const config = require("@root/config.json");
 const { recursiveReadDirSync } = require("@utils/class/utils");
 const { EventsLoader, CommandsLoader, ComponentsLoader, CustomEvents } = require("@src/handlers");
-const { db_default, db_mongo, db_mysql, db_sqlite } = require("@base/database");
+const { db_default, db_mongo, db_mysql, db_sqlite, db_postgersql } = require("@base/database");
 const UpdateChecker = require("@utils/class/updateChecker");
+const { createAudioSource } = require("@root/src/audio");
 const wait = require("node:timers/promises").setTimeout;
 
 
@@ -32,7 +33,9 @@ let defaultDjsOption = {
     Partials.Channel,
     Partials.User,
   ],
-  shards: "auto",
+  // Do NOT set shards:"auto" here — ShardingManager injects DISCORD_SHARD_ID/DISCORD_TOTAL_SHARDS
+  // env vars and Discord.js uses them automatically. Setting "auto" here causes every shard process
+  // to connect as ALL shards, so every interaction gets handled 8 times → error 40060.
 };
 
 class baseClient extends Client {
@@ -53,6 +56,7 @@ class baseClient extends Client {
     else if (db_option?.database_type == "MONGODB") this.db = db_mongo(db_option)
     else if (db_option?.database_type == "Sqlite") this.db = db_sqlite(db_option)
     else if (db_option?.database_type == "MySQL") this.db = db_mysql(db_option)
+    else if (db_option?.database_type == "Postgersql") this.db = db_postgersql(db_option)
     else throw new TypeError("No database type specified Invalid type")
 
     /** 
@@ -105,6 +109,21 @@ class baseClient extends Client {
     this.contextMenus = new Collection();
     this.events = new Collection();
     this.logger = Logger;
+
+    /**
+     * Shared audio source — never module scope (that is what made /refresh
+     * orphan ffmpeg children). Constructed once per client/shard process from
+     * env. With no AUDIO_* vars set this is identical to the old embedded
+     * AudioBroadcaster behaviour: ffmpeg in-process at 128k.
+     * @type {import("@root/src/audio/AudioSource")}
+     */
+    this.audio = createAudioSource({
+      mode: process.env.AUDIO_MODE || "embedded",
+      serverUrl: process.env.AUDIO_SERVER_URL || "http://127.0.0.1:3040",
+      token: process.env.AUDIO_SERVER_TOKEN,
+      bitrate: process.env.AUDIO_BITRATE || "128k",
+      logger: Logger,
+    });
     this.wait = wait;
     this.config = config;
 
@@ -112,15 +131,27 @@ class baseClient extends Client {
   };
 
 
-  async DBConnect() {
+  async DBConnect(retries = 8, baseDelay = 3000) {
     const supportedDbTypes = ["MONGODB", "MySQL"];
-    if (this.db && supportedDbTypes.includes(this.#db_option?.database_type)) {
-      await this.db.connect().then(() => {
-        this.logger.success(`DB Connected to ${this.#db_option?.database_type}`)
-      });
+    if (!this.db || !supportedDbTypes.includes(this.#db_option?.database_type)) {
+      return this.logger.log(`DB Type ${this.#db_option?.database_type}`);
+    }
 
-    } else this.logger.log(`DB Type ${this.#db_option?.database_type}`)
-
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        await this.db.connect();
+        this.logger.success(`DB Connected to ${this.#db_option?.database_type}`);
+        return;
+      } catch (err) {
+        const isLast = attempt === retries;
+        this.logger.error(`DB connection attempt ${attempt}/${retries} failed: ${err.message}`);
+        if (isLast) throw new Error(`Failed to connect to ${this.#db_option?.database_type} after ${retries} attempts`);
+        // exponential backoff: 3s, 6s, 9s, 12s...
+        const wait = baseDelay * attempt;
+        this.logger.log(`Retrying DB connection in ${wait / 1000}s...`);
+        await new Promise(r => setTimeout(r, wait));
+      }
+    }
   }
   Checker() {
     setTimeout(() => {

@@ -1,7 +1,5 @@
-const controlData = require("@utils/functions/ControlData");
-const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
 const { getBroadcastStats } = require("@utils/functions/joinAndPlayQuran");
-const { ButtonStyle, ButtonBuilder, ChannelType, EmbedBuilder, ButtonInteraction } = require("discord.js");
+const { EmbedBuilder, ButtonInteraction } = require("discord.js");
 
 /**
  * @type {import("@utils/types/baseComponent")}
@@ -10,101 +8,80 @@ module.exports = {
   name: "status_bot",
   enabled: true,
   /**
-   * @param {ButtonInteraction} interaction 
+   * @param {ButtonInteraction} interaction
    */
   async action(client, interaction, parts, lang) {
     try {
+      await interaction.deferReply({ ephemeral: true });
 
-      let UserCount = client.guilds.cache.reduce((a, b) => a + b.memberCount, 0)
-      const activeBroadcasts = getBroadcastStats();
-      const guildId = interaction.guild.id;
-      const shardId = client.ws.shards.find(s => s.manager.client.guilds.cache.has(guildId)).id;
-      const totalShards = client.ws.shards.size
-      let embed = new EmbedBuilder()
+      const totalShards    = client.shard?.count ?? 1;
+      const currentShardId = client.shard?.ids[0] ?? 0;
+
+      let totalGuilds, totalChannels, totalUsers, totalRadio, totalAzkar, totalAdhan;
+
+      if (client.shard) {
+        const results = await client.shard.broadcastEval((c) => ({
+          guilds:   c.guilds.cache.size,
+          channels: c.channels.cache.size,
+          users:    c.guilds.cache.reduce((a, b) => a + b.memberCount, 0),
+          radio:    c.Radio.size,
+          azkar:    c.Azkar.size,
+          adhan:    c.Adhan.size,
+        }));
+        totalGuilds   = results.reduce((a, b) => a + b.guilds,   0);
+        totalChannels = results.reduce((a, b) => a + b.channels, 0);
+        totalUsers    = results.reduce((a, b) => a + b.users,    0);
+        totalRadio    = results.reduce((a, b) => a + b.radio,    0);
+        totalAzkar    = results.reduce((a, b) => a + b.azkar,    0);
+        totalAdhan    = results.reduce((a, b) => a + b.adhan,    0);
+      } else {
+        totalGuilds   = client.guilds.cache.size;
+        totalChannels = client.channels.cache.size;
+        totalUsers    = client.guilds.cache.reduce((a, b) => a + b.memberCount, 0);
+        totalRadio    = client.Radio.size;
+        totalAzkar    = client.Azkar.size;
+        totalAdhan    = client.Adhan.size;
+      }
+
+      const activeBroadcasts = getBroadcastStats(client);
+      const audioServerLine = activeBroadcasts.audioServer?.configured
+        ? (activeBroadcasts.audioServer.reachable ? "✅ reachable" : "❌ unreachable")
+        : "n/a (embedded)";
+
+      const embed = new EmbedBuilder()
         .setTitle("**Bot Status** | **معلومات البوت**")
         .setColor("White")
         .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL(), url: client.config.DevXorLink })
         .setFooter({ text: client.config.Copyright.text, iconURL: client.config.Copyright.logo })
-        // .setThumbnail(client.user.displayAvatarURL({ size: 4096 }))
         .setImage("https://i.pinimg.com/originals/6c/76/32/6c76328c235c489736330d743515500c.jpg")
         .addFields([
-          {
-            name: "Bot Name | اسم البوت",
-            value: `**${client.user.username}**`,
-            inline: true
-          },
-          {
-            name: "Bot ID",
-            value: `\`${client.user.id}\``,
-            inline: true
-          },
-          {
-            name: "Server Count | عدد السيرفرات",
-            value: `\`${client.guilds.cache.size}\``,
-            // inline: true
-          },
-          {
-            name: "Channel Listening Count | عدد قنوات الاستماع",
-            value: `\`${client.Radio.size}\``,
-            // inline: true
-          },
-          {
-            name: "Channel Azkar Count | عدد قنوات الاذكار",
-            value: `\`${client.Azkar.size}\``,
-            // inline: true
-          },
-          {
-            name: "Channel Adhan Count | عدد قنوات الاذان",
-            value: `\`${client.Adhan.size}\``,
-            // inline: true
-          },
-          {
-            name: "Active Broadcasts Count | عدد البثوث النشطة",
-            value: `\`${activeBroadcasts.activeBroadcasts}\``,
-            // inline: true
-          },
-          {
-            name: "Channel Count | عدد القنوات",
-            value: `\`${client.channels.cache.size}\``,
-            // inline: true
-          },
-          {
-            name: "User Count | عدد المستخدمين",
-            value: `\`${UserCount}\``,
-            // inline: true
-          },
-          {
-            name: "Ping | سرعة استجابة البوت",
-            value: `\`${client.ws.ping}ms\` 🏓`,
-            inline: true
-          },
-          {
-            name: "shardId / shards | الشارد",
-            value: `\`${shardId}/${totalShards}\` 🏓`,
-            inline: true
-          },
-          {
-            name: "Version | الاصدار",
-            value: `\`${require('../../../package.json').version}\``,
-            inline: true
-          },
-          {
-            name: "Developer | المطور",
-            value: `**${require('../../../package.json').author.name}**`,
-            inline: false
-          },
-          {
-            name: "Developer github | حساب المطور",
-            value: `**${require('../../../package.json').author.url}**`,
-            inline: false
-          },
-        ])
+          { name: "Bot Name | اسم البوت",              value: `**${client.user.username}**`,               inline: true },
+          { name: "Bot ID",                             value: `\`${client.user.id}\``,                     inline: true },
+          { name: "Shard | الشارد",                    value: `\`${currentShardId} / ${totalShards}\``,    inline: true },
+          { name: "Server Count | عدد السيرفرات",      value: `\`${totalGuilds.toLocaleString()}\``,       inline: true },
+          { name: "Channel Count | عدد القنوات",       value: `\`${totalChannels.toLocaleString()}\``,     inline: true },
+          { name: "User Count | عدد المستخدمين",       value: `\`${totalUsers.toLocaleString()}\``,        inline: true },
+          { name: "Radio Channels | قنوات الراديو",    value: `\`${totalRadio}\``,                         inline: true },
+          { name: "Azkar Channels | قنوات الاذكار",    value: `\`${totalAzkar}\``,                         inline: true },
+          { name: "Adhan Channels | قنوات الاذان",     value: `\`${totalAdhan}\``,                         inline: true },
+          { name: "Active Broadcasts | البثوث النشطة", value: `\`${activeBroadcasts.activeBroadcasts}\``,  inline: true },
+          { name: "Audio Mode | نمط الصوت",             value: `\`${activeBroadcasts.mode ?? "embedded"}\``, inline: true },
+          { name: "Total Listeners | عدد المستمعين",   value: `\`${activeBroadcasts.totalListeners ?? 0}\``, inline: true },
+          { name: "Audio Server | سيرفر الصوت",        value: audioServerLine,                              inline: true },
+          { name: "Ping | سرعة الاستجابة",             value: `\`${client.ws.ping}ms\` 🏓`,               inline: true },
+          { name: "Version | الاصدار",                 value: `\`${require('../../../package.json').version}\``, inline: true },
+          { name: "Developer | المطور",                value: `**${require('../../../package.json').author.name}**`, inline: true },
+          { name: "Developer GitHub | حساب المطور",    value: `**${require('../../../package.json').author.url}**`, inline: true },
+        ]);
 
-      client.logger.log(`${client.user.username} Status Command has been used! | by user [${interaction.user.username}] | global name [${interaction.user.globalName}] |  in server ${interaction.guild.name} with ID [${interaction.guild.id}] `);
-      interaction.reply({ embeds: [embed], ephemeral: true })
+      client.logger.log(
+        `${client.user.username} Status Command has been used! | by user [${interaction.user.username}] | in server ${interaction.guild.name} [${interaction.guild.id}]`
+      );
 
+      interaction.editReply({ embeds: [embed] });
     } catch (err) {
-      console.log(err)
+      console.error("[status_bot]", err);
+      interaction.editReply({ content: "❌ Failed to fetch bot status." });
     }
   },
 };

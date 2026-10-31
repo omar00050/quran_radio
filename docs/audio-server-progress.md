@@ -5,7 +5,7 @@ If a session stops mid-way (usage limits), this file plus
 [`audio-source-contract.md`](./audio-source-contract.md) is enough to pick up.
 
 **Branch:** `feat/audio-server` (from `main`, `80df1e8`)
-**Last updated:** Phase 1 complete
+**Last updated:** Phase 3 complete
 
 ---
 
@@ -13,9 +13,9 @@ If a session stops mid-way (usage limits), this file plus
 
 | Phase | State |
 |---|---|
-| 1 — contract | ✅ done |
-| 2 — build (A: audio engine + server, B: bot integration, Haiku: config) | ⏳ not started |
-| 3 — verification + tests | ⬜ not started |
+| 1 — contract | ✅ done — commit `ab2acba` (docs only) |
+| 2 — build (A: audio engine + server, B: bot integration, Haiku: config) | ✅ done |
+| 3 — verification + tests | ✅ done — 12/12 harness checks pass |
 
 ---
 
@@ -28,16 +28,61 @@ If a session stops mid-way (usage limits), this file plus
 - **`docs/audio-source-contract.md`** written and committed — `AudioSource` surface, the
   `UpstreamProvider` A/B seam, audio-server HTTP API, `getStats()` shape, env table, file ownership.
 
-## In progress
+## Phase 3 — lead review findings (all fixed)
 
-- nothing yet
+Four real bugs, three of which broke the common path:
+
+1. **First guild on every station got no audio.** `createGuildStream` returned `null` unless
+   `oggHeader` was already captured, but `getOrCreate` resolves as soon as the upstream opens —
+   before any OGG pages arrive. Fixed: join the listener set pre-header and let `_onData`'s
+   capture branch replay the buffered prefix (which is what the old code did).
+2. **refCount leaked, so the idle sweep never fired.** A stream destroyed directly rather than via
+   `releaseGuildStream` (e.g. `onRadio_off_radio.js:51`) left `listeners` smaller but `refCount`
+   unchanged. Fixed with a single `_detachStream` used by both the release call and the stream's
+   own `close`/`error`, idempotent via a flag on the stream.
+3. **A station down at join time could never recover.** `_start`'s catch deleted the entry when
+   `refCount === 0` — always true on a first open — leaving no retry timer and no event to resume
+   from, while the guild held its voice connection. Fixed: keep the entry, start the retry policy,
+   and let the idle timer be the bounded give-up. `broadcast:recovered` now also fires when coming
+   back from `stalled` (not just `failed`), and `joinAndPlayQuran` additionally listens for
+   `broadcast:start` for the never-came-up-yet case.
+4. **`audio-server.js` never set `FFMPEG_PATH`**, so `EmbeddedProvider` fell back to bare `ffmpeg`
+   on PATH — exactly what depending on `ffmpeg-static` is supposed to avoid. Fixed, with an
+   explicit env override still winning.
+
+Also: `_watchForRecovery` bailed on `!client.Radio.get(guildId)`, which is the state during a fresh
+join (both callers `set` only after the promise resolves) — so restore-against-a-dead-station
+attached no watcher. Fixed with a `localConn` fallback.
+
+Removed the dead `STATEFUL_MODULES` guard from `/refresh` (it could never work — it read
+`.broadcasts` off the exported class; §C2) and documented why no exclusion list is needed now that
+the source lives on `client.audio`.
+
+## Known-dead code left in place
+
+`src/utils/functions/AudioBroadcaster.js` has no live `require` anywhere and is superseded by
+`src/audio/`. It was NOT deleted: it carries uncommitted staged changes that exist nowhere else, so
+removing it would destroy work. Delete it once those changes are committed or discarded.
+
+## Completed teammate work
+
+- **Teammate A (Sonnet)** — `src/audio/**` (engine, hub, OGG parser, EmbeddedProvider),
+  `audio-server.js`, `src/audio-server/**`. Carries batch-1 (I4, I2, abandon-ends-listeners) plus
+  I3 watchdog, I5 retry policy, I9 page validation, M5 and m2/m4.
+- **Teammate B (Sonnet)** — `src/audio/remote/RemoteProvider.js`,
+  `src/utils/functions/joinAndPlayQuran.js`, `src/base/baseClient.js` (AUDIO_MODE switch),
+  `src/server/liveSocket.js`, `src/ComponentsAction/info/status_bot.js`.
+- **Haiku subagent** — `.env.example`, `ecosystem.config.js` (two pm2 apps),
+  `scripts/count-ffmpeg.{sh,ps1}`.
+
+Both teammates were told to leave `src/utils/functions/AudioBroadcaster.js` untouched so the tree
+never broke mid-build. See "Known-dead code left in place" above for why it still exists.
 
 ## Next
 
-1. Spawn teammate A (Sonnet) — `src/audio/**`, `audio-server.js`, `src/audio-server/**`.
-2. Spawn teammate B (Sonnet) — `src/audio/remote/`, `joinAndPlayQuran.js`, AUDIO_MODE switch, stats.
-3. Spawn Haiku subagent — `.env.example`, `ecosystem.config.js`, `scripts/count-ffmpeg.*`.
-4. Phase 3: review both diffs, add `tests/` harness, commit.
+- Delete `AudioBroadcaster.js` after the staged changes to it are resolved.
+- Optional follow-ups deliberately NOT done (still open in `AUDIO_REPORT.md`): §C5 Idle-handler
+  emptiness check, §C6 `enabled` ignored on restore, §M1 64 KB mid-page splice, §I10 bitrate.
 
 ## Open problems / decisions taken
 
@@ -53,11 +98,19 @@ If a session stops mid-way (usage limits), this file plus
 - **Not fixed here, by instruction:** §C5 (Idle-handler emptiness check), §C6 (`enabled` ignored on
   restore), §M1 (64 KB mid-page splice). All three remain live bugs; see `AUDIO_REPORT.md`.
 
-## Verification checklist (Phase 3)
+## Verification (Phase 3) — `node tests/audio-server.test.js`
 
-- [ ] late joiner gets a valid OGG stream (header replayed)
-- [ ] N concurrent requests for one station → exactly **one** ffmpeg
-- [ ] zero ffmpeg children remain after `SIGTERM`
-- [ ] `npm start` with no new env vars behaves exactly as before (embedded, 128k)
-- [ ] remote mode spawns no ffmpeg in the bot process
-- [ ] audio server down → voice connections held, playback resumes when it returns
+Run against a real station, no bot and no token involved. 12/12 pass:
+
+- [x] late joiner (+6s) gets a valid OGG/Opus stream, header replayed
+- [x] 6 concurrent consumers for one station → exactly **one** ffmpeg (`health.totals.ffmpeg == 1`)
+- [x] late joiner reuses that same pid — no second spawn
+- [x] idle sweep stops the station after the last listener leaves, ffmpeg pid dies
+- [x] zero ffmpeg children survive `SIGTERM`
+- [x] unauthenticated request → 401, non-allowlisted url → 403
+- [x] `createAudioSource({mode:'embedded'})` with no env vars → embedded provider, 128k,
+      `audioServer.reachable === null`
+- [x] remote mode never pulls `ffmpeg-static` into `require.cache`
+
+Not covered by the harness (needs a live bot): audio server down → voice connections held and
+playback resumes. Reviewed by reading, not executed.
