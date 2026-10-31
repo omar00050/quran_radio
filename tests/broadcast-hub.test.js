@@ -203,6 +203,47 @@ async function main() {
   await hub.destroy();
   record('destroy() leaves no broadcasts behind', hub.getStats().broadcasts.length === 0);
 
+  // ── a long outage must not strand a waiting consumer ───────────────────
+  // A drop ends every listener, so refCount is 0 and the idle sweep is free to
+  // delete the entry and cancel its retries — leaving a guild subscribed to
+  // broadcast:recovered that can never fire. markWanted is what prevents that.
+  const deadProvider = { kind: 'remote', async open() { throw new Error('ECONNREFUSED'); } };
+  const mkDeadHub = () => new BroadcastHub(deadProvider, {
+    idleMs: 600, retryFloorMs: 80, retryCapMs: 150, failedRetryMs: 200, maxAttempts: 2,
+    logger: { error() {}, warn() {}, log() {} },
+  });
+  const DEAD = 'fake://down';
+
+  const unwantedHub = mkDeadHub();
+  await unwantedHub.getOrCreate(DEAD).catch(() => {});
+  await sleep(1400);                                     // well past idleMs
+  record('an unwanted dead station IS swept (no pointless retrying)',
+    !unwantedHub.broadcasts.has(DEAD));
+  await unwantedHub.destroy();
+
+  const wantedHub = mkDeadHub();
+  wantedHub.markWanted(DEAD);
+  await sleep(1400);                                     // same wait
+  record('a WANTED dead station survives the idle sweep and keeps retrying',
+    wantedHub.broadcasts.has(DEAD), `state=${wantedHub.getState(DEAD)}`);
+
+  // and it must recover once the station returns
+  let deadOpens = 0;
+  deadProvider.open = async () => {
+    deadOpens++;
+    const stream = new PassThrough();
+    return { stream, pid: 7777, destroy: () => stream.destroy() };
+  };
+  const cameBack = await Promise.race([
+    new Promise((r) => wantedHub.once('broadcast:recovered', () => r(true))),
+    sleep(4000).then(() => false),
+  ]);
+  record('a wanted station recovers by itself when the server returns', cameBack,
+    `opens=${deadOpens}`);
+
+  wantedHub.unmarkWanted(DEAD);
+  await wantedHub.destroy();
+
   const failedCount = results.filter((r) => !r.passed).length;
   console.log(`\n${results.length - failedCount}/${results.length} passed`);
   if (failedCount) process.exitCode = 1;

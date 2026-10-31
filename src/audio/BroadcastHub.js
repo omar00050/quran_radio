@@ -40,6 +40,17 @@ class BroadcastHub extends EventEmitter {
     this.broadcasts = new Map();
     /** @type {Map<string, Promise<object>>} in-flight `_start` calls (I4 dedup) */
     this.inFlight = new Map();
+    /**
+     * @type {Map<string, number>} url -> number of consumers waiting for this
+     * station to come back even though they hold no live stream right now.
+     *
+     * Without this, an outage longer than `idleMs` is unrecoverable: a drop
+     * ends every listener, so refCount is 0, so the idle sweep deletes the
+     * entry and cancels its retry timers — while the guilds that were playing
+     * sit subscribed to broadcast:recovered, which can then never fire. They
+     * keep their voice connections and stay silent forever.
+     */
+    this.wanted = new Map();
   }
 
   // ─── Public API ────────────────────────────────────────────────────────
@@ -144,6 +155,36 @@ class BroadcastHub extends EventEmitter {
     this._emit('broadcast:stop', { url });
   }
 
+  /**
+   * Declare that a consumer is waiting for `url` even though it has no stream.
+   * Keeps the idle sweep off the entry and makes sure retries are running, so
+   * the station can still announce itself when it recovers.
+   */
+  markWanted(url) {
+    this.wanted.set(url, (this.wanted.get(url) ?? 0) + 1);
+    const entry = this.broadcasts.get(url);
+    if (entry) {
+      this._clearIdleTimer(entry);
+    } else {
+      // Already swept (or never started): re-arm the retry chain. The rejection
+      // is expected while the station is down; the retry policy takes over.
+      this.getOrCreate(url).catch(() => {});
+    }
+  }
+
+  unmarkWanted(url) {
+    const next = (this.wanted.get(url) ?? 0) - 1;
+    if (next > 0) { this.wanted.set(url, next); return; }
+    this.wanted.delete(url);
+    // Last waiter gone — if nothing is listening either, let it go idle.
+    const entry = this.broadcasts.get(url);
+    if (entry && entry.refCount === 0) this._scheduleIdle(entry);
+  }
+
+  _isWanted(url) {
+    return (this.wanted.get(url) ?? 0) > 0;
+  }
+
   getState(url) {
     const entry = this.broadcasts.get(url);
     return entry ? entry.state : null;
@@ -176,6 +217,7 @@ class BroadcastHub extends EventEmitter {
   async destroy() {
     for (const url of Array.from(this.broadcasts.keys())) this.cleanup(url);
     this.inFlight.clear();
+    this.wanted.clear();
     if (typeof this.provider.destroy === 'function') {
       await this.provider.destroy();
     }
@@ -384,6 +426,9 @@ class BroadcastHub extends EventEmitter {
 
   _scheduleIdle(entry) {
     this._clearIdleTimer(entry);
+    // A station someone is waiting for must keep retrying, however long the
+    // outage lasts. Rate stays bounded by failedRetryMs, once per station.
+    if (this._isWanted(entry.url)) return;
     entry.idleTimer = setTimeout(() => {
       if (entry.refCount === 0) this.cleanup(entry.url);
     }, this.idleMs);

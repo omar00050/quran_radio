@@ -74,6 +74,18 @@ class AudioSource extends EventEmitter {
     return this.hub.cleanup(url);
   }
 
+  /**
+   * Declare/withdraw interest in a station while holding no stream for it, so
+   * an outage longer than `idleMs` cannot strand a waiting consumer.
+   */
+  markWanted(url) {
+    return this.hub.markWanted(url);
+  }
+
+  unmarkWanted(url) {
+    return this.hub.unmarkWanted(url);
+  }
+
   /** Current lifecycle state for `url` ('starting'|'active'|'stalled'|'failed'|'stopped'|null). */
   getState(url) {
     return this.hub.getState(url);

@@ -48,6 +48,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       if (!conn || conn._audioRecoveryHandler) return;
 
       const detach = () => {
+        client.audio.unmarkWanted(forUrl);
         client.audio.off('broadcast:recovered', onRecovered);
         client.audio.off('broadcast:start', onRecovered);
         client.audio.off('broadcast:failed', onFailed);
@@ -76,6 +77,11 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       const onFailed = (detail) => {
         if (detail?.url !== forUrl) return;
       };
+
+      // Tell the hub this guild is waiting even though it holds no stream, so
+      // an outage longer than idleMs can't let the idle sweep delete the
+      // station and cancel the retries we're waiting on.
+      client.audio.markWanted(forUrl);
 
       client.audio.on('broadcast:recovered', onRecovered);
       // broadcast:start matters for the case where the station was never up in
