@@ -104,7 +104,7 @@ async function cleanOldPrayerCache(client) {
       // Keys are: lat_lng_method_year_month — parse year/month from the end
       const parts = key.split("_");
       const month = parseInt(parts[parts.length - 1]);
-      const year  = parseInt(parts[parts.length - 2]);
+      const year = parseInt(parts[parts.length - 2]);
       if (!isNaN(year) && !isNaN(month)) {
         const entryDate = new Date(year, month - 1, 1).getTime();
         if (entryDate < cutoff) {
@@ -127,6 +127,7 @@ async function findNextPrayer(client, data) {
   const year = now.year();
   const month = now.month() + 1;
   const day = now.date();
+  console.log("Next prayer check:", now, year, month, day);
 
   const calendar = await getCalendar(client, data, year, month);
   const todayTimings = calendar[day - 1]?.timings;

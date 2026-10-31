@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
-
+const config = require("@root/config.json");
 
 /**
  * 
@@ -32,15 +32,20 @@ function help(interaction) {
     .setStyle("Link")
     .setLabel("Invite Me")
   let btnSupport = new ButtonBuilder()
-    .setURL("https://discord.gg/devxor")
+    .setURL(config.DevXorLink)
     .setStyle("Link")
     .setLabel("Support Server")
   let btnStatus = new ButtonBuilder()
     .setCustomId("status_bot")
     .setStyle("Primary")
     .setLabel("Bot Status")
+  let btnShards = new ButtonBuilder()
+    .setCustomId("shard_status")
+    .setStyle("Secondary")
+    .setLabel("Shard Status")
+    .setEmoji("📡")
 
-  let row = new ActionRowBuilder().addComponents(btnInvite, btnSupport, btnStatus)
+  let row = new ActionRowBuilder().addComponents(btnInvite, btnSupport, btnStatus, btnShards)
 
   return { embeds: [em], components: [row] }
 }

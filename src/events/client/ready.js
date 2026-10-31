@@ -4,6 +4,7 @@ const SendAdhan = require('@utils/functions/sendPrayer');
 const { cleanOldPrayerCache } = require('@utils/functions/sendPrayer');
 const ControlData = require('@utils/functions/ControlData');
 const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
+const { getBroadcastStats } = joinAndPlayQuran;
 const chalk = require('chalk');
 const { ActivityType, Guild, } = require('discord.js');
 const gr = chalk.hex('#00D100');
@@ -11,10 +12,15 @@ const un = chalk.underline;
 
 module.exports = {
   name: 'ready',
+  once: true, // must only run once — re-running on reconnect causes duplicate DB connections and stacked timers
   /**
-   * @param {import("@base/baseClient")} client 
+   * @param {import("@base/baseClient")} client
    */
   async execute(client) {
+    
+
+    // Expose broadcaster stats for broadcastEval (used by liveSocket)
+    client.getBroadcasterStats = getBroadcastStats;
 
     await client.DBConnect();
     await client.registerInteractions();
@@ -31,17 +37,54 @@ module.exports = {
     client.user.setStatus("idle")
     client.user.setActivity({ name: `Loading....`, type: ActivityType.Playing })
     setTimeout(() => client.user.setStatus("online"), 40000);
-    setInterval(() => {
-      let ServersStatus = client.Radio.size + client.Azkar.size;
-      client.user.setActivity({ name: `in ${ServersStatus}/${client.channels.cache.size} Channels`, type: ActivityType.Listening })
+    setInterval(async () => {
+            let totalGuilds, totalChannels, totalUsers, totalRadio, totalAzkar, totalAdhan;
+
+      if (client.shard) {
+        const results = await client.shard.broadcastEval((c) => ({
+          guilds:   c.guilds.cache.size,
+          channels: c.channels.cache.size,
+          users:    c.guilds.cache.reduce((a, b) => a + b.memberCount, 0),
+          radio:    c.Radio.size,
+          azkar:    c.Azkar.size,
+          adhan:    c.Adhan.size,
+        }));
+        totalGuilds   = results.reduce((a, b) => a + b.guilds,   0);
+        totalChannels = results.reduce((a, b) => a + b.channels, 0);
+        totalUsers    = results.reduce((a, b) => a + b.users,    0);
+        totalRadio    = results.reduce((a, b) => a + b.radio,    0);
+        totalAzkar    = results.reduce((a, b) => a + b.azkar,    0);
+        totalAdhan    = results.reduce((a, b) => a + b.adhan,    0);
+      } else {
+        totalGuilds   = client.guilds.cache.size;
+        totalChannels = client.channels.cache.size;
+        totalUsers    = client.guilds.cache.reduce((a, b) => a + b.memberCount, 0);
+        totalRadio    = client.Radio.size;
+        totalAzkar    = client.Azkar.size;
+        totalAdhan    = client.Adhan.size;
+      }
+      
+      let ServersStatus = totalRadio + totalAzkar + totalAdhan;
+      client.user.setActivity({ name: `in ${ServersStatus}/${totalChannels} Channels`, type: ActivityType.Listening })
     }, 1 * 1000 * 60);
 
-    // let RadioChannels = await db.values() || [];
-    let RadioChannels = Object.values(await db.endsWith("_radioChannel")) || [];
-    let AzkarChannels = Object.values(await db.endsWith("_azkarChannel")) || [];
-    let PrayerChannels = Object.values(await db.endsWith("_prayerChannel")) || [];
+    // Filter channels to only those belonging to this shard.
+    // Every shard runs ready.js, so without filtering all shards would race
+    // to process every guild — causing duplicate connections and false deletions.
+    const shardId = client.shard?.ids[0] ?? 0;
+    const totalShards = client.shard?.count ?? 1;
+    const belongsToShard = (guildId) =>
+      Number(BigInt(guildId) >> 22n) % totalShards === shardId;
 
+    // Delay channel restoration by 2 minutes to allow the database connection
+    // and Discord gateway to fully stabilize before doing heavy work.
     setTimeout(async () => {
+
+    // let RadioChannels = await db.values() || [];
+    let RadioChannels = Object.values(await db.endsWith("_radioChannel")).filter(d => belongsToShard(d.guildId)) || [];
+    let AzkarChannels = Object.values(await db.endsWith("_azkarChannel")).filter(d => belongsToShard(d.guildId)) || [];
+    let PrayerChannels = Object.values(await db.endsWith("_prayerChannel")).filter(d => belongsToShard(d.guildId)) || [];
+
       const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
       // if (process.env.testMode) return console.log("stop run radio is test mode".red);
       let noCh = []
@@ -109,7 +152,7 @@ module.exports = {
 
             client.guilds.fetch(data.guildId).then(async guild => {
 
-              if (data.enabled) {
+              if (data) {
 
                 if (client.Radio.has(data.guildId)) return
                 await sleep(5000 * key);
@@ -129,7 +172,7 @@ module.exports = {
 
                   client.Radio.set(data.guildId, conn)
                   setTimeout(async () => {
-                    // await db.set(`${data.guildId}_radioChannel..enabled`, true)
+                    await db.set(`${data.guildId}_radioChannel..enabled`, true)
                   }, 100 * i);
 
                   // if (guild.id !== "1171512753802969098") continue
@@ -213,7 +256,7 @@ module.exports = {
 
 
 
-    }, 1000);
+    }, 2 * 60 * 1000); // 2 minutes — gives DB and gateway time to stabilize
 
 
   },

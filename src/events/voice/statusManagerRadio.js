@@ -1,6 +1,7 @@
 const VoiceUtils = require("@utils/class/voice");
 const joinAndPlayQuran = require("@utils/functions/joinAndPlayQuran");
 const BEV = require("@utils/types/baseEvents");
+const { AudioPlayerStatus } = require("@discordjs/voice");
 
 /** @type {BEV.BaseEvent<"voiceStateUpdate">} */
 module.exports = {
@@ -21,7 +22,7 @@ module.exports = {
       player.stop(true);
       console.log(`Stop radio on empty voice channel`.red + ` in server [${voiceChannel.guild.name}]`.blue + ` Channel [${voiceChannel.name}] `.yellow + `Member : ${newState.member.user.username} `.blue + `Name: [${newState.member.user.globalName}]}]`);
     } else {
-      if (player.state.status == "playing") return
+      if (player.state.status !== AudioPlayerStatus.Idle) return
       console.log(`Run radio voice channel not empty `.green + ` in server [${voiceChannel.guild.name}]`.blue + ` Channel [${voiceChannel.name}] `.yellow + `Member : ${newState.member.user.username} `.blue + `Name: [${oldState.member.user.globalName}]}]`);
       await joinAndPlayQuran(client, voiceChannel.id, guild, radioUrl, true)
     }

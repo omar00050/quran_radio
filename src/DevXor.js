@@ -32,7 +32,7 @@ module.exports = DevXor;
 
 
 /**
- * @typedef {"MONGODB"|"Sqlite"|"JSON"|"MySQL"} DataBaseType
+ * @typedef {"MONGODB"|"Sqlite"|"JSON"|"MySQL"|"Postgersql"} DataBaseType
  */
 
 /**
@@ -41,6 +41,7 @@ module.exports = DevXor;
  * @property {import("good.db/dist/Types").goodDBOptions} [options]
  * @property {import("good.db/dist/Types").MongoDBDriverOptions} [MongoDB]
  * @property {import("mysql2").PoolOptions} [MySQL]
+ * @property {import("pg").PoolConfig} [Postgersql]
  * 
  */
 

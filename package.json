@@ -29,7 +29,7 @@
     "discord.js": "^14.25.1",
     "dotenv": "^17.3.1",
     "ffmpeg-static": "^5.2.0",
-    "good.db": "^2.4.6",
+    "good.db": "^2.5.0",
     "libsodium-wrappers": "^0.8.2",
     "module-alias": "^2.2.3",
     "moment": "^2.30.1",
@@ -38,7 +38,8 @@
     "muwaqqit": "^1.0.5",
     "node-fetch": "^3.3.2",
     "pino": "^9.1.0",
-    "pino-pretty": "^11.0.0"
+    "pino-pretty": "^11.0.0",
+    "socket.io": "^4.8.3"
   },
   "_moduleAliases": {
     "@root": ".",
