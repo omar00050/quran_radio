@@ -84,6 +84,33 @@ never broke mid-build. See "Known-dead code left in place" above for why it stil
 - Optional follow-ups deliberately NOT done (still open in `AUDIO_REPORT.md`): §C5 Idle-handler
   emptiness check, §C6 `enabled` ignored on restore, §M1 64 KB mid-page splice, §I10 bitrate.
 
+## Rollout plan: embedded -> remote
+
+Partial rollout is driven by `AUDIO_REMOTE_SHARDS` (comma-separated shard ids; empty = all shards).
+Shard ids come from `SHARDS`, which is what discord.js's ShardingManager injects per child process.
+
+1. **Deploy with `AUDIO_MODE` unset.** Everything stays embedded and behaviourally identical, so the
+   engine rewrite gets exercised in production before the topology changes. Record the baseline
+   ffmpeg count (`scripts/count-ffmpeg.sh` / `.ps1`) on a shard host.
+2. **Bring up the audio server alone**: `pm2 start ecosystem.config.js --only quran-audio`. Check
+   `GET /health` — stations appear only once something requests them, so an empty `stations` array
+   here is correct. Nothing consumes it yet.
+3. **One shard.** Set `AUDIO_MODE=remote` and `AUDIO_REMOTE_SHARDS=0`, restart the bot. Only shard 0
+   goes remote; every other shard logs `Audio mode: embedded — shard N not in AUDIO_REMOTE_SHARDS=0`
+   and keeps its own ffmpeg. Verify: shard 0's guilds still have audio, `/health` shows listeners,
+   and the station count on the audio server matches what shard 0 was playing.
+4. **Widen gradually**: `AUDIO_REMOTE_SHARDS=0,1,2`, restart, re-check. The embedded shards are the
+   control group — if remote shards misbehave, narrow the list and restart.
+5. **All shards**: clear `AUDIO_REMOTE_SHARDS` (keep `AUDIO_MODE=remote`). Now expect ~35 ffmpeg on
+   the audio-server host and **0** in every shard process.
+6. **Keep `AUDIO_STATION_IDLE_MS` long** (default 600000) so a bot restart or shard respawn doesn't
+   respawn ffmpeg — stations stay warm across it.
+
+Rollback at any step is one env var plus a restart, which is why step 1 matters: the embedded path
+stays fully functional the whole way. A shard started while the audio server is down holds its
+voice connections and resumes on `broadcast:start`/`broadcast:recovered` rather than failing, so
+ordering between steps 2 and 3 is forgiving.
+
 ## Open problems / decisions taken
 
 - **Batch-1 fixes are not on a branch** — they live inside teammate A's work. If a separate

@@ -12,6 +12,7 @@ const { EventsLoader, CommandsLoader, ComponentsLoader, CustomEvents } = require
 const { db_default, db_mongo, db_mysql, db_sqlite, db_postgersql } = require("@base/database");
 const UpdateChecker = require("@utils/class/updateChecker");
 const { createAudioSource } = require("@root/src/audio");
+const { resolveAudioMode } = require("@root/src/audio/resolveMode");
 const wait = require("node:timers/promises").setTimeout;
 
 
@@ -115,10 +116,17 @@ class baseClient extends Client {
      * orphan ffmpeg children). Constructed once per client/shard process from
      * env. With no AUDIO_* vars set this is identical to the old embedded
      * AudioBroadcaster behaviour: ffmpeg in-process at 128k.
+     *
+     * The mode is resolved PER SHARD: with AUDIO_MODE=remote plus
+     * AUDIO_REMOTE_SHARDS=0,3 only shards 0 and 3 use the audio server and
+     * every other shard stays embedded, so a partial rollout is possible.
      * @type {import("@root/src/audio/AudioSource")}
      */
+    const audioMode = resolveAudioMode(process.env);
+    Logger.log(`Audio mode: ${audioMode.mode} — ${audioMode.reason}`);
+
     this.audio = createAudioSource({
-      mode: process.env.AUDIO_MODE || "embedded",
+      mode: audioMode.mode,
       serverUrl: process.env.AUDIO_SERVER_URL || "http://127.0.0.1:3040",
       token: process.env.AUDIO_SERVER_TOKEN,
       bitrate: process.env.AUDIO_BITRATE || "128k",
