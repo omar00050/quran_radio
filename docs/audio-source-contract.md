@@ -55,11 +55,13 @@ two teammates never block on each other.
 | Method | Returns | Contract |
 |---|---|---|
 | `async getOrCreate(url)` | `Promise<Broadcast>` | Idempotent. **Concurrent calls for the same url share one in-flight promise** (§C7/I4). Rejects if the upstream cannot be opened; never retries inside this call — retry is the hub's background job. |
-| `createGuildStream(url)` | `Readable \| null` | A new `PassThrough` with the cached OGG header written **before** it joins the listener set. `null` if the broadcast is not currently serving data. Increments refcount. |
-| `releaseGuildStream(url, stream)` | `void` | Removes + destroys the listener, decrements refcount. On reaching 0, schedules cleanup after `idleMs` (cancelled if a listener returns) (§C3/I2). Safe to call twice, and safe with a url whose entry was replaced (§M5). |
+| `createGuildStream(url)` | `Readable \| null` | A new `PassThrough` that joins the listener set and increments the refcount. If a header is already cached it is written **first**; if it is not, the stream still joins and the header-capture branch replays the whole buffered prefix to it. Returns `null` only when there is no entry, or its state is `failed`/`stopped` — **not** merely because the header hasn't arrived yet, since `getOrCreate` resolves when the upstream opens and that is always before the first OGG pages. |
+| `releaseGuildStream(url, stream)` | `void` | Removes + destroys the listener, decrements refcount. On reaching 0, schedules cleanup after `idleMs` (cancelled if a listener returns) (§C3/I2). Safe to call twice, and safe with a url whose entry was replaced (§M5). A stream that is destroyed **directly** by a caller decrements the refcount too, via its own `close`/`error` — both routes go through one idempotent detach, so the refcount can't drift above the real listener count and strand the idle sweep. |
 | `cleanup(url)` | `void` | Immediate teardown: end+destroy listeners, kill upstream, drop the map entry. |
 | `getStats()` | `StatsPayload` | §5. Must include entries that are **failed or inactive** — the old one hid them (§m2). |
 | `async destroy()` | `Promise<void>` | Cleanup every station. Must leave **zero** ffmpeg children. |
+| `getState(url)` | `string\|null` | `'starting'\|'active'\|'stalled'\|'failed'\|'stopped'`, or `null` if unknown. Lets the audio server answer `503` for a failed station without calling `getOrCreate`. |
+| `setAudioServerStatus(partial)` | `void` | Merges into the `audioServer` block of `getStats()`. Remote-mode wiring only. |
 | `get mode()` | `'embedded'\|'remote'` | |
 
 ### Events (`AudioSource extends EventEmitter`)
@@ -72,7 +74,7 @@ Payload is always `{ url, ...detail }`. Emit-only; nothing may throw into the hu
 | `broadcast:stall` | watchdog fired (`lastDataAt` older than `stallMs`) |
 | `broadcast:reconnect` | retry scheduled — `{ attempt, delayMs }` |
 | `broadcast:failed` | attempts exhausted → `failed` state; listeners have been ended |
-| `broadcast:recovered` | came back from `failed` |
+| `broadcast:recovered` | reopened after `stalled` **or** `failed` — i.e. any successful reconnect, not just one following full exhaustion. A consumer waiting on a station needs the same resume signal in both cases. |
 | `broadcast:stop` | cleaned up (idle sweep or explicit) |
 
 ### States
@@ -80,6 +82,15 @@ Payload is always `{ url, ...detail }`. Emit-only; nothing may throw into the hu
 `starting → active → (stalled → active) → failed → active`, and any → `stopped`.
 A `failed` broadcast keeps retrying on a long periodic timer (`failedRetryMs`, default 60s) so a
 station that comes back recovers without operator action (§C4/I5).
+
+A **first** open that fails keeps its entry and starts the retry policy even though refcount is
+still 0 — the guild that asked is waiting with its voice connection held, and dropping the entry
+would leave no retry timer and no event to resume from. The idle timer is the bounded give-up: if
+no listener attaches within `idleMs`, `cleanup()` ends the retries. For the same reason
+`_reconnect` has no `refCount === 0 → cleanup` short-circuit.
+
+A station that was never up emits `broadcast:start` (not `recovered`) when it first serves data, so
+anything waiting on a cold station must listen for both.
 
 ### Error behaviour — non-negotiable
 
@@ -189,6 +200,7 @@ read the old shape. `audioServer.reachable` is `null` in embedded mode.
 | Var | Default | Mode | Meaning |
 |---|---|---|---|
 | `AUDIO_MODE` | `embedded` | both | `embedded` \| `remote` |
+| `AUDIO_REMOTE_SHARDS` | *(empty)* | remote | Comma-separated shard ids that go remote; empty = all. Ignored in embedded mode and on unsharded runs. Ids come from `SHARDS`. |
 | `AUDIO_SERVER_URL` | `http://127.0.0.1:3040` | remote | where the bot pulls from |
 | `AUDIO_SERVER_PORT` | `3040` | server | listen port, 127.0.0.1 only |
 | `AUDIO_SERVER_TOKEN` | `change_me` | both | bearer token, required on every request |
