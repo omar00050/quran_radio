@@ -37,7 +37,14 @@ class EmbeddedProvider {
       '-f', 'ogg',
       '-loglevel', 'error',
       'pipe:1',
-    ]);
+    ], {
+      // Without this, every ffmpeg opens a visible console window on Windows.
+      // It went unnoticed while the broadcaster only ran inside shards, because
+      // shard.js patches child_process.fork with windowsHide and the children
+      // inherited that hidden console. audio-server.js is launched by pm2
+      // directly, so nothing hides its ffmpeg processes. No-op on Linux/macOS.
+      windowsHide: true,
+    });
 
     response.data.pipe(ffmpeg.stdin);
     ffmpeg.stdin.on('error', () => {}); // ignore broken pipe when we tear down first

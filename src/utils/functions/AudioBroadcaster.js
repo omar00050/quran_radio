@@ -101,7 +101,10 @@ class AudioBroadcaster {
       '-f', 'ogg',
       '-loglevel', 'error',
       'pipe:1',
-    ]);
+    ], {
+      // Keep ffmpeg from opening a console window on Windows. No-op elsewhere.
+      windowsHide: true,
+    });
 
     /** @type {BroadcastEntry} */
     const entry = {
