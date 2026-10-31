@@ -2,6 +2,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerSta
 const ControlData = require('./ControlData');
 const VoiceUtils = require('../class/voice');
 const RadioChannels = require("@root/src/utils/helpers/RadioChannels");
+const { startWaiting, stopWaiting, waitingUrl } = require("@root/src/audio/waiters");
 
 /**
  * Joins a voice channel and plays the Quran audio.
@@ -44,16 +45,14 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
     // connection so it can be detached on disconnect or when a fresh
     // playBroadcastAudio supersedes it.
     const _watchForRecovery = (forUrl) => {
-      const conn = client.Radio.get(guildId) || localConn;
-      if (!conn || conn._audioRecoveryHandler) return;
+      // Already waiting on this exact station — don't mark `wanted` twice.
+      if (waitingUrl(client, guildId) === forUrl) return;
 
       const detach = () => {
         client.audio.unmarkWanted(forUrl);
         client.audio.off('broadcast:recovered', onRecovered);
         client.audio.off('broadcast:start', onRecovered);
         client.audio.off('broadcast:failed', onFailed);
-        const c = client.Radio.get(guildId) || localConn;
-        if (c && c._audioRecoveryHandler === detach) c._audioRecoveryHandler = null;
       };
 
       const onRecovered = async (detail) => {
@@ -90,7 +89,12 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       // itself with 'start' once it finally serves data.
       client.audio.on('broadcast:start', onRecovered);
       client.audio.on('broadcast:failed', onFailed);
-      conn._audioRecoveryHandler = detach;
+
+      // Keyed by guild, NOT stored on the VoiceConnection: joinVoiceChannel
+      // reuses the same connection object, the OFF button destroys it, and
+      // guildDelete never sees it — any of which previously orphaned the wait
+      // and left the station permanently exempt from the idle sweep.
+      startWaiting(client, guildId, forUrl, detach);
     };
 
     // ── Helper: start/restart playback using the shared audio source ─────────
@@ -105,7 +109,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       const conn = client.Radio.get(guildId);
       // A fresh attempt supersedes any pending recovery watcher for a
       // previous failure/url.
-      conn?._audioRecoveryHandler?.();
+      stopWaiting(client, guildId);
 
       try {
         // Snapshot the old stream so we can release it AFTER the new one is playing.
@@ -176,8 +180,9 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
     connection.broadcastUrl = url;
     connection.guildId     = guildId;
     connection.guildStream = null; // filled by playBroadcastAudio
-    connection._audioRecoveryHandler = null;
-    localConn = connection; // so _watchForRecovery can attach before client.Radio.set
+    localConn = connection; // so onRecovered can find the player before client.Radio.set
+    // A fresh join supersedes any wait this guild had from a previous attempt.
+    stopWaiting(client, guildId);
 
     if (!VoiceUtils.isVoiceChannelEmpty(channel)) {
       await playBroadcastAudio(player);
@@ -210,7 +215,7 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
 
       // Use the URL stored on the connection, not the closed-over `url`
       const goneConn = client.Radio.get(gId);
-      goneConn?._audioRecoveryHandler?.();
+      stopWaiting(client, gId);
       _releaseStream(client, goneConn);
       goneConn?.player?.stop(true);
       client.Radio.delete(gId);
@@ -284,4 +289,7 @@ function cleanupBroadcast(client, url) {
 }
 
 module.exports.getBroadcastStats = getBroadcastStats;
+// Re-exported so teardown paths that have no connection object in hand
+// (the OFF button, guildDelete) can release a guild's recovery wait.
+module.exports.stopWaiting = stopWaiting;
 module.exports.cleanupBroadcast  = cleanupBroadcast;
