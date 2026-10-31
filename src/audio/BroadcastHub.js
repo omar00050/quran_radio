@@ -244,8 +244,13 @@ class BroadcastHub extends EventEmitter {
     entry.lastDataAt = Date.now();
     entry.headerDone = false;
     entry.headerBuf = Buffer.alloc(0);
-    // entry.oggHeader deliberately NOT cleared here — existing listeners
-    // already have it; new joiners wait for the fresh capture below.
+    // The cached header MUST be dropped: it belongs to the previous logical
+    // OGG stream, which has a different serial number. Replaying it to a
+    // joiner would lock that joiner's demuxer onto a serial the live audio no
+    // longer uses, and prism-media then silently discards every packet
+    // (OggDemuxer.js:95). A joiner arriving before the fresh capture writes
+    // nothing up front and gets the new header from the replay instead.
+    entry.oggHeader = null;
 
     const onData = (chunk) => this._onData(entry, chunk);
     const onDrop = () => this._handleDrop(entry);
@@ -293,12 +298,45 @@ class BroadcastHub extends EventEmitter {
     entry.handle = null;
     try { handle.destroy(); } catch (_) {}
 
-    if (entry.refCount === 0) {
-      this.cleanup(entry.url);
-      return;
-    }
+    // End every listener instead of carrying them across the reconnect.
+    //
+    // ffmpeg assigns a NEW serial number to each output stream, and
+    // prism-media's OggDemuxer locks onto the first serial it sees and then
+    // silently drops every packet whose serial differs
+    // (node_modules/prism-media/src/opus/OggDemuxer.js:93-99 — `_bitstream` is
+    // assigned once and never updated). A listener kept across a reconnect
+    // would therefore be fed a chained OGG stream it can never decode, with
+    // no error and no 'end': its player would sit in Playing with permanent
+    // silence. That is exactly the AUDIO_REPORT.md §C1 failure mode.
+    //
+    // Ending the stream costs a ~1s gap but makes the player transition to
+    // Idle, so it rejoins and picks up the new header cleanly.
+    //
+    // This also covers remote mode's second layer: on the audio server the
+    // listeners ARE the client HTTP responses, so ending them closes those
+    // connections, the bot's own hub sees a normal upstream drop, and it
+    // reconnects and re-captures the header through this same path. That
+    // propagation is what guarantees a new logical stream can never appear
+    // mid-stream on an already-open connection.
+    this._endListeners(entry);
 
+    // No `refCount === 0 -> cleanup` branch: the listeners were just detached,
+    // so refCount is 0 by construction here and cleaning up would cancel the
+    // reconnect. Giving up is the idle timer's job (scheduled by the detach).
     this._scheduleRetry(entry);
+  }
+
+  /**
+   * Ends (not destroys) every listener so downstream players see a clean
+   * end-of-stream and transition to Idle. `destroy()` would surface as an
+   * error instead, and an error is not a resume signal.
+   */
+  _endListeners(entry) {
+    for (const stream of Array.from(entry.listeners)) {
+      this._detachStream(entry, stream);
+      try { stream.end(); } catch (_) {}
+    }
+    entry.listeners.clear();
   }
 
   _scheduleRetry(entry) {
@@ -307,10 +345,9 @@ class BroadcastHub extends EventEmitter {
     if (entry.attempts > this.maxAttempts) {
       entry.state = 'failed';
       // §I3/C1: end every listener so the downstream player goes Idle.
-      for (const s of entry.listeners) {
-        try { s.end(); } catch (_) {}
-      }
-      entry.listeners.clear();
+      // Usually already empty — _handleDrop ends them on the first drop — but
+      // _scheduleRetry is also reachable from a failed first open.
+      this._endListeners(entry);
       this._emit('broadcast:failed', { url: entry.url, attempts: entry.attempts });
       this._scheduleFailedRetry(entry);
       return;
