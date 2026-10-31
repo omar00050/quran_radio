@@ -5,7 +5,7 @@ If a session stops mid-way (usage limits), this file plus
 [`audio-source-contract.md`](./audio-source-contract.md) is enough to pick up.
 
 **Branch:** `feat/audio-server` (from `main`, `80df1e8`)
-**Last updated:** Phase 3 complete
+**Last updated:** follow-ups 1-5 complete
 
 ---
 
@@ -15,7 +15,9 @@ If a session stops mid-way (usage limits), this file plus
 |---|---|
 | 1 — contract | ✅ done — commit `ab2acba` (docs only) |
 | 2 — build (A: audio engine + server, B: bot integration, Haiku: config) | ✅ done |
-| 3 — verification + tests | ✅ done — 12/12 harness checks pass |
+| 3 — verification + tests | ✅ done — 17/17 server harness + 13/13 hub unit |
+| follow-ups 1-5 | ✅ done (see below) |
+| follow-up 6 — test-bot checklist | ⏳ in progress |
 
 ---
 
@@ -57,6 +59,62 @@ attached no watcher. Fixed with a `localConn` fallback.
 Removed the dead `STATEFUL_MODULES` guard from `/refresh` (it could never work — it read
 `.broadcasts` off the exported class; §C2) and documented why no exclusion list is needed now that
 the source lives on `client.audio`.
+
+## Follow-ups
+
+### 1. `AUDIO_REMOTE_SHARDS` — per-shard rollout
+
+`src/audio/resolveMode.js` resolves the effective mode as a pure function of env, so remote mode can
+be enabled one shard at a time. Shard ids come from **`SHARDS`** — what discord.js's ShardingManager
+actually injects (`Shard.js`: `SHARDS: this.id`), not `DISCORD_SHARD_ID` as the comment in
+`baseClient.js:37` claims. An unsharded run ignores the list rather than silently matching shard 0.
+The resolved mode and the reason are logged at startup. See the rollout plan below.
+
+### 2. Contract re-synced
+
+`docs/audio-source-contract.md` had drifted from the Phase 3 fixes: `createGuildStream` no longer
+returns `null` before the header is captured, and `broadcast:recovered` fires after `stalled` as
+well as `failed`. Also documented the failed-first-open retry rule, the single idempotent detach,
+`getState`/`setAudioServerStatus`, and `AUDIO_REMOTE_SHARDS`.
+
+### 3. Chained OGG after a reconnect — was a silent-death bug
+
+**prism-media's `OggDemuxer` cannot decode a chained OGG stream.** It records the first serial
+number it sees and never updates it (`node_modules/prism-media/src/opus/OggDemuxer.js:93-99`), then
+silently discards every packet whose serial differs. ffmpeg assigns a new serial per output, so
+**every upstream reconnect** fed connected listeners a stream they could never decode — no error, no
+`end`, player stuck in `Playing` with permanent silence. AUDIO_REPORT.md §C1, reintroduced by any
+reconnect.
+
+Answers to the three questions asked:
+
+- *Does the hub detect new BOS pages and replace the cached header?* It replaces it, but by
+  re-capturing at the start of each new upstream, not by detecting BOS mid-stream. `_onOpened` now
+  also **clears** the stale `oggHeader`, which it previously kept deliberately.
+- *What do existing listeners receive, and can the demuxer cope?* They received chained OGG, and
+  **no** — see above. So they are now **ended** on drop (`_endListeners`), giving the player a clean
+  end-of-stream so it goes Idle, rejoins, and gets the new header. Costs a ~1s gap.
+- *Both layers in remote mode?* Covered by propagation rather than extra machinery: on the audio
+  server the hub's listeners **are** the client HTTP responses, so ending them closes those
+  connections; the bot's hub then sees an ordinary upstream end and reconnects through the same
+  path. A new logical stream therefore cannot appear mid-stream on an already-open connection. Both
+  layers are asserted — layer 1 in the server harness, layer 2 in the hub unit test.
+
+### 4. `.env` loading — was a real misconfiguration
+
+`audio-server.js` called `dotenv.config()` with no path (resolves against `process.cwd()`) and
+`ecosystem.config.js` set no `cwd`. Verified from a foreign cwd: **`injecting env (0) from .env`** —
+the server came up with `AUDIO_SERVER_TOKEN` unset and `AUDIO_BITRATE` at its default while the bot
+used the real values, so every bot request would have 401'd. Fixed with an explicit `__dirname`-based
+path plus `cwd: __dirname` on both pm2 apps. Re-verified: 15 variables, no token warning.
+
+### 5. Secret hygiene — confirmed
+
+- `.env` is ignored (`.gitignore:4`), untracked, and appears in **0 commits on any branch**.
+- Only `.env.example` is tracked, carrying the `change_me` placeholder.
+- `AUDIO_SERVER_TOKEN` is only read from env, passed as an option, compared in `auth.js`, and
+  interpolated into an `Authorization` header. **No code path logs or prints it**; the boot warning
+  names the variable only. Tests use their own literal token.
 
 ## Known-dead code left in place
 
