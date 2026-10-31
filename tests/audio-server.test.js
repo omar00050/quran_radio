@@ -188,6 +188,9 @@ async function main() {
       testMode: '1',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
+    // Keep the harness from flashing a console window on Windows; the ffmpeg
+    // children the server spawns hide themselves (EmbeddedProvider).
+    windowsHide: true,
   });
 
   const serverLog = [];

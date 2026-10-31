@@ -51,13 +51,13 @@ function createServer(opts = {}) {
       return;
     }
 
-    if (!checkAuth(req, token)) {
-      sendJson(res, 401, { error: 'unauthorized' });
+    if (req.method === 'GET' && parsed.pathname === '/health') {
+      sendJson(res, 200, buildHealthPayload(audioSource, allowlist, startedAt));
       return;
     }
 
-    if (req.method === 'GET' && parsed.pathname === '/health') {
-      sendJson(res, 200, buildHealthPayload(audioSource, allowlist, startedAt));
+    if (!checkAuth(req, token)) {
+      sendJson(res, 401, { error: 'unauthorized' });
       return;
     }
 
@@ -109,7 +109,7 @@ function createServer(opts = {}) {
 
       req.on('close', release);
       res.on('close', release);
-      stream.on('error', () => { try { res.end(); } catch (_) {} release(); });
+      stream.on('error', () => { try { res.end(); } catch (_) { } release(); });
       stream.on('end', release);
       stream.pipe(res);
       return;
