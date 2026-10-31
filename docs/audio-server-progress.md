@@ -5,7 +5,7 @@ If a session stops mid-way (usage limits), this file plus
 [`audio-source-contract.md`](./audio-source-contract.md) is enough to pick up.
 
 **Branch:** `feat/audio-server` (from `main`, `80df1e8`)
-**Last updated:** follow-ups 1-5 complete
+**Last updated:** follow-ups 1-6 complete
 
 ---
 
@@ -17,7 +17,7 @@ If a session stops mid-way (usage limits), this file plus
 | 2 — build (A: audio engine + server, B: bot integration, Haiku: config) | ✅ done |
 | 3 — verification + tests | ✅ done — 17/17 server harness + 13/13 hub unit |
 | follow-ups 1-5 | ✅ done (see below) |
-| follow-up 6 — test-bot checklist | ⏳ in progress |
+| follow-up 6 — test-bot checklist | ✅ done — `docs/test-bot-checklist.md` |
 
 ---
 
@@ -115,6 +115,23 @@ path plus `cwd: __dirname` on both pm2 apps. Re-verified: 15 variables, no token
 - `AUDIO_SERVER_TOKEN` is only read from env, passed as an option, compared in `auth.js`, and
   interpolated into an `Authorization` header. **No code path logs or prints it**; the boot warning
   names the variable only. Tests use their own literal token.
+
+### 6. Test-bot checklist
+
+`docs/test-bot-checklist.md` — manual acceptance tests in both modes: embedded regression (A),
+remote single-shard (B), **killing `quran-audio` while guilds are playing** (C, including the
+>10-minute outage case), partial rollout with `AUDIO_REMOTE_SHARDS` (D), and `/refresh` plus
+shutdown hygiene (E). Expectations are derived from the actual timer values, and the known-open
+§C5/§C6 behaviours are called out so they aren't mistaken for regressions.
+
+Writing part C surfaced a real bug, now fixed: **an outage longer than `idleMs` stranded waiting
+guilds permanently.** A drop ends every listener, so refCount is 0, so the idle sweep deleted the
+station entry and cancelled its retry timers — while the guilds sat subscribed to
+`broadcast:recovered`, which could then never fire. Fixed with a `wanted` registry on the hub
+(`markWanted`/`unmarkWanted`): a station someone is waiting for is exempt from the idle sweep and
+keeps retrying at the bounded `failedRetryMs` cadence, once per station rather than per guild. A
+station nobody wants is still swept, so §C4 is not reintroduced. Both behaviours are asserted in
+`tests/broadcast-hub.test.js`.
 
 ## Known-dead code left in place
 
