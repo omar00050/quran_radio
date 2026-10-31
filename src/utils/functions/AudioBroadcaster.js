@@ -1,132 +1,194 @@
-const axios = require('axios');
+const axios  = require('axios');
 const { PassThrough } = require('stream');
-const { createAudioResource } = require('@discordjs/voice');
+const { spawn } = require('child_process');
 
-// Advanced Broadcast System
+/**
+ * One HTTP connection + one FFmpeg per radio URL.
+ * FFmpeg outputs OGG/Opus so Discord.js can consume it with StreamType.OggOpus
+ * without needing any native Opus encoder library.
+ *
+ * OGG Opus header pages are captured and replayed for every guild that joins
+ * mid-stream, so they can always decode the stream correctly.
+ */
 class AudioBroadcaster {
   constructor() {
-    /** @type {Map<string, PassThrough>} */
+    /** @type {Map<string, BroadcastEntry>} */
     this.broadcasts = new Map();
-    /** @type {Map<string, number>} */
-    this.connectionCounts = new Map();
   }
 
-  async getBroadcastForURL(url) {
-    // If the broadcast exists and is not destroyed, return the main PassThrough
-    if (this.broadcasts.has(url)) {
-      const broadcast = this.broadcasts.get(url);
-      if (!broadcast.destroyed) {
-        this.connectionCounts.set(url, (this.connectionCounts.get(url) || 0) + 1);
-        return broadcast;
-      }
-    }
+  // ─── Public API ────────────────────────────────────────────────────────────
 
-    // Create a new broadcast
-    try {
-      console.log(`Creating new broadcast for URL: ${url}`);
-      const response = await axios.get(url, { responseType: 'stream' });
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const originalStream = response.data;
-      const broadcastStream = new PassThrough();
-
-      // Connect the original stream to the broadcast
-      originalStream.pipe(broadcastStream);
-      this.broadcasts.set(url, broadcastStream);
-      this.connectionCounts.set(url, 1);
-
-      // Setup error handling and cleanup
-      this.setupStreamHandlers(url, originalStream, broadcastStream);
-
-      return broadcastStream;
-    } catch (error) {
-      console.error(`Error creating broadcast for ${url}:`, error);
-      throw error;
-    }
+  async getOrCreate(url) {
+    const existing = this.broadcasts.get(url);
+    if (existing?.active) return existing;
+    return this._start(url);
   }
 
-  setupStreamHandlers(url, originalStream, broadcastStream) {
-    originalStream.on('end', () => {
-      console.log(`Original stream ended for: ${url}`);
-      this.cleanupBroadcast(url);
-    });
+  /**
+   * Returns a PassThrough stream that receives OGG/Opus data from the broadcast.
+   * The OGG header is written first so the guild can always decode the stream.
+   */
+  createGuildStream(url) {
+    const entry = this.broadcasts.get(url);
+    if (!entry?.active) return null;
 
-    originalStream.on('error', (error) => {
-      console.error(`Original stream error for ${url}:`, error);
-      this.cleanupBroadcast(url);
-    });
+    const stream = new PassThrough({ highWaterMark: 0 });
 
-    broadcastStream.on('error', (error) => {
-      console.error(`Broadcast stream error for ${url}:`, error);
-    });
+    // Replay captured OGG header pages so the new guild can sync immediately
+    if (entry.oggHeader) stream.write(entry.oggHeader);
 
-    // Auto-cleanup if there are no listeners
-    const checkCleanup = () => {
-      setTimeout(() => {
-        const count = this.connectionCounts.get(url) || 0;
-        if (count === 0 && this.broadcasts.has(url)) {
-          console.log(`Auto-cleaning unused broadcast: ${url}`);
-          this.cleanupBroadcast(url);
-        }
-      }, 30000); // 30 seconds
-    };
+    entry.listeners.add(stream);
 
-    checkCleanup();
+    const cleanup = () => entry.listeners.delete(stream);
+    stream.once('close', cleanup);
+    stream.once('error', cleanup);
+
+    return stream;
   }
 
-  createAudioResourceForGuild(url) {
-    try {
-      const broadcast = this.broadcasts.get(url);
-      if (!broadcast || broadcast.destroyed) {
-        return null;
-      }
-
-      // Create a new PassThrough for each guild
-      const guildStream = new PassThrough();
-
-      // Connect the main broadcast to the new guild
-      broadcast.pipe(guildStream, { end: false });
-
-      const resource = createAudioResource(guildStream);
-
-      // Increment the connection counter
-      this.connectionCounts.set(url, (this.connectionCounts.get(url) || 0) + 1);
-
-      return resource;
-    } catch (error) {
-      console.error(`Error creating audio resource for guild:`, error);
-      return null;
-    }
+  releaseGuildStream(url, stream) {
+    if (!stream) return;
+    const entry = this.broadcasts.get(url);
+    if (entry) entry.listeners.delete(stream);
+    if (!stream.destroyed) { try { stream.destroy(); } catch (_) {} }
   }
 
-  releaseGuildConnection(url) {
-    const currentCount = this.connectionCounts.get(url) || 0;
-    if (currentCount > 0) {
-      this.connectionCounts.set(url, currentCount - 1);
-    }
-
-    console.log(`Released connection for ${url}. Current connections: ${this.connectionCounts.get(url)}`);
-  }
-
-  cleanupBroadcast(url) {
-    console.log(`Cleaning up broadcast for: ${url}`);
-    const broadcast = this.broadcasts.get(url);
-    if (broadcast && !broadcast.destroyed) {
-      broadcast.destroy();
-    }
+  cleanup(url) {
+    const entry = this.broadcasts.get(url);
+    if (!entry) return;
+    entry.listeners.forEach(s => { try { s.destroy(); } catch (_) {} });
+    entry.listeners.clear();
+    this._destroyEntry(entry);
     this.broadcasts.delete(url);
-    this.connectionCounts.delete(url);
   }
 
   getStats() {
-    return {
-      activeBroadcasts: this.broadcasts.size,
-      connectionCounts: Array.from(this.connectionCounts.entries()).map(([url, count]) => ({ url, count }))
+    const result = { activeBroadcasts: 0, connectionCounts: [] };
+    for (const [url, entry] of this.broadcasts) {
+      if (entry.active) {
+        result.activeBroadcasts++;
+        result.connectionCounts.push({ url, count: entry.listeners.size });
+      }
+    }
+    return result;
+  }
+
+  // ─── Internal ───────────────────────────────────────────────────────────────
+
+  async _start(url) {
+    const old = this.broadcasts.get(url);
+    const survivors = old ? new Set(old.listeners) : new Set();
+    if (old) this._destroyEntry(old);
+
+    let response;
+    try {
+      response = await axios.get(url, { responseType: 'stream', timeout: 15_000 });
+    } catch (err) {
+      console.error(`[Broadcaster] HTTP error for ${url}:`, err.message);
+      throw err;
+    }
+
+    const ffmpegBin = process.env.FFMPEG_PATH || 'ffmpeg';
+
+    // Output OGG/Opus — no Opus encoder library needed on the Node side.
+    // StreamType.OggOpus in @discordjs/voice demuxes OGG in pure JS.
+    const ffmpeg = spawn(ffmpegBin, [
+      '-i', 'pipe:0',
+      '-c:a', 'libopus',
+      '-b:a', '128k',
+      '-ar', '48000',
+      '-ac', '2',
+      '-f', 'ogg',
+      '-loglevel', 'error',
+      'pipe:1',
+    ]);
+
+    /** @type {BroadcastEntry} */
+    const entry = {
+      active:      true,
+      ffmpeg,
+      source:      response.data,
+      listeners:   survivors,
+      oggHeader:   null,   // captured OGG header pages (OpusHead + OpusTags)
+      _headerBuf:  Buffer.alloc(0),
+      _headerDone: false,
     };
+
+    this.broadcasts.set(url, entry);
+    response.data.pipe(ffmpeg.stdin);
+
+    ffmpeg.stdout.on('data', (chunk) => {
+      // ── Phase 1: capture OGG header (first 2 pages: OpusHead + OpusTags) ──
+      if (!entry._headerDone) {
+        entry._headerBuf = Buffer.concat([entry._headerBuf, chunk]);
+        const headerEnd = this._findOggHeaderEnd(entry._headerBuf);
+        if (headerEnd !== -1) {
+          entry.oggHeader   = entry._headerBuf.slice(0, headerEnd);
+          entry._headerDone = true;
+          // Replay full header + remainder for survivors that were already listening
+          for (const s of entry.listeners) {
+            if (!s.destroyed) s.write(entry._headerBuf);
+          }
+          delete entry._headerBuf; // free memory
+        }
+        // Don't push to listeners until header is captured
+        return;
+      }
+
+      // ── Phase 2: distribute live OGG data — drop slow consumers ──────────
+      for (const stream of entry.listeners) {
+        if (stream.destroyed) { entry.listeners.delete(stream); continue; }
+        if (stream.writableLength > 65_536) continue; // drop — live radio, skip > 64KB lag
+        stream.write(chunk);
+      }
+    });
+
+    const onDrop = () => {
+      if (!entry.active) return;
+      console.log(`[Broadcaster] Stream dropped for ${url} — reconnecting in 3s...`);
+      this._destroyEntry(entry);
+      setTimeout(() => this._start(url).catch(err => {
+        console.error(`[Broadcaster] Reconnect failed:`, err.message);
+        setTimeout(() => this._start(url).catch(() => {}), 5_000);
+      }), 3_000);
+    };
+
+    ffmpeg.on('close', onDrop);
+    response.data.on('error', onDrop);
+    ffmpeg.stdin.on('error', () => {}); // ignore stdin broken pipe
+    ffmpeg.stderr.on('data', d => {
+      const msg = d.toString().trim();
+      if (msg) console.error(`[FFmpeg] ${msg}`);
+    });
+
+    console.log(`[Broadcaster] Started broadcast for: ${url} (${entry.listeners.size} guilds restored)`);
+    return entry;
+  }
+
+  /**
+   * Finds the byte offset where the 3rd OGG page begins (= end of header).
+   * OGG Opus always has exactly 2 header pages: OpusHead and OpusTags.
+   * Returns -1 if not enough data yet.
+   */
+  _findOggHeaderEnd(buf) {
+    const magic = Buffer.from('OggS');
+    let count = 0;
+    let pos = 0;
+    while (pos < buf.length) {
+      const idx = buf.indexOf(magic, pos);
+      if (idx === -1) return -1;
+      count++;
+      if (count === 3) return idx; // 3rd page = first audio page
+      pos = idx + 4;
+    }
+    return -1;
+  }
+
+  _destroyEntry(entry) {
+    entry.active = false;
+    try { entry.source?.destroy(); }  catch (_) {}
+    try { entry.ffmpeg?.kill('SIGKILL'); } catch (_) {}
   }
 }
-
 
 module.exports = AudioBroadcaster;

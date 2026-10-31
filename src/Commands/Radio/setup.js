@@ -1,4 +1,5 @@
 const ControlAzkar = require('@root/src/utils/functions/ControlAzkar');
+const ControlPrayer = require('@root/src/utils/functions/ControlPrayer');
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder, ChannelSelectMenuBuilder, ChannelType, ApplicationCommandOptionType } = require('discord.js');
 
 /**
@@ -109,10 +110,8 @@ module.exports = {
         }
 
         case "prayer": {
-          let data =
-            (await db.get(`${interaction.guildId}_prayerChannel`)) || null;
-          let channel =
-            interaction.guild.channels.cache.get(data?.channelId) || null;
+          let data = (await db.get(`${interaction.guildId}_prayerChannel`)) || null;
+          let channel = interaction.guild.channels.cache.get(data?.channelId) || null;
 
           let embed = new EmbedBuilder()
             .setColor("White")

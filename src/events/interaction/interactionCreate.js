@@ -12,6 +12,14 @@ module.exports = {
         ephemeral: true
       });
 
+//       if (interaction.user.id !== "768414261231747093") return interaction.reply({
+//         content: `⚙️ 🛠️ | We apologize for the bot being temporarily unavailable for maintenance. The bot will be back online at 8:30 PM Cairo/Egypt time. We apologize for the current inconvenience.
+//         نعتذر عن البوت في الوقت الحالي في وضع صيانه مؤقتة 
+// و سيعود البوت للعمل مره اخري الساعة 8:30 مساءََ بتوقيت مصر/القاهرة 
+// نعتذر عن عن الوقت الحالي  و شكرا لتفهمكم`,
+//         ephemeral: true
+//       });
+
       let lang_type = await client.db.get(`${interaction.guild.id}_lang`) || "en";
       let lang = require(`@root/lang/${lang_type}.json`);
 
@@ -43,8 +51,14 @@ module.exports = {
       };
     } catch (error) {
       console.error(error);
-
-      interaction.isRepliable ? await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true }) : interaction.editReply({ content: 'There was an error while executing this command!' })
+      try {
+        if (!interaction.isRepliable()) return;
+        if (interaction.deferred || interaction.replied) {
+          await interaction.editReply({ content: 'There was an error while executing this command!' });
+        } else {
+          await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+      } catch (_) { /* interaction expired or already handled — ignore */ }
     };
   },
 };

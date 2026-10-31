@@ -1,4 +1,4 @@
-const { GoodDB, JSONDriver, MongoDBDriver, SQLiteDriver, MySQLDriver } = require("good.db");
+const { GoodDB, JSONDriver, MongoDBDriver, SQLiteDriver, MySQLDriver, PostgreSQLDriver } = require("good.db");
 const path = require('path');
 
 let db_josn_path = path.join(__dirname, '../../database/database.json')
@@ -77,6 +77,21 @@ module.exports = class DB {
   */
   static db_mysql(db_option) {
     return new GDB(new MySQLDriver(db_option?.MySQL), {
+      nested: "..",
+      nestedIsEnabled: true,
+      table: "DevXorDB",
+      cache: {
+        capacity: 1024,
+        isEnabled: true,
+      }
+    }, db_option);
+  };
+
+  /**
+   * @param {import("@DevXor/DevXor").DataBase} db_option
+   */
+  static db_postgersql(db_option) {
+    return new GDB(new PostgreSQLDriver(db_option?.Postgersql), {
       nested: "..",
       nestedIsEnabled: true,
       table: "DevXorDB",

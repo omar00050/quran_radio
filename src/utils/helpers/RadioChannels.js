@@ -68,7 +68,7 @@ module.exports = [{
 {
   group: "quran",
   name: " إذاعة الشيخ محمد رفعت",
-  value: "https://stream.zeno.fm/73xsyy44qs8uv",
+  value: "https://radio.mp3islam.com/listen/refaat/radio.mp3/;",
   img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAUKHXr-T3uFpY0puZLu8i6lTQ_3hZ9qzazW_yGjQjvAyftyLY31Uop5AvILB0AbmuMQw&usqp=CAU"
 },
 // {

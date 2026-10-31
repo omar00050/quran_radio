@@ -16,14 +16,27 @@ let client = new Quran({
   token: process.env.token,
   database: {
     database_type: "JSON",
+    Postgersql: {
+      connectionString: process.env.postgres_uri,
+    },
     MongoDB: {
-      uri: process.env.mongodb_uri
+      uri: process.env.mongodb_uri,
+      // Limit pool size per shard — 8 shards × 5 = 40 max connections total
+      // Prevents hitting Atlas connection limits on startup
+      maxPoolSize: 5,
+      minPoolSize: 1,
+      serverSelectionTimeoutMS: 10000, // fail fast if server unreachable (10s)
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 30000,
+      retryWrites: true,
+      retryReads: true,
+      heartbeatFrequencyMS: 30000, // ping MongoDB every 30s to keep connections alive on M0 free tier
     },
     options: {
       nested: '..',
       nestedIsEnabled: true,
       cache: {
-        isEnabled: true,
+        isEnabled: false,
         capacity: 4096
       }
     }
