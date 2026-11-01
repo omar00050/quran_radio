@@ -272,7 +272,7 @@ async function runQuickSetup(client, interaction, lang, { delayMs = 1200 } = {})
       channelId: made.azkar.id,
       guildId: gid,
       enabled: false,
-      msgTimeSend: '10m',
+      msgTimeSend: '1h',
       // Must not be empty: sendAzkar picks a random id out of this list, and an
       // empty list makes `idCat` undefined so an enabled schedule silently
       // posts nothing. 'azkar' is the morning/evening pool (sendAzkar widens it
