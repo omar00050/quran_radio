@@ -20,7 +20,8 @@ function help(interaction) {
       { name: "/setup radio", value: "setup radio channel || تسطيب القناه الصوتية", inline: true },
       { name: "/setup azkar", value: "setup azkar channel || تسطيب الاذكار", inline: true },
       { name: "/setup prayer", value: "setup prayer channel || تسطيب الاذان", inline: true },
-      { name: "/control", value: "control radio channel || التحكم بالراديو", inline: true }
+      { name: "/control", value: "control radio channel || التحكم بالراديو", inline: true },
+      { name: "/lang", value: "change lang of bot || تغير لغه البوت", inline:true }
     ])
     .setFooter({
       text: interaction.author ? `Requested by ${interaction.author.globalName}` : `Requested by ${interaction.member.user.globalName}`,

@@ -59,7 +59,7 @@ module.exports = {
             ephemeral: true
           })
 
-          if (data?.catogory?.length == 0) return interaction.followUp({
+          if (!data?.category?.length) return interaction.followUp({
             content: "❌ | Please choose category | **من فضلك قم بتحديد الفئات**",
             ephemeral: true
           })

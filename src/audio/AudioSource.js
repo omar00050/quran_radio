@@ -43,11 +43,15 @@ class AudioSource extends EventEmitter {
       this.hub.on(evt, (detail) => this._emit(evt, detail));
     }
 
-    // Populated by the remote-mode provider/bot wiring (Teammate B) via
-    // setAudioServerStatus(); stays null/false here in embedded mode.
+    // `reachable: null` means UNKNOWN and must stay null until something
+    // actually probes the server. It used to start as `false` in remote mode,
+    // which read as "known unreachable" — and since nothing in a shard ever
+    // called setAudioServerStatus (only the manager polls /health), it stayed
+    // false forever and permanently blocked the ON button. Never initialise
+    // this to a definite value nobody has measured.
     this._audioServerStatus = {
       configured: mode === 'remote',
-      reachable: mode === 'remote' ? false : null,
+      reachable: null,
       url: opts.serverUrl || null,
       consecutiveFailures: 0,
       lastCheckAt: null,

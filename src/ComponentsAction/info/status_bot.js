@@ -1,5 +1,7 @@
 const { getBroadcastStats } = require("@utils/functions/joinAndPlayQuran");
-const { EmbedBuilder, ButtonInteraction } = require("discord.js");
+const { EmbedBuilder, ButtonInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { t } = require("@utils/functions/i18n");
+const { isOwner, isMod } = require("@utils/functions/access");
 
 /**
  * @type {import("@utils/types/baseComponent")}
@@ -78,7 +80,23 @@ module.exports = {
         `${client.user.username} Status Command has been used! | by user [${interaction.user.username}] | in server ${interaction.guild.name} [${interaction.guild.id}]`
       );
 
-      interaction.editReply({ embeds: [embed] });
+      // The reply is already ephemeral (deferReply above), so these buttons are
+      // only ever visible to the person who pressed Status. They are still
+      // just presentation: every manager action re-checks access server-side.
+      const rows = [];
+      const owner = isOwner(client, interaction.user.id);
+      const mod = owner ? false : await isMod(client, interaction.user.id);
+
+      if (owner || mod) {
+        rows.push(new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(owner ? "manager_owner" : "manager_mod")
+            .setLabel(t(lang, owner ? "manager.btn_owner" : "manager.btn_mod"))
+            .setStyle(ButtonStyle.Primary),
+        ));
+      }
+
+      interaction.editReply({ embeds: [embed], components: rows });
     } catch (err) {
       console.error("[status_bot]", err);
       interaction.editReply({ content: "❌ Failed to fetch bot status." });

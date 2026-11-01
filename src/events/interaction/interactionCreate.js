@@ -1,5 +1,8 @@
 const { CommandHandler } = require("@src/handlers");
 const BEV = require("@utils/types/baseEvents");
+const { t, getGuildLang } = require("@utils/functions/i18n");
+const { say } = require("@utils/functions/messages");
+const { maybeSendLangPrompt } = require("@utils/functions/langPrompt");
 
 /** @type {BEV.BaseEvent<"interactionCreate">} */
 module.exports = {
@@ -8,7 +11,7 @@ module.exports = {
     try {
       // Check if interaction has guild
       if (!interaction.guild?.id) return interaction.reply({
-        content: "Command can only be executed in a discord server",
+        content: say(null, "common.guild_only"),
         ephemeral: true
       });
 
@@ -20,12 +23,19 @@ module.exports = {
 //         ephemeral: true
 //       });
 
-      let lang_type = await client.db.get(`${interaction.guild.id}_lang`) || "en";
-      let lang = require(`@root/lang/${lang_type}.json`);
+      // getGuildLang falls back to English on a missing/invalid stored value;
+      // requiring `lang/<value>.json` directly would throw and take down every
+      // interaction in that guild.
+      const lang = await getGuildLang(client, interaction.guild.id);
 
       // Check if interaction is a command
-      if (interaction.isChatInputCommand()) CommandHandler.handleSlashCommand(client, interaction)
-      if (interaction.isAutocomplete()) CommandHandler.handleAutoComplete(client, interaction);
+      if (interaction.isChatInputCommand()) {
+        await CommandHandler.handleSlashCommand(client, interaction, lang);
+        // After the command, never before: the one-time language tip must not
+        // delay it, and must not be able to break it either.
+        maybeSendLangPrompt(client, interaction).catch(() => { });
+      }
+      if (interaction.isAutocomplete()) CommandHandler.handleAutoComplete(client, interaction, lang);
 
       // Check if interaction is a button, select menu or modal submit
       if (
@@ -35,7 +45,7 @@ module.exports = {
       ) {
         if (interaction?.customId?.startsWith('collect')) return;
 
-        if (client.UserHold.get(interaction.user.id)) return interaction.reply({ content: 'You are hold this button please waiting and try again.', ephemeral: true })
+        if (client.UserHold.get(interaction.user.id)) return interaction.reply({ content: say(lang, "common.busy"), ephemeral: true })
 
         let customId = interaction?.customId;
 
@@ -47,7 +57,13 @@ module.exports = {
         if (!component) return;
 
 
-        await component.action(client, interaction, parts);
+        await component.action(client, interaction, parts, lang);
+
+        // Same one-time tip for button/menu use. Skipped for the language
+        // buttons themselves, which would otherwise answer their own prompt.
+        if (!String(customId).startsWith('langset')) {
+          maybeSendLangPrompt(client, interaction).catch(() => { });
+        }
       };
     } catch (error) {
       console.error(error);

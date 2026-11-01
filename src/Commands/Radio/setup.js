@@ -1,6 +1,9 @@
 const ControlAzkar = require('@root/src/utils/functions/ControlAzkar');
+const { say } = require("@utils/functions/messages");
+const { buildPreview } = require('@root/src/utils/functions/quickSetup');
+const { t } = require('@root/src/utils/functions/i18n');
 const ControlPrayer = require('@root/src/utils/functions/ControlPrayer');
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder, ChannelSelectMenuBuilder, ChannelType, ApplicationCommandOptionType } = require('discord.js');
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, EmbedBuilder, ChannelSelectMenuBuilder, ChannelType, ApplicationCommandOptionType, PermissionFlagsBits, MessageFlags } = require('discord.js');
 
 /**
  * @type {import("@utils/types/baseCommand")}
@@ -10,7 +13,7 @@ module.exports = {
   description: "setup radio channel",
   category: "ADMIN",
   botPermissions: ["ManageChannels", "SendMessages", "EmbedLinks", "ViewChannel"],
-  userPermissions: ["ManageChannels", "sendMessages", "EmbedLinks", "ViewChannel"],
+  userPermissions: ["ManageChannels", "SendMessages", "EmbedLinks", "ViewChannel"],
   cooldown: 1000,
   command: {
     enabled: false,
@@ -19,6 +22,11 @@ module.exports = {
   slashCommand: {
     enabled: true,
     options: [
+      {
+        name: "quick",
+        description: "create every channel the bot needs and configure it in one step",
+        type: ApplicationCommandOptionType.Subcommand
+      },
       {
         name: "radio",
         description: "to setup radio channel",
@@ -48,6 +56,23 @@ module.exports = {
       let config = client.config
 
       switch (Subcommand) {
+        case "quick": {
+          // Quick setup creates channels, so it needs a higher bar than the
+          // per-service setup flows: Manage Server, checked here rather than on
+          // the command as a whole so the other subcommands keep their own
+          // requirement.
+          if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
+            return interaction.reply({
+              content: say(lang, "quick.need_manage_guild"),
+              flags: MessageFlags.Ephemeral,
+            });
+          }
+
+          // Preview only — nothing is created until Confirm is pressed.
+          const preview = await buildPreview(client, interaction, lang);
+          return interaction.reply(preview);
+        }
+
         case "radio": {
 
           let data = await db.get(`${interaction.guildId}_radioChannel`) || null
@@ -62,11 +87,9 @@ module.exports = {
             // .setDescription("يمكنك  تحديد القناه الصوتية او التسطيب التلقائي")
             .setFooter({ text: config.Copyright.text, iconURL: config.Copyright.logo })
 
-          //todo : add new quick setup for radio 
-          let btn_setup = new ButtonBuilder()
-            .setCustomId("setup_Radio")
-            .setLabel("Quick Setup")
-            .setStyle(ButtonStyle.Primary)
+          // The old "Quick Setup" button was removed: its row was never sent and
+          // its customId "setup_Radio" had no handler, so it would have done
+          // nothing if ever rendered. `/setup quick` is the real implementation.
 
           let Menu_setChannel = new ChannelSelectMenuBuilder()
             .setCustomId("set_RadioChannel")
@@ -74,7 +97,6 @@ module.exports = {
             .setChannelTypes(ChannelType.GuildVoice)
           if (data?.ch) Menu_setChannel.setDefaultChannels([data?.ch])
           let rowMenu = new ActionRowBuilder().addComponents(Menu_setChannel)
-          let rowQuick = new ActionRowBuilder().addComponents(btn_setup)
 
           interaction.reply({ embeds: [embed], components: [rowMenu], ephemeral: true })
           break;

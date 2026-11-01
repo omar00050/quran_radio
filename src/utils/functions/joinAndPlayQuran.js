@@ -1,8 +1,9 @@
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
-const ControlData = require('./ControlData');
+const updateControlPanel = require('./updateControlPanel');
 const VoiceUtils = require('../class/voice');
 const RadioChannels = require("@root/src/utils/helpers/RadioChannels");
 const { startWaiting, stopWaiting, waitingUrl } = require("@root/src/audio/waiters");
+const { reportPlayback } = require("./statsReporter");
 
 /**
  * Joins a voice channel and plays the Quran audio.
@@ -209,9 +210,10 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
       await db.set(`${gId}_radioChannel..enabled`, false);
       const data = await db.get(`${gId}_radioChannel`);
 
-      const msg = await g?.channels.cache.get(data?.ch)
-        ?.messages.fetch(data?.msgId).catch(() => null);
-      if (msg) msg.edit(ControlData(client, data)).catch(() => {});
+      // Background refresh (no interaction), so same rule as startup: do not
+      // migrate an old panel here. A disconnect storm would otherwise turn
+      // into a burst of deletes and reposts.
+      if (g) await updateControlPanel(client, g, data, undefined, { migrate: false }).catch(() => {});
 
       // Use the URL stored on the connection, not the closed-over `url`
       const goneConn = client.Radio.get(gId);
@@ -246,6 +248,10 @@ module.exports = async function joinAndPlayQuran(client, channelId, guild, url =
     player.on('error', async (error) => {
       const radioUrl = client.radioUrlCache.get(guildId) ?? url;
       console.error(`[joinAndPlayQuran] Player error in ${guild.name}: ${error.message}`);
+      // No actor: this is the player failing on its own, not someone's action.
+      reportPlayback(client, {
+        kind: 'radio_error', guildId, station: radioUrl, reason: error.message,
+      });
       const conn = client.Radio.get(guildId);
       _releaseStream(client, conn);
       console.log(`[joinAndPlayQuran] Keeping voice connection in ${guild.name}, waiting on station ${radioUrl}`);

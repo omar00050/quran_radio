@@ -51,13 +51,18 @@ function createServer(opts = {}) {
       return;
     }
 
-    if (req.method === 'GET' && parsed.pathname === '/health') {
-      sendJson(res, 200, buildHealthPayload(audioSource, allowlist, startedAt));
+    // The auth check comes FIRST, before every route including /health.
+    // /health is not harmless to publish: it lists station URLs (one of which
+    // carries a provider token in its query string), ffmpeg process ids,
+    // listener counts and uptime. Serving it before this check made the whole
+    // payload readable by anyone who could reach the port.
+    if (!checkAuth(req, token)) {
+      sendJson(res, 401, { error: 'unauthorized' });
       return;
     }
 
-    if (!checkAuth(req, token)) {
-      sendJson(res, 401, { error: 'unauthorized' });
+    if (req.method === 'GET' && parsed.pathname === '/health') {
+      sendJson(res, 200, buildHealthPayload(audioSource, allowlist, startedAt));
       return;
     }
 

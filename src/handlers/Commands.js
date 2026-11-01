@@ -99,7 +99,7 @@ module.exports = {
    * @param {import("@root/src/base/baseClient")} client 
    * @param {import('discord.js').ChatInputCommandInteraction} interaction
    */
-  handleSlashCommand: async function (client, interaction) {
+  handleSlashCommand: async function (client, interaction, lang) {
 
 
     const cmd = client.slashCommands.get(interaction.commandName);
@@ -153,7 +153,7 @@ module.exports = {
 
     try {
 
-      await cmd.interactionExecute(client, interaction);
+      await cmd.interactionExecute(client, interaction, lang);
     } catch (error) {
       client.logger.error("interactionRun", error);
     }
@@ -164,14 +164,14 @@ module.exports = {
    * @param {import("@root/src/base/baseClient")} client 
    * @param {import("discord.js").AutocompleteInteraction} interaction
    */
-  handleAutoComplete: async function (client, interaction) {
+  handleAutoComplete: async function (client, interaction, lang) {
 
     const cmd = client.slashCommands.get(interaction.commandName);
 
     if (!cmd) return interaction.reply({ content: "An error has occurred", ephemeral: true }).catch(() => { });
 
     try {
-      await cmd.autocompleteExecute(client, interaction);
+      await cmd.autocompleteExecute(client, interaction, lang);
     } catch (error) {
       client.logger.error("autoCompleteRun", error);
     }

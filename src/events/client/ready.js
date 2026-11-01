@@ -2,7 +2,8 @@ const { chunkArray } = require('@root/src/utils/class/utils');
 const sendAzkar = require('@root/src/utils/functions/sendAzkar');
 const SendAdhan = require('@utils/functions/sendPrayer');
 const { cleanOldPrayerCache } = require('@utils/functions/sendPrayer');
-const ControlData = require('@utils/functions/ControlData');
+const updateControlPanel = require('@utils/functions/updateControlPanel');
+const resetGuildRuntime = require('@utils/functions/resetGuildRuntime');
 const joinAndPlayQuran = require('@utils/functions/joinAndPlayQuran');
 const { getBroadcastStats } = joinAndPlayQuran;
 const chalk = require('chalk');
@@ -21,6 +22,12 @@ module.exports = {
 
     // Expose broadcaster stats for broadcastEval (used by liveSocket)
     client.getBroadcasterStats = getBroadcastStats;
+
+    // Exposed on the client so the manager's reset can reach it through
+    // broadcastEval: the evaluated function is serialised into the shard, where
+    // `require` is not reliably available, so it can only call what already
+    // hangs off the client.
+    client.resetGuildRuntime = (guildId) => resetGuildRuntime(client, guildId);
 
     await client.DBConnect();
     await client.registerInteractions();
@@ -178,19 +185,17 @@ module.exports = {
                   // if (guild.id !== "1171512753802969098") continue
                   let data1 = await db.get(`${data.guildId}_radioChannel`)
 
-                  let ch = await guild.channels.cache.get(data1?.ch) || null;
-                  if (!ch) {
-                    console.log("cant find channel in server  " + guild.name.yellow + " " + guild.id.red);
-                    db.set(`${data.guildId}_radioChannel..ch`, null)
-                    return
-                  }
-                  let msg = await ch?.messages.fetch(data1?.msgId).catch(err => null)
-                  if (!msg?.id) {
-                    // await db.set(`${ data.guildId }_radioChannel..enabled`, false)
-                    console.log("cant find msg in server  " + guild.name.yellow + " " + guild.id.red);
-                    db.set(`${data.guildId}_radioChannel..msgId`, null)
-                  }
-                  if (msg?.id) msg?.edit(ControlData(client, data1)).catch(err => console.log(err));
+                  // Re-render the panel, but do NOT migrate here. Panels that
+                  // are already Components v2 are edited as usual; an old
+                  // embed-based panel is left exactly as it is. Converting one
+                  // costs a delete plus a repost, and doing that for every
+                  // guild at startup is a large burst of requests for panels
+                  // nobody may even look at today. Old panels keep working —
+                  // their customIds are unchanged — and each is converted the
+                  // first time someone presses a button on it or runs
+                  // /control.
+                  await updateControlPanel(client, guild, data1, undefined, { migrate: false })
+                    .catch(err => console.log(err));
                 });
 
               }

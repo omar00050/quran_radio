@@ -9,3 +9,6 @@ guildDelete.js
 database.json
 database.sqlite
 package-lock.json
+stats.sqlite
+*.sqlite-wal
+*.sqlite-shm

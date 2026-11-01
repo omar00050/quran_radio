@@ -1,5 +1,6 @@
 
 const ms = require('ms');
+const { safeSet } = require('./dbSafe');
 const getAzkar = require('./../helpers/azkar.json');
 const drawZekr = require('./drawZekr');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
@@ -42,6 +43,16 @@ module.exports = async function SendAzkar(client, guild, data, isTest = false) {
 
       clearTimeout(client.Azkar.get(guild.id));
 
+      // ms() returns undefined for a missing or malformed value, and
+      // setTimeout(fn, undefined) fires immediately — which turned a bad
+      // msgTimeSend into a tight loop. Fall back to the default interval.
+      // ms() returns undefined for a malformed value AND throws on an empty
+      // one, while setTimeout(fn, undefined) fires immediately — which turned a
+      // bad msgTimeSend into a tight loop. Coerce, guard and floor it.
+      let interval;
+      try { interval = ms(String(data2?.msgTimeSend || "10m")); } catch (_) { interval = undefined; }
+      if (!Number.isFinite(interval) || interval < 60_000) interval = ms("10m");
+
       let timeout = setTimeout(async function () {
 
         let isGuild = client.guilds.cache.get(guild.id) || await client.guilds.fetch(guild.id).catch(() => null);
@@ -54,7 +65,7 @@ module.exports = async function SendAzkar(client, guild, data, isTest = false) {
         }
         await SendAzkar(client, isGuild, data2);
 
-      }, ms(data2.msgTimeSend));
+      }, interval);
 
       client.Azkar.set(guild.id, timeout);
     }
@@ -62,9 +73,22 @@ module.exports = async function SendAzkar(client, guild, data, isTest = false) {
 
 
     /** @type {import("discord.js").TextChannel} */
-    let channel = guild.channels.cache.get(data?.channelId) || await guild.channels.fetch(data?.channelId).catch(() => null);
+    let channel = guild.channels.cache.get(data2?.channelId ?? data?.channelId)
+      || await guild.channels.fetch(data2?.channelId ?? data?.channelId).catch(() => null);
 
-    if (!channel) return resolve(!isDone);
+    if (!channel) {
+      // The timer above has already been rescheduled, so simply returning here
+      // left a deleted channel being retried every interval forever, with no
+      // self-heal and nothing written back. Stop the schedule and disable the
+      // service so the guild can see it is off and set a new channel.
+      if (!isTest) {
+        clearTimeout(client.Azkar.get(guild.id));
+        client.Azkar.delete(guild.id);
+        await safeSet(db, `${guild.id}_azkarChannel..enabled`, false);
+        client.logger?.warn?.(`[azkar] channel missing in ${guild.id} — disabled`);
+      }
+      return resolve(!isDone);
+    }
 
     if (data?.enabled) {
 

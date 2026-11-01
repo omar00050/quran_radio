@@ -1,5 +1,9 @@
 const RadioChannels = require("@utils/helpers/RadioChannels");
-const { ButtonStyle, ButtonBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
+const { t } = require("@utils/functions/i18n");
+const { say } = require("@utils/functions/messages");
+const { missingVoicePermissions } = require("@utils/functions/radioGuards");
+const { stopWaiting } = require("@utils/functions/joinAndPlayQuran");
+const { ChannelType } = require("discord.js");
 
 /**
  * @type {import("@utils/types/baseComponent")}
@@ -8,51 +12,91 @@ module.exports = {
   name: "set_RadioChannel",
   enabled: true,
   /**
-   * @param {import("discord.js").ChannelSelectMenuInteraction} interaction 
+   * Stores the voice channel the radio should play in.
+   *
+   * Validation happens BEFORE anything is written, so a channel the bot cannot
+   * actually use is never saved — that used to leave the radio silently
+   * non-functional with no indication why.
+   *
+   * @param {import("discord.js").ChannelSelectMenuInteraction} interaction
    */
   async action(client, interaction, parts, lang) {
     try {
-
-      // let channelId = interaction.fields.getTextInputValue("RadioChannel").trim()
       const db = await client.db.table("channels");
+      const channel = interaction.channels.first();
 
-      let channel = interaction.channels.first() //await interaction.guild.channels.fetch(channelId).catch(e => null) || interaction.guild.channels.cache.find(ch => ch.name === channelId)
-      if (!channel) return interaction.reply({
-        content: "❌ | لم يتم العثور علي القناه الصوتيه",
-        ephemeral: true
-      })
-      let data = await db.get(`${interaction.guildId}_radioChannel`)
+      if (!channel) {
+        return interaction.reply({ content: say(lang, "setup.errors.channel_not_found"), ephemeral: true });
+      }
 
-      if (channel.type === ChannelType.GuildVoice) {
+      if (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildStageVoice) {
+        return interaction.reply({
+          content: say(lang, "setup.errors.not_voice_channel", { channel: `<#${channel.id}>` }),
+          ephemeral: true,
+        });
+      }
 
-        let isChannel = await db.get(`${interaction.guildId}_radioChannel`)
+      // Permission check before saving: without Connect/Speak the radio can
+      // never play, and the old code stored the channel anyway.
+      const missing = missingVoicePermissions(interaction.guild, channel);
+      if (missing.length) {
+        return interaction.reply({
+          content: say(lang, "setup.errors.missing_permissions", {
+            channel: `<#${channel.id}>`,
+            permissions: missing.map((name) => t(lang, `permissions.${name}`)).join(", "),
+          }),
+          ephemeral: true,
+        });
+      }
 
-        if (isChannel?.channelId === channel.id) return interaction.reply({
-          content: ":warning: | هذه القناه تم تعينها بالفعل من قبل ",
-          ephemeral: true
-        })
+      const data = await db.get(`${interaction.guildId}_radioChannel`);
 
-        await db.set(`${interaction.guildId}_radioChannel`, {
-          channelId: channel.id,
-          guildId: interaction.guildId,
-          url: data?.url || RadioChannels[0].value,
-          enabled: data?.enabled || false,
-          ch: data?.ch || null,
-          msgId: data?.msgId || null
-        })
+      if (data?.channelId === channel.id) {
+        return interaction.reply({
+          content: say(lang, "setup.errors.already_set", { channel: `<#${channel.id}>` }),
+          ephemeral: true,
+        });
+      }
 
-        interaction.reply({
-          content: `✅ | تم تعين القناه الصوتيه ${channel}\n يمكنك التشغيل و الايقاف  وتغير الاذاعة عبر استخدام امر /control حتي يمكنك التحكم به`,
-          ephemeral: true
-        })
+      // Moving the channel while the radio is live left the old connection
+      // playing in the old channel, with the database pointing elsewhere.
+      // Stop it so the stored state and reality agree again.
+      let wasPlaying = false;
+      const conn = client.Radio.get(`${interaction.guildId}`);
+      if (conn) {
+        wasPlaying = true;
+        stopWaiting(client, interaction.guildId);
+        try {
+          conn.player?.stop(true);
+          if (conn.guildStream && !conn.guildStream.destroyed) conn.guildStream.destroy();
+          conn.destroy();
+        } catch (_) { /* already torn down */ }
+        client.Radio.delete(`${interaction.guildId}`);
+        if (data?.channelId) {
+          client.rest.put(`/channels/${data.channelId}/voice-status`, { body: { status: "" } }).catch(() => { });
+        }
+      }
 
-      } else interaction.reply({
-        content: `🛑 | هذه ليست قناه صوتيه ${channel} من فضلك قم بتعين قناه صوتيه بشكل صحيح`,
-        ephemeral: true
-      })
+      await db.set(`${interaction.guildId}_radioChannel`, {
+        channelId: channel.id,
+        guildId: interaction.guildId,
+        url: data?.url || RadioChannels[0].value,
+        enabled: false,
+        ch: data?.ch || null,
+        msgId: data?.msgId || null,
+        offBy: data?.offBy ?? null,
+        offAt: data?.offAt ?? null,
+      });
 
+      const lines = [say(lang, "setup.success.radio_channel_set", { channel: `<#${channel.id}>` })];
+      if (wasPlaying) lines.push(say(lang, "setup.errors.radio_moved"));
+
+      return interaction.reply({ content: lines.join("\n"), ephemeral: true });
     } catch (err) {
-      console.log(err)
+      client.logger?.error?.("set_RadioChannel", err);
+      if (!interaction.replied && !interaction.deferred) {
+        return interaction.reply({ content: say(lang, "common.unexpected"), ephemeral: true }).catch(() => { });
+      }
     }
   },
 };

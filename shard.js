@@ -11,6 +11,15 @@ childProcess.fork = (mod, args, opts) =>
 
 const { ShardingManager } = require("discord.js");
 const path = require("path");
+const { openStatsStore } = require("./src/stats/statsStore");
+const { IPC_KEY } = require("./src/utils/functions/statsReporter");
+
+// The manager is the ONLY process that writes the stats store. Shards send
+// their events here over the sharding IPC instead, so sixteen processes never
+// contend on the same SQLite file.
+const stats = openStatsStore();
+stats.startMaintenance();
+console.log(`[stats] store at ${stats.file} (raw ${stats.rawRetentionDays}d, hourly ${stats.hourlyRetentionDays}d)`.cyan);
 
 const manager = new ShardingManager(path.join(__dirname, "index.js"), {
   token: process.env.token,
@@ -20,6 +29,16 @@ const manager = new ShardingManager(path.join(__dirname, "index.js"), {
 
 manager.on("shardCreate", (shard) => {
   console.log(`[ShardingManager] Launched Shard ${shard.id}`.green);
+
+  // Statistics arriving from this shard. Anything else on the channel is left
+  // alone so discord.js's own IPC keeps working.
+  shard.on("message", (message) => {
+    const event = message?.[IPC_KEY];
+    if (!event) return;
+    try { stats.record(event); } catch (err) {
+      console.error(`[stats] could not record from shard ${shard.id}: ${err.message}`.red);
+    }
+  });
 
   shard.on("ready", () => {
     console.log(`[Shard ${shard.id}] Ready`.cyan);
@@ -52,7 +71,7 @@ const { startLiveSocket } = require('./src/server/liveSocket');
 manager.spawn({ amount: "auto", delay: 5500, timeout: 90_000 })
   .then(() => {
     // Start the live-status Socket.io server once all shards are up
-    startLiveSocket(manager);
+    startLiveSocket(manager, undefined, stats);
   })
   .catch((err) => {
     console.error("[ShardingManager] Failed to spawn shards:".red, err);
@@ -66,6 +85,7 @@ function shutdown(signal) {
     try { shard.kill(); } catch (_) {}
   });
   setTimeout(() => {
+    try { stats.close(); } catch (_) {}
     console.log("[ShardingManager] All shards killed. Exiting.".red);
     process.exit(0);
   }, 3000);
